@@ -6,6 +6,7 @@
 .pnpm-store
 .tool-versions
 docker-compose.override.yml
+docker-compose.override.yml.bak.*
 npm-debug.log
 yarn-error.log
 console/public/extensions.json

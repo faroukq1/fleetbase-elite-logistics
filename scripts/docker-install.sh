@@ -324,6 +324,23 @@ section "Writing docker-compose.override.yml"
 
 OVERRIDE_FILE="docker-compose.override.yml"
 
+# Guard: these keys are consumed as literal driver names by Laravel
+# (config/filesystems.php, config/mail.php). A human-readable menu label such as
+# "Local disk (development only)" resolves to a disk that has no configured
+# driver, which makes every file upload fail. Refuse to write a bad value.
+assert_enum() {
+  local key="$1" val="$2"; shift 2
+  local allowed=("$@")
+  for a in "${allowed[@]}"; do
+    [[ "$val" == "$a" ]] && return 0
+  done
+  echo "ERROR: refusing to write ${key}=\"${val}\" — expected one of: ${allowed[*]}" >&2
+  exit 1
+}
+
+assert_enum FILESYSTEM_DRIVER "$FILESYSTEM_DRIVER" local public s3 gcs
+assert_enum MAIL_MAILER       "$MAIL_MAILER"       smtp mailgun postmark sendgrid resend ses log
+
 # Back up any existing override
 if [[ -f "$OVERRIDE_FILE" ]]; then
   BACKUP="${OVERRIDE_FILE}.bak.$(date +%Y%m%d%H%M%S)"

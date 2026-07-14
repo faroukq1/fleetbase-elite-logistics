@@ -96,6 +96,7 @@ services:
     command: >
       sh -c "
         chown -R www-data:www-data /fleetbase/api/storage/app &&
+        chmod -R 775 /fleetbase/api/storage/app &&
         php /fleetbase/api/artisan storage:link --force &&
         sed -i \"s|https://flb-assets.s3.ap-southeast-1.amazonaws.com/static/fleetbase-logo.png|/images/elite_green.jpeg|g\" /fleetbase/api/vendor/fleetbase/core-api/config/fleetbase.php &&
         sed -i \"s|https://flb-assets.s3.ap-southeast-1.amazonaws.com/static/fleetbase-icon.png|/images/icon.png|g\" /fleetbase/api/vendor/fleetbase/core-api/config/fleetbase.php &&
@@ -130,5 +131,9 @@ services:
       dockerfile: docker/httpd/Dockerfile
     ports:
       - "8000:80"
+    volumes:
+      # nginx serves /storage/ directly via alias; it needs the same uploads
+      # directory the application container writes to, or every upload 404s.
+      - ./api/storage/app/public:/fleetbase/api/storage/app/public:ro
     depends_on:
       - application
