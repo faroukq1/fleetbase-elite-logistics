@@ -1,0 +1,35 @@
+services:
+  application:
+    environment:
+      APP_KEY: "base64:VWmePYNW1pqqDPI6D2AnolJpcnyUrbf+B/7Hut3AYSw="
+      APP_NAME: "Fleetbase"
+      APP_URL: "http://localhost:8000"
+      CONSOLE_HOST: "http://localhost:4200"
+      ENVIRONMENT: "Development"
+      APP_DEBUG: "true"
+      DATABASE_URL: "mysql://fleetbase:3f44da1bd3cc0787f90b6d86b5e647bbc20359bb@database/fleetbase"
+      SESSION_DOMAIN: "localhost"
+      MAIL_MAILER: "Log only (development)"
+      MAIL_FROM_ADDRESS: "hello@example.com"
+      MAIL_FROM_NAME: "Fleetbase"
+      FILESYSTEM_DRIVER: "Local disk  (development only — files lost on container rebuild)"
+
+  socket:
+    environment:
+      SOCKETCLUSTER_OPTIONS: "{\"origins\":\"http://localhost:*,https://localhost:*,ws://localhost:*,wss://localhost:*\"}"
+
+  queue:
+    environment:
+      DATABASE_URL: "mysql://fleetbase:3f44da1bd3cc0787f90b6d86b5e647bbc20359bb@database/fleetbase"
+
+  scheduler:
+    environment:
+      DATABASE_URL: "mysql://fleetbase:3f44da1bd3cc0787f90b6d86b5e647bbc20359bb@database/fleetbase"
+
+  database:
+    environment:
+      MYSQL_ROOT_PASSWORD: "13008cc6e39ff6580f506d757e629243c5c53a66"
+      MYSQL_DATABASE: "fleetbase"
+      MYSQL_USER: "fleetbase"
+      MYSQL_PASSWORD: "3f44da1bd3cc0787f90b6d86b5e647bbc20359bb"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"

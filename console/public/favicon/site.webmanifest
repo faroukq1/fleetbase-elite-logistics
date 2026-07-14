@@ -1,7 +1,7 @@
 {
-    "name": "Fleetbase Console",
-    "short_name": "Fleetbase",
-    "theme_color": "#ffffff",
+    "name": "Elite Logistics Console",
+    "short_name": "Elite Logistics",
+    "theme_color": "#16a34a",
     "background_color": "#ffffff",
     "display": "standalone"
 }

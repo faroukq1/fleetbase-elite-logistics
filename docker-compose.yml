@@ -16,6 +16,8 @@ services:
     volumes:
       - "./docker/database/:/docker-entrypoint-initdb.d/"
       - "./docker/database/mysql:/var/lib/mysql"
+      - "./docker/database/socket.cnf:/etc/mysql/conf.d/socket.cnf:ro"
+    command: ["bash", "-c", "rm -f /var/lib/mysql/mysql.sock /var/lib/mysql/mysql.sock.lock /var/lib/mysql/mysqlx.sock /var/lib/mysql/mysqlx.sock.lock && exec /entrypoint.sh mysqld"]
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "fleetbase"
@@ -91,6 +93,14 @@ services:
     volumes:
       - ./api/.env:/fleetbase/api/.env
       - ./api/storage/app:/fleetbase/api/storage/app
+    command: >
+      sh -c "
+        chown -R www-data:www-data /fleetbase/api/storage/app &&
+        php /fleetbase/api/artisan storage:link --force &&
+        sed -i \"s|https://flb-assets.s3.ap-southeast-1.amazonaws.com/static/fleetbase-logo.png|/images/elite_green.jpeg|g\" /fleetbase/api/vendor/fleetbase/core-api/config/fleetbase.php &&
+        sed -i \"s|https://flb-assets.s3.ap-southeast-1.amazonaws.com/static/fleetbase-icon.png|/images/icon.png|g\" /fleetbase/api/vendor/fleetbase/core-api/config/fleetbase.php &&
+        exec php artisan octane:frankenphp --max-requests=1000 --port=8000 --host=0.0.0.0
+      "
     environment:
       ENVIRONMENT: development
       DATABASE_URL: "mysql://root@database/fleetbase"
@@ -101,9 +111,10 @@ services:
       REDIS_URL: tcp://cache
       SESSION_DOMAIN: localhost
       BROADCAST_DRIVER: socketcluster
-      MAIL_FROM_NAME: Fleetbase
-      APP_NAME: Fleetbase
+      MAIL_FROM_NAME: Elite Logistics
+      APP_NAME: Elite Logistics
       LOG_CHANNEL: daily
+      FILESYSTEM_DRIVER: public
       REGISTRY_HOST: https://registry.fleetbase.io
       REGISTRY_PREINSTALLED_EXTENSIONS: "true"
       OSRM_HOST: https://router.project-osrm.org

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # scripts/docker-install.sh
-# Fleetbase Docker installer — interactive setup wizard
+# Elite Logistics Docker installer — interactive setup wizard
 # -------------------------------------------------------
 # Usage:
 #   bash scripts/docker-install.sh              # interactive (default)
@@ -36,7 +36,7 @@ env_line() {
 }
 
 echo
-echo -e "${BOLD}🚀  Fleetbase Installation Wizard${RESET}"
+echo -e "${BOLD}🚀  Elite Logistics Installation Wizard${RESET}"
 echo
 
 ###############################################################################
@@ -82,7 +82,7 @@ section "Core Configuration"
 if $NON_INTERACTIVE; then
   HOST="localhost"
   ENVIRONMENT="development"
-  APP_NAME="Fleetbase"
+  APP_NAME="Elite Logistics"
 else
   read -rp "Host or IP address to bind to [localhost]: " HOST_INPUT
   HOST="${HOST_INPUT:-localhost}"
@@ -97,8 +97,8 @@ else
     esac
   done
 
-  read -rp "Application name [Fleetbase]: " APP_NAME_INPUT
-  APP_NAME="${APP_NAME_INPUT:-Fleetbase}"
+  read -rp "Application name [Elite Logistics]: " APP_NAME_INPUT
+  APP_NAME="${APP_NAME_INPUT:-Elite Logistics}"
 fi
 
 # Derive scheme flags
@@ -456,7 +456,7 @@ success "Console configuration files updated"
 ###############################################################################
 # STEP 11 — Start containers
 ###############################################################################
-section "Starting Fleetbase Containers"
+section "Starting Elite Logistics Containers"
 echo "  This may take a few minutes on first run..."
 docker compose up -d
 
@@ -530,7 +530,7 @@ $CONFIG_3P \
 
 echo
 printf '%0.s═' {1..60}; echo
-echo -e "  ${BOLD}🏁  Fleetbase Installation Complete${RESET}"
+echo -e "  ${BOLD}🏁  Elite Logistics Installation Complete${RESET}"
 printf '%0.s═' {1..60}; echo
 echo
 echo "  📍  Endpoints"

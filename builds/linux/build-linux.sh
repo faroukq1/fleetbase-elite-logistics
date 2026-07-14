@@ -6,7 +6,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-APP_NAME="Fleetbase"
+APP_NAME="Elite Logistics"
 IMAGE_NAME="fleetbase-linux-static"
 CONTAINER_NAME="fleetbase-linux-build"
 DIST_DIR="$ROOT_DIR/builds/dist"

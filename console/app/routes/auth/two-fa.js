@@ -29,6 +29,7 @@ export default class AuthTwoFaRoute extends Route {
      * @var {Service}
      */
     @service session;
+    @service store;
 
     /**
      * Query parameters for the route.
@@ -91,6 +92,10 @@ export default class AuthTwoFaRoute extends Route {
      */
     setupController(controller) {
         super.setupController(...arguments);
+
+        this.store.findRecord('brand', 1).then((brand) => {
+            controller.brand = brand;
+        });
 
         this.session.store.restore().then(({ clientToken, identity }) => {
             controller.clientToken = clientToken;

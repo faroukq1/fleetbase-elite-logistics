@@ -38,7 +38,7 @@ export function initialize(appInstance) {
             new Widget({
                 id: 'fleetbase-github-card',
                 name: 'Github Card',
-                description: 'Displays current Github stats from the official Fleetbase repo.',
+                description: 'Displays current Github stats from the official Elite Logistics repo.',
                 icon: faGithub,
                 component: 'github-card',
                 grid_options: { w: 5, h: 9, minW: 5, minH: 9 },

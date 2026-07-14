@@ -6,6 +6,7 @@ export default class AuthLoginRoute extends Route {
     @service universe;
     @service installation;
     @service router;
+    @service store;
 
     /**
      * If user is authentication redirect to console.
@@ -26,5 +27,10 @@ export default class AuthLoginRoute extends Route {
 
         this.session.prohibitAuthentication('console');
         return this.universe.virtualRouteRedirect(transition, 'auth:login', 'virtual', { restoreQueryParams: true });
+    }
+
+    async setupController(controller) {
+        super.setupController(...arguments);
+        controller.brand = await this.store.findRecord('brand', 1);
     }
 }

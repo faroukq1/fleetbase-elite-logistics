@@ -5,6 +5,7 @@ export default class AuthVerificationRoute extends Route {
     @service session;
     @service fetch;
     @service router;
+    @service store;
 
     queryParams = {
         token: {
@@ -33,6 +34,7 @@ export default class AuthVerificationRoute extends Route {
 
     async setupController(controller) {
         super.setupController(...arguments);
+        controller.brand = await this.store.findRecord('brand', 1);
         let { email } = await this.session.store.restore();
         controller.email = email;
     }
