@@ -1,3 +1,16 @@
+diff --git a/addon/components/layout/header/dark-mode-toggle.hbs b/addon/components/layout/header/dark-mode-toggle.hbs
+index a49999fc60210ce40e6b7447a8477a21d89ba608..b70d12f9735b1b0d30ec6a7c71fbdf1ada65f584 100644
+--- a/addon/components/layout/header/dark-mode-toggle.hbs
++++ b/addon/components/layout/header/dark-mode-toggle.hbs
+@@ -1,6 +1,6 @@
+ <a href="#" class="{{@wrapperClass}} next-dd-item hover:bg-gray-800">
+     <Toggle @isToggled={{this.userPrefersDarkMode}} @onToggle={{this.switchDarkMode}} />
+     <span class="ml-1">
+-        Dark Mode
++        {{t "user-menu.dark-mode"}}
+     </span>
+ </a>
+\ No newline at end of file
 diff --git a/addon/components/layout/header/dropdown/item.hbs b/addon/components/layout/header/dropdown/item.hbs
 index a6f0b35cbe39a3ece89d996906a737028e9f2a11..3ee4187f77eb229788372a76297324f94b0c911d 100644
 --- a/addon/components/layout/header/dropdown/item.hbs

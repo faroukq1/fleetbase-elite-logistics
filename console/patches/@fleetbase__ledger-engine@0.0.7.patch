@@ -363,14 +363,238 @@ index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e
          {{/if}}
      </div>
  </div>
+diff --git a/addon/controllers/application.js b/addon/controllers/application.js
+index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2066f52e1 100644
+--- a/addon/controllers/application.js
++++ b/addon/controllers/application.js
+@@ -4,30 +4,31 @@ import { inject as service } from '@ember/service';
+ 
+ export default class ApplicationController extends Controller {
+     @service fetch;
++    @service intl;
+ 
+     get navigationItems() {
+         return [
+             {
+-                label: 'Dashboard',
++                label: this.intl.t('ledger.sidebar.dashboard'),
+                 description: 'Ledger dashboard and financial overview.',
+                 icon: 'chart-simple',
+                 route: 'console.ledger.home',
+                 keywords: ['overview', 'metrics', 'finance dashboard'],
+             },
+             {
+-                label: 'Billing',
++                label: this.intl.t('ledger.sidebar.billing'),
+                 description: 'Invoices and reusable invoice templates.',
+                 icon: 'file-invoice-dollar',
+                 children: [
+                     {
+-                        label: 'Invoices',
++                        label: this.intl.t('ledger.sidebar.invoices'),
+                         description: 'Create, send, and manage customer invoices.',
+                         icon: 'file-invoice-dollar',
+                         route: 'console.ledger.billing.invoices.index',
+                         keywords: ['receivables', 'customers', 'payments due'],
+                     },
+                     {
+-                        label: 'Invoice Templates',
++                        label: this.intl.t('ledger.sidebar.invoice-templates'),
+                         description: 'Design reusable invoice templates.',
+                         icon: 'file-code',
+                         route: 'console.ledger.billing.invoice-templates.index',
+@@ -36,26 +37,26 @@ export default class ApplicationController extends Controller {
+                 ],
+             },
+             {
+-                label: 'Payments',
++                label: this.intl.t('ledger.sidebar.payments'),
+                 description: 'Transactions, wallets, and payment gateways.',
+                 icon: 'money-bill-transfer',
+                 children: [
+                     {
+-                        label: 'Transactions',
++                        label: this.intl.t('ledger.sidebar.transactions'),
+                         description: 'Review payment and wallet transaction history.',
+                         icon: 'money-bill-transfer',
+                         route: 'console.ledger.payments.transactions.index',
+                         keywords: ['payments', 'charges', 'refunds', 'settlements'],
+                     },
+                     {
+-                        label: 'Wallets',
++                        label: this.intl.t('ledger.sidebar.wallets'),
+                         description: 'Manage company, customer, and driver wallets.',
+                         icon: 'wallet',
+                         route: 'console.ledger.payments.wallets.index',
+                         keywords: ['balances', 'top ups', 'payouts'],
+                     },
+                     {
+-                        label: 'Gateways',
++                        label: this.intl.t('ledger.sidebar.gateways'),
+                         description: 'Configure payment gateway integrations.',
+                         icon: 'credit-card',
+                         route: 'console.ledger.payments.gateways.index',
+@@ -64,26 +65,26 @@ export default class ApplicationController extends Controller {
+                 ],
+             },
+             {
+-                label: 'Accounting',
++                label: this.intl.t('ledger.sidebar.accounting'),
+                 description: 'Chart of accounts, journals, and general ledger.',
+                 icon: 'calculator',
+                 children: [
+                     {
+-                        label: 'Chart of Accounts',
++                        label: this.intl.t('ledger.sidebar.chart-of-accounts'),
+                         description: 'Manage the ledger account structure.',
+                         icon: 'sitemap',
+                         route: 'console.ledger.accounting.accounts.index',
+                         keywords: ['accounts', 'coa', 'accounting'],
+                     },
+                     {
+-                        label: 'Journal Entries',
++                        label: this.intl.t('ledger.sidebar.journal-entries'),
+                         description: 'Browse and create double-entry journal entries.',
+                         icon: 'book',
+                         route: 'console.ledger.accounting.journal.index',
+                         keywords: ['journals', 'debits', 'credits'],
+                     },
+                     {
+-                        label: 'General Ledger',
++                        label: this.intl.t('ledger.sidebar.general-ledger'),
+                         description: 'Review posted activity across accounts.',
+                         icon: 'scroll',
+                         route: 'console.ledger.accounting.general-ledger',
+@@ -92,47 +93,47 @@ export default class ApplicationController extends Controller {
+                 ],
+             },
+             {
+-                label: 'Reports',
++                label: this.intl.t('ledger.sidebar.reports'),
+                 description: 'Financial statements and operational reports.',
+                 icon: 'chart-line',
+                 children: [
+                     {
+-                        label: 'Income Statement',
++                        label: this.intl.t('ledger.sidebar.income-statement'),
+                         description: 'Revenue, expenses, and net income.',
+                         icon: 'chart-line',
+                         route: 'console.ledger.reports.income-statement',
+                         keywords: ['profit and loss', 'pnl', 'revenue', 'expenses'],
+                     },
+                     {
+-                        label: 'Balance Sheet',
++                        label: this.intl.t('ledger.sidebar.balance-sheet'),
+                         description: 'Assets, liabilities, and equity.',
+                         icon: 'scale-balanced',
+                         route: 'console.ledger.reports.balance-sheet',
+                         keywords: ['assets', 'liabilities', 'equity'],
+                     },
+                     {
+-                        label: 'Trial Balance',
++                        label: this.intl.t('ledger.sidebar.trial-balance'),
+                         description: 'Debit and credit balances by account.',
+                         icon: 'list-check',
+                         route: 'console.ledger.reports.trial-balance',
+                         keywords: ['debits', 'credits', 'balances'],
+                     },
+                     {
+-                        label: 'Cash Flow',
++                        label: this.intl.t('ledger.sidebar.cash-flow'),
+                         description: 'Cash movement over the selected period.',
+                         icon: 'water',
+                         route: 'console.ledger.reports.cash-flow',
+                         keywords: ['cash', 'inflow', 'outflow'],
+                     },
+                     {
+-                        label: 'AR Aging',
++                        label: this.intl.t('ledger.sidebar.ar-aging'),
+                         description: 'Outstanding receivables by age bucket.',
+                         icon: 'clock',
+                         route: 'console.ledger.reports.ar-aging',
+                         keywords: ['receivables', 'overdue invoices', 'aging'],
+                     },
+                     {
+-                        label: 'Wallet Summary',
++                        label: this.intl.t('ledger.sidebar.wallet-summary'),
+                         description: 'Wallet balances and activity summary.',
+                         icon: 'wallet',
+                         route: 'console.ledger.reports.wallet-summary',
+@@ -141,26 +142,26 @@ export default class ApplicationController extends Controller {
+                 ],
+             },
+             {
+-                label: 'Settings',
++                label: this.intl.t('ledger.sidebar.settings'),
+                 description: 'Ledger billing, payment, and accounting settings.',
+                 icon: 'gear',
+                 children: [
+                     {
+-                        label: 'Invoice Settings',
++                        label: this.intl.t('ledger.sidebar.invoice-settings'),
+                         description: 'Configure invoice numbering, defaults, and templates.',
+                         icon: 'file-invoice',
+                         route: 'console.ledger.settings.invoice',
+                         keywords: ['invoice defaults', 'numbering', 'template'],
+                     },
+                     {
+-                        label: 'Payment Settings',
++                        label: this.intl.t('ledger.sidebar.payment-settings'),
+                         description: 'Configure payment defaults and gateway behavior.',
+                         icon: 'gear',
+                         route: 'console.ledger.settings.payment',
+                         keywords: ['payments', 'gateway defaults'],
+                     },
+                     {
+-                        label: 'Accounting Settings',
++                        label: this.intl.t('ledger.sidebar.accounting-settings'),
+                         description: 'Configure accounting automation and posting behavior.',
+                         icon: 'calculator',
+                         route: 'console.ledger.settings.accounting',
+diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
+index 31f5e9a04ac20966a319aa459cd0c910478d4365..5a98fbaff47e9b7e0a88904f95396b3a74dd8e72 100644
+--- a/addon/templates/application.hbs
++++ b/addon/templates/application.hbs
+@@ -1,5 +1,5 @@
+ <EmberWormhole @to="sidebar-menu-items">
+-    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder="Search Ledger..." @searchProvider={{this.searchNavigation}} />
++    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder={{t "ledger.sidebar.search-placeholder"}} @searchProvider={{this.searchNavigation}} />
+ </EmberWormhole>
+ <Layout::Section::Container>
+     {{outlet}}
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..14330d6ce9dd7ace356bfd81ff92188a9b69fd8a
+index 0000000000000000000000000000000000000000..7d8cfda3b9349d47c026045152f5cb5782e763b8
 --- /dev/null
 +++ b/translations/ar-ae.yaml
-@@ -0,0 +1,157 @@
+@@ -0,0 +1,182 @@
 +ledger:
 +  extension-name: دفتر الأستاذ
++  sidebar:
++    dashboard: لوحة التحكم
++    billing: الفوترة
++    invoices: الفواتير
++    invoice-templates: قوالب الفواتير
++    payments: المدفوعات
++    transactions: المعاملات
++    wallets: المحافظ
++    gateways: البوابات
++    accounting: المحاسبة
++    chart-of-accounts: دليل الحسابات
++    journal-entries: قيود اليومية
++    general-ledger: دفتر الأستاذ العام
++    reports: التقارير
++    income-statement: قائمة الدخل
++    balance-sheet: الميزانية العمومية
++    trial-balance: ميزان المراجعة
++    cash-flow: التدفق النقدي
++    ar-aging: تقادم الذمم المدينة
++    wallet-summary: ملخص المحافظ
++    settings: الإعدادات
++    invoice-settings: إعدادات الفواتير
++    payment-settings: إعدادات المدفوعات
++    accounting-settings: إعدادات المحاسبة
++    search-placeholder: البحث في دفتر الأستاذ...
 +  widget:
 +    kpi:
 +      revenue: الإيرادات
@@ -527,12 +751,37 @@ index 0000000000000000000000000000000000000000..14330d6ce9dd7ace356bfd81ff92188a
 +    void: إلغاء الفاتورة
 +    edit: تعديل الفاتورة
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index ab0883de2c82375e4085beba527d4d468f690c86..9f91d58f77dac1b0a6e61e56f107382f15cf43b7 100644
+index ab0883de2c82375e4085beba527d4d468f690c86..08c6307e37a0c92233d7a133c9968c2bd11ebeac 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -1,5 +1,55 @@
+@@ -1,5 +1,80 @@
  ledger:
    extension-name: Ledger
++  sidebar:
++    dashboard: Dashboard
++    billing: Billing
++    invoices: Invoices
++    invoice-templates: Invoice Templates
++    payments: Payments
++    transactions: Transactions
++    wallets: Wallets
++    gateways: Gateways
++    accounting: Accounting
++    chart-of-accounts: Chart of Accounts
++    journal-entries: Journal Entries
++    general-ledger: General Ledger
++    reports: Reports
++    income-statement: Income Statement
++    balance-sheet: Balance Sheet
++    trial-balance: Trial Balance
++    cash-flow: Cash Flow
++    ar-aging: AR Aging
++    wallet-summary: Wallet Summary
++    settings: Settings
++    invoice-settings: Invoice Settings
++    payment-settings: Payment Settings
++    accounting-settings: Accounting Settings
++    search-placeholder: Search Ledger...
 +  widget:
 +    kpi:
 +      revenue: Revenue

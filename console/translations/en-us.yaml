@@ -822,6 +822,7 @@ user-menu:
   keyboard-shortcuts: Show keyboard shortcuts
   changelog: Changelog
   developers: Developers
+  dark-mode: Dark Mode
 registry-bridge:
   sidebar:
     installed: Installed

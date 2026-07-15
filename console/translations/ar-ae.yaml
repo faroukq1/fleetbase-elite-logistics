@@ -791,6 +791,7 @@ user-menu:
   keyboard-shortcuts: عرض اختصارات لوحة المفاتيح
   changelog: سجل التغييرات
   developers: المطورون
+  dark-mode: الوضع الداكن
 registry-bridge:
   sidebar:
     installed: مثبّتة
