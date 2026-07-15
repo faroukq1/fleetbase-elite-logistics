@@ -215,3 +215,48 @@
 .elite-onboard-submit {
     margin-top: 0.5rem;
 }
+
+/* ── Smooth light/dark theme toggle ────────────────────────────────────── */
+/* Transition surfaces/borders/text when [data-theme] flips on <html>. Scoped
+   to common containers to avoid janking every element on the page. */
+body,
+.next-content-panel,
+.next-view-section,
+nav,
+aside,
+table,
+th,
+td,
+.card,
+.panel,
+input,
+select,
+textarea,
+button,
+[class*='bg-gray-'],
+[class*='bg-white'],
+[class*='border-gray-'] {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+/* Respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+    body,
+    .next-content-panel,
+    .next-view-section,
+    nav,
+    aside,
+    table,
+    th,
+    td,
+    .card,
+    .panel,
+    input,
+    select,
+    textarea,
+    button,
+    [class*='bg-gray-'],
+    [class*='bg-white'],
+    [class*='border-gray-'] {
+        transition: none;
+    }
+}
