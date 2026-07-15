@@ -390,3 +390,10 @@ index 0000000000000000000000000000000000000000..4168fadee8b47819fc42fa5afbe31029
 +        return this.intl.exists(key) ? this.intl.t(key) : text;
 +    }
 +}
+diff --git a/app/helpers/localize-label.js b/app/helpers/localize-label.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..612a3f8a6a2caae16f56cab741fa71d617f7d661
+--- /dev/null
++++ b/app/helpers/localize-label.js
+@@ -0,0 +1 @@
++export { default } from '@fleetbase/ember-ui/helpers/localize-label';
