@@ -1,3 +1,55 @@
+diff --git a/addon/components/layout/header/smart-nav-menu/item.hbs b/addon/components/layout/header/smart-nav-menu/item.hbs
+index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce082b74d2f4 100644
+--- a/addon/components/layout/header/smart-nav-menu/item.hbs
++++ b/addon/components/layout/header/smart-nav-menu/item.hbs
+@@ -27,7 +27,7 @@
+                 <FaIcon @icon={{or @item.icon "circle-dot"}} @prefix={{@item.iconPrefix}} @size="sm" />
+             {{/if}}
+         </div>
+-        <span class="truncate">{{@item.title}}</span>
++        <span class="truncate">{{this.displayTitle}}</span>
+     </a>
+ {{else}}
+     <LinkToExternal
+@@ -44,6 +44,6 @@
+                 <FaIcon @icon={{or @item.icon "circle-dot"}} @prefix={{@item.iconPrefix}} @size="sm" />
+             {{/if}}
+         </div>
+-        <span class="truncate">{{@item.title}}</span>
++        <span class="truncate">{{this.displayTitle}}</span>
+     </LinkToExternal>
+ {{/if}}
+diff --git a/addon/components/layout/header/smart-nav-menu/item.js b/addon/components/layout/header/smart-nav-menu/item.js
+index 0df254b34b13a5267950a778bc35671fd5e294f7..8bbd3a4dd8203f9d2845f1c76129c839458290e2 100644
+--- a/addon/components/layout/header/smart-nav-menu/item.js
++++ b/addon/components/layout/header/smart-nav-menu/item.js
+@@ -14,6 +14,26 @@ import { inject as service } from '@ember/service';
+ export default class LayoutHeaderSmartNavMenuItemComponent extends Component {
+     @service router;
+     @service hostRouter;
++    @service intl;
++
++    /**
++     * Localized nav label. Engines register header items with hardcoded English
++     * titles (Fleet-Ops, Storefront, ...); map them to translation keys so they
++     * follow the active locale. Falls back to the raw title when unmapped.
++     */
++    get displayTitle() {
++        const title = this.args.item?.title;
++        const keyByTitle = {
++            'Fleet-Ops': 'header-nav.fleet-ops',
++            Storefront: 'header-nav.storefront',
++            IAM: 'header-nav.iam',
++            Ledger: 'header-nav.ledger',
++            Developers: 'header-nav.developers',
++            Extensions: 'header-nav.extensions',
++        };
++        const key = keyByTitle[title];
++        return key ? this.intl.t(key) : title;
++    }
+ 
+     /**
+      * Whether the item's route matches the current route, making it "active".
 diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
 index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff6615fd6e79e 100644
 --- a/addon/components/layout/header.js
