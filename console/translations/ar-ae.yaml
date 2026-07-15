@@ -787,3 +787,51 @@ user-menu:
   discord: انضم إلى مجتمع Discord
   support: المساعدة والدعم
   documentation: التوثيق
+registry-bridge:
+  sidebar:
+    installed: مثبّتة
+    purchased: مشتراة
+    explore: استكشاف
+    explore-all: استكشاف الكل
+    developers: المطورون
+    extensions: الامتدادات
+    analytics: التحليلات
+    payments: المدفوعات
+    credentials: بيانات الاعتماد
+
+config:
+  apn-device-token: "رمز جهاز APN"
+  apn-private-key: "مفتاح APN الخاص"
+  apn-production: "إنتاج APN"
+  body-template-json: "قالب الجسم JSON"
+  choose-an-authentication-method: "اختر طريقة مصادقة"
+  configure-provider: "إعداد المزود"
+  default-provider: "المزود الافتراضي"
+  enable-two-factor-authentication: "تفعيل المصادقة الثنائية"
+  enabled-tls-encryption: "تشفير TLS مفعّل"
+  fcm-device-token: "رمز جهاز FCM"
+  from-address: "عنوان المُرسِل"
+  from-name: "اسم المُرسِل"
+  headers-json: "الترويسات JSON"
+  input-the-email-address-for-elite-logistics-to-send-emails-f: "أدخل عنوان البريد الإلكتروني الذي سترسل منه Elite Logistics الرسائل."
+  input-the-name-for-elite-logistics-to-send-emails-from: "أدخل الاسم الذي سترسل منه Elite Logistics الرسائل."
+  method: "الطريقة"
+  push-notification-message: "رسالة الإشعار الفوري"
+  push-notification-title: "عنوان الإشعار الفوري"
+  query-params-json: "معاملات الاستعلام JSON"
+  recommended: "موصى به"
+  save-to-sent-items: "حفظ في العناصر المرسلة"
+  select-filesystem-driver: "اختر مشغّل نظام الملفات"
+  select-mailer: "اختر برنامج البريد"
+  select-queue-driver: "اختر مشغّل قائمة الانتظار"
+  select-the-default-filesystem-driver-for-elite-logistics-to-: "اختر مشغّل نظام الملفات الافتراضي الذي ستستخدمه Elite Logistics."
+  select-the-default-mailer-for-elite-logistics-to-use: "اختر برنامج البريد الافتراضي الذي ستستخدمه Elite Logistics."
+  select-the-default-queue-driver-for-elite-logistics-to-use: "اختر مشغّل قائمة الانتظار الافتراضي الذي ستستخدمه Elite Logistics."
+  send-test-sms-here: "أرسل رسالة اختبار هنا"
+  sms-providers: "مزودو الرسائل النصية"
+  smtp-encryption: "تشفير SMTP"
+  test-message: "رسالة اختبار"
+  test-push-notification: "اختبار الإشعار الفوري"
+  upload-p8-key-file: "رفع ملف مفتاح P8"
+  upload-service-account-json: "رفع JSON حساب الخدمة"
+  use-tls: "استخدام TLS"

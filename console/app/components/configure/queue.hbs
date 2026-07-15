@@ -1,6 +1,6 @@
 <ContentPanel @title="Queue" @open={{true}} @wrapperClass="bordered-classic">
-    <InputGroup @name="Driver" @helpText="Select the default queue driver for Elite Logistics to use.">
-        <Select @options={{this.connections}} @value={{this.driver}} @onSelect={{this.setDriver}} @placeholder="Select queue driver" disabled={{this.isLoading}} class="w-full" />
+    <InputGroup @name="Driver" @helpText={{t "config.select-the-default-queue-driver-for-elite-logistics-to-use"}}>
+        <Select @options={{this.connections}} @value={{this.driver}} @onSelect={{this.setDriver}} @placeholder={{t "config.select-queue-driver"}} disabled={{this.isLoading}} class="w-full" />
     </InputGroup>
     {{#if (eq this.driver "beanstalkd")}}
         <InputGroup @name="Beanstalk Host" @value={{this.beanstalkdHost}} disabled={{this.isLoading}} />

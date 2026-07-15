@@ -818,3 +818,51 @@ user-menu:
   discord: Join Discord Community
   support: Help & Support
   documentation: Documentation
+registry-bridge:
+  sidebar:
+    installed: Installed
+    purchased: Purchased
+    explore: Explore
+    explore-all: Explore All
+    developers: Developers
+    extensions: Extensions
+    analytics: Analytics
+    payments: Payments
+    credentials: Credentials
+
+config:
+  apn-device-token: "APN Device Token"
+  apn-private-key: "APN Private Key"
+  apn-production: "APN Production"
+  body-template-json: "Body Template JSON"
+  choose-an-authentication-method: "Choose an authentication method"
+  configure-provider: "Configure Provider"
+  default-provider: "Default Provider"
+  enable-two-factor-authentication: "Enable Two-Factor Authentication"
+  enabled-tls-encryption: "Enabled TLS Encryption"
+  fcm-device-token: "FCM Device Token"
+  from-address: "From Address"
+  from-name: "From Name"
+  headers-json: "Headers JSON"
+  input-the-email-address-for-elite-logistics-to-send-emails-f: "Input the email address for Elite Logistics to send emails from."
+  input-the-name-for-elite-logistics-to-send-emails-from: "Input the name for Elite Logistics to send emails from."
+  method: "Method"
+  push-notification-message: "Push Notification Message"
+  push-notification-title: "Push Notification Title"
+  query-params-json: "Query Params JSON"
+  recommended: "Recommended"
+  save-to-sent-items: "Save to sent items"
+  select-filesystem-driver: "Select filesystem driver"
+  select-mailer: "Select mailer"
+  select-queue-driver: "Select queue driver"
+  select-the-default-filesystem-driver-for-elite-logistics-to-: "Select the default filesystem driver for Elite Logistics to use."
+  select-the-default-mailer-for-elite-logistics-to-use: "Select the default mailer for Elite Logistics to use."
+  select-the-default-queue-driver-for-elite-logistics-to-use: "Select the default queue driver for Elite Logistics to use."
+  send-test-sms-here: "Send Test SMS Here"
+  sms-providers: "SMS Providers"
+  smtp-encryption: "SMTP Encryption"
+  test-message: "Test Message"
+  test-push-notification: "Test Push Notification"
+  upload-p8-key-file: "Upload P8 Key File"
+  upload-service-account-json: "Upload Service Account JSON"
+  use-tls: "Use TLS"

@@ -9,10 +9,10 @@
     <InputGroup @name="Google Maps Locale" @value={{this.googleMapsLocale}} disabled={{this.isLoading}} />
 </ContentPanel>
 
-<ContentPanel @title="SMS Providers" @open={{true}} @wrapperClass="bordered-classic">
+<ContentPanel @title={{t "config.sms-providers"}} @open={{true}} @wrapperClass="bordered-classic">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-            <label class="form-label">Default Provider</label>
+            <label class="form-label">{{t "config.default-provider"}}</label>
             <select class="form-select form-select-sm w-full" data-test-sms-default-provider {{on "change" this.updateSmsDefaultProvider}}>
                 {{#each this.smsProviders as |provider|}}
                     <option value={{provider.key}} selected={{eq this.normalizedSms.defaultProvider provider.key}}>{{provider.name}}</option>
@@ -20,7 +20,7 @@
             </select>
         </div>
         <div>
-            <label class="form-label">Configure Provider</label>
+            <label class="form-label">{{t "config.configure-provider"}}</label>
             <select class="form-select form-select-sm w-full" data-test-sms-configure-provider {{on "change" this.selectSmsProvider}}>
                 {{#each this.smsProviders as |provider|}}
                     <option value={{provider.key}} selected={{eq this.smsSelectedProvider provider.key}}>{{provider.name}}</option>
@@ -70,13 +70,13 @@
             <InputGroup @name="SMPP Bind Type" @value={{this.selectedSmsProviderConfig.bind_type}} {{on "input" (fn this.updateSmsProviderField "smpp" "bind_type")}} disabled={{this.isLoading}} />
             <label class="flex flex-row items-center text-sm mt-2">
                 <Input @type="checkbox" @checked={{this.selectedSmsProviderConfig.tls}} {{on "change" (fn this.updateSmsProviderChecked "smpp" "tls")}} />
-                <span class="ml-2">Use TLS</span>
+                <span class="ml-2">{{t "config.use-tls"}}</span>
             </label>
         {{/if}}
 
         {{#if (eq this.smsSelectedProvider "custom_http")}}
             <div>
-                <label class="form-label">Method</label>
+                <label class="form-label">{{t "config.method"}}</label>
                 <select class="form-select form-select-sm w-full" data-test-custom-http-method {{on "change" (fn this.updateSmsProviderField "custom_http" "method")}}>
                     <option value="POST" selected={{eq (or this.selectedSmsProviderConfig.method "POST") "POST"}}>POST</option>
                     <option value="GET" selected={{eq this.selectedSmsProviderConfig.method "GET"}}>GET</option>
@@ -86,12 +86,12 @@
             <InputGroup @name="From" @value={{this.selectedSmsProviderConfig.from}} {{on "input" (fn this.updateSmsProviderField "custom_http" "from")}} disabled={{this.isLoading}} />
             <InputGroup @name="Auth Header" @value={{this.selectedSmsProviderConfig.auth_header}} {{on "input" (fn this.updateSmsProviderField "custom_http" "auth_header")}} disabled={{this.isLoading}} />
             <InputGroup @name="Auth Token" @value={{this.selectedSmsProviderConfig.auth_token}} {{on "input" (fn this.updateSmsProviderField "custom_http" "auth_token")}} disabled={{this.isLoading}} />
-            <label class="form-label">Headers JSON</label>
+            <label class="form-label">{{t "config.headers-json"}}</label>
             <textarea class="form-input w-full font-mono text-xs" rows="4" value={{this.customHttpHeadersText}} {{on "input" (fn this.updateSmsProviderJsonField "custom_http" "headers")}}></textarea>
-            <label class="form-label mt-3">Query Params JSON</label>
+            <label class="form-label mt-3">{{t "config.query-params-json"}}</label>
             <textarea class="form-input w-full font-mono text-xs" rows="4" value={{this.customHttpQueryParamsText}} {{on "input" (fn this.updateSmsProviderJsonField "custom_http" "query_params")}} data-test-custom-http-query-params></textarea>
             {{#if this.isCustomHttpPostMethod}}
-                <label class="form-label mt-3">Body Template JSON</label>
+                <label class="form-label mt-3">{{t "config.body-template-json"}}</label>
                 <textarea class="form-input w-full font-mono text-xs" rows="5" value={{this.customHttpBodyText}} {{on "input" (fn this.updateSmsProviderJsonField "custom_http" "body")}} data-test-custom-http-body></textarea>
             {{/if}}
         {{/if}}
@@ -104,8 +104,8 @@
         </div>
     {{/if}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-        <Input @value={{this.smsTestPhone}} @type="tel" placeholder="Send Test SMS Here" class="form-input form-input-sm" data-test-sms-test-phone />
-        <Input @value={{this.smsTestMessage}} @type="text" placeholder="Test Message" class="form-input form-input-sm" data-test-sms-test-message />
+        <Input @value={{this.smsTestPhone}} @type="tel" placeholder={{t "config.send-test-sms-here"}} class="form-input form-input-sm" data-test-sms-test-phone />
+        <Input @value={{this.smsTestMessage}} @type="text" placeholder={{t "config.test-message"}} class="form-input form-input-sm" data-test-sms-test-message />
     </div>
     <Button @wrapperClass="mt-3" @icon="plug" @text="Test SMS Provider" @onClick={{perform this.testSmsProvider}} @isLoading={{this.testSmsProvider.isRunning}} @disabled={{not this.smsTestPhone}} data-test-sms-test-button />
 </ContentPanel>
