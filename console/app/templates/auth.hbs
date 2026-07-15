@@ -1,6 +1,16 @@
-<div class="flex items-center justify-center min-h-screen px-4 py-12 bg-gray-50 dark:bg-gray-900 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
-        {{outlet}}
-        <FleetbaseAttribution />
+<div class="elite-auth">
+    <div class="elite-auth-brand">
+        <div class="elite-auth-brand-inner">
+            <LogoIcon @brand={{@model}} @size="28" class="elite-auth-brand-logo" />
+            <div class="elite-auth-brand-tagline">{{t "auth.login.logistics-tagline"}}</div>
+        </div>
+    </div>
+    <div class="elite-auth-main">
+        <div class="elite-auth-card">
+            {{outlet}}
+        </div>
+        <div class="elite-auth-attribution">
+            <FleetbaseAttribution />
+        </div>
     </div>
 </div>

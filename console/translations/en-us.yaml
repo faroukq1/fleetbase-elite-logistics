@@ -599,6 +599,12 @@ auth:
 
   login:
     title: Sign in to your account
+    log-in: Log in
+    welcome-back: "Welcome back! Please enter your details."
+    remember-30-days: Remember for 30 days
+    no-account: "Don't have an account?"
+    contact-admin: Contact Administrator
+    logistics-tagline: Logistics
     no-identity-notification: Did you forget to enter your email?
     no-password-notification: Did you forget to enter your password?
     unverified-notification: Your account needs to be verified to proceed.

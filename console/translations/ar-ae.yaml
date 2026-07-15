@@ -576,6 +576,12 @@ auth:
       nevermind-button: لا بأس
   login:
     title: تسجيل الدخول إلى حسابك
+    log-in: تسجيل الدخول
+    welcome-back: "مرحبًا بعودتك! يرجى إدخال بياناتك."
+    remember-30-days: تذكرني لمدة 30 يومًا
+    no-account: "ليس لديك حساب؟"
+    contact-admin: تواصل مع المسؤول
+    logistics-tagline: للخدمات اللوجستية
     no-identity-notification: هل نسيت إدخال بريدك الإلكتروني؟
     no-password-notification: هل نسيت إدخال كلمة المرور؟
     unverified-notification: يجب التحقق من حسابك للمتابعة.

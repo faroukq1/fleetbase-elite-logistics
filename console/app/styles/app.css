@@ -3,3 +3,160 @@
 @import 'tailwindcss/utilities';
 @import 'inter-ui/inter.css';
 @import 'console.css';
+
+/* ── Elite Logistics auth page ─────────────────────────────────────────── */
+.elite-auth {
+    display: flex;
+    min-height: 100vh;
+    background: #0f0f0f;
+    color: #f8f8f8;
+}
+.elite-auth-brand {
+    display: none;
+}
+@media (min-width: 1024px) {
+    .elite-auth-brand {
+        display: flex;
+        flex: 1 1 55%;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(120% 120% at 100% 50%, #5dd62c 0%, #337418 28%, #0b0b0b 62%, #000 100%);
+    }
+}
+.elite-auth-brand-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+.elite-auth-brand-logo {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.elite-auth-brand-tagline {
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: #f8f8f8;
+    opacity: 0.9;
+}
+.elite-auth-main {
+    flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+}
+.elite-auth-card {
+    width: 100%;
+    max-width: 24rem;
+    background: #141414;
+    border: 1px solid rgba(93, 214, 44, 0.35);
+    border-radius: 1rem;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 0 40px rgba(93, 214, 44, 0.12);
+}
+.elite-login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+.elite-login-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-align: center;
+    color: #f8f8f8;
+}
+.elite-login-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin: 0.35rem 0 1.75rem;
+}
+.elite-field {
+    margin-bottom: 1rem;
+}
+.elite-field > label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #f8f8f8;
+    margin-bottom: 0.4rem;
+}
+.elite-field input {
+    width: 100%;
+    background: #f8f8f8 !important;
+    color: #111 !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 0.8rem !important;
+}
+.elite-field input:focus {
+    outline: none !important;
+    border-color: #5dd62c !important;
+    box-shadow: 0 0 0 3px rgba(93, 214, 44, 0.25) !important;
+}
+.elite-login-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.75rem 0 1.35rem;
+    font-size: 0.85rem;
+}
+.elite-remember {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f8f8f8;
+    cursor: pointer;
+}
+.elite-forgot,
+.elite-contact {
+    color: #5dd62c;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.elite-forgot:hover,
+.elite-contact:hover {
+    color: #7ee352;
+}
+.elite-signin .btn,
+.elite-signin button {
+    width: 100%;
+    background: #5dd62c !important;
+    border-color: #5dd62c !important;
+    color: #0f0f0f !important;
+    font-weight: 700 !important;
+}
+.elite-signin .btn:hover,
+.elite-signin button:hover {
+    background: #47a821 !important;
+    border-color: #47a821 !important;
+}
+.elite-login-footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    margin-top: 1.25rem;
+}
+.elite-login-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    background: rgba(180, 130, 20, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    color: #fde68a;
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+.elite-auth-attribution {
+    margin-top: 1.5rem;
+    opacity: 0.7;
+}

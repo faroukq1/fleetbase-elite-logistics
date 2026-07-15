@@ -1,38 +1,22 @@
-<div>
-    <LinkTo @route="console" class="flex items-center justify-center">
-        <LogoIcon @brand={{@brand}} @size="12" class="rounded-md" />
+<div class="elite-login">
+    <LinkTo @route="console" class="elite-login-logo">
+        <LogoIcon @brand={{@brand}} @size="16" class="rounded-md" />
     </LinkTo>
-    <h2 class="mt-6 mb-3 text-3xl font-extrabold leading-9 text-center text-gray-900 dark:text-gray-100">
-        {{t "auth.login.title"}}
-    </h2>
-</div>
+    <h1 class="elite-login-title">{{t "auth.login.log-in"}}</h1>
+    <p class="elite-login-subtitle">{{t "auth.login.welcome-back"}}</p>
 
-{{#if (gte this.failedAttempts 3)}}
-    <div class="flex flex-col flex-grow-0 flex-shrink-0 text-sm bg-yellow-800 border border-yellow-600 px-2 py-2 rounded-md text-yellow-100 my-4 transition-all">
-        <div class="flex flex-row items-start mb-2">
-            <div class="w-8 flex-grow-0 flex-shrink-0">
-                <FaIcon @icon="triangle-exclamation" @size="xl" class="pt-1" />
-            </div>
-            <div class="flex-1">
-                <p class="flex-1 text-sm text-yellow-100">
-                    {{t "auth.login.failed-attempt.message" htmlSafe=true}}
-                </p>
-            </div>
+    {{#if (gte this.failedAttempts 3)}}
+        <div class="elite-login-alert">
+            <FaIcon @icon="triangle-exclamation" class="mr-2" />
+            <p>{{t "auth.login.failed-attempt.message" htmlSafe=true}}</p>
         </div>
-        <Button
-            @text={{t "auth.login.failed-attempt.button-text"}}
-            @type="link"
-            class="text-yellow-100"
-            @wrapperClass="px-4 py-2 bg-gray-900 bg-opacity-25 hover:opacity-50"
-            @onClick={{this.forgotPassword}}
-        />
-    </div>
-{{/if}}
+    {{/if}}
 
-<form class="mt-8" {{on "submit" this.login}}>
-    <input type="hidden" name="remember" value="true" />
-    <div class="rounded-md shadow-sm">
-        <div>
+    <form class="elite-login-form" {{on "submit" this.login}}>
+        <input type="hidden" name="remember" value="true" />
+
+        <div class="elite-field">
+            <label for="email">{{t "auth.login.form.email-label"}}</label>
             <Input
                 @value={{this.identity}}
                 aria-label={{t "auth.login.form.email-label"}}
@@ -40,12 +24,13 @@
                 @type="email"
                 autocomplete="username"
                 required
-                class="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-t-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5 dark:text-white dark:bg-gray-700 dark:border-gray-900"
                 placeholder={{t "auth.login.form.email-label"}}
                 disabled={{this.isLoading}}
             />
         </div>
-        <div class="-mt-px">
+
+        <div class="elite-field">
+            <label for="password">{{t "auth.login.form.password-label"}}</label>
             <Input
                 @value={{this.password}}
                 aria-label={{t "auth.login.form.password-label"}}
@@ -53,54 +38,33 @@
                 @type="password"
                 autocomplete="current-password"
                 required
-                class="relative block w-full px-3 py-2 text-gray-900 placeholder-gray-500 border border-gray-300 rounded-none appearance-none rounded-b-md focus:outline-none focus:shadow-outline-blue focus:border-blue-300 focus:z-10 sm:text-sm sm:leading-5 dark:text-white dark:bg-gray-700 dark:border-gray-900"
                 placeholder={{t "auth.login.form.password-label"}}
                 disabled={{this.isLoading}}
             />
         </div>
-    </div>
 
-    <div class="flex items-center justify-between mt-6">
-        <div class="flex items-center">
-            <Input id="rememberMe" @type="checkbox" @checked={{this.rememberMe}} disabled={{this.isLoading}} class="w-4 h-4 transition duration-150 ease-in-out form-checkbox text-sky-500" />
-            <label for="rememberMe" class="block ml-2 text-sm leading-5 text-gray-900 dark:text-gray-100">
-                {{t "auth.login.form.remember-me-label"}}
+        <div class="elite-login-row">
+            <label class="elite-remember">
+                <Input id="rememberMe" @type="checkbox" @checked={{this.rememberMe}} disabled={{this.isLoading}} />
+                <span>{{t "auth.login.remember-30-days"}}</span>
             </label>
-        </div>
-
-        <div class="text-sm leading-5">
-            <a
-                href="javascript:;"
-                {{on "click" this.forgotPassword}}
-                disabled={{this.isLoading}}
-                class="font-medium transition duration-150 ease-in-out text-sky-500 hover:text-sky-400 focus:outline-none focus:underline"
-            >
+            <a href="javascript:;" {{on "click" this.forgotPassword}} disabled={{this.isLoading}} class="elite-forgot">
                 {{t "auth.login.form.forgot-password-label"}}
             </a>
         </div>
-    </div>
 
-    <div class="mt-6 space-y-4">
         <Button
             @buttonType="submit"
             @type="primary"
             @text={{t "auth.login.form.sign-in-button"}}
-            @icon="lock"
-            @wrapperClass="btn-block"
+            @wrapperClass="btn-block elite-signin"
             @isLoading={{this.isLoading}}
             @onClick={{this.login}}
         />
-        <Button @text={{t "auth.login.form.create-account-button"}} @icon="briefcase" @wrapperClass="btn-block" @disabled={{this.isLoading}} @onClick={{fn (transition-to "onboard")}} />
-        <RegistryYield @type="menu" @registry="auth:login" as |menuItem|>
-            <Button
-                @text={{menuItem.title}}
-                @icon={{menuItem.icon}}
-                @type={{menuItem.type}}
-                @wrapperClass={{menuItem.wrapperClass}}
-                @disabled={{this.isLoading}}
-                @onClick={{menuItem.onClick}}
-                @permission={{menuItem.permission}}
-            />
-        </RegistryYield>
-    </div>
-</form>
+
+        <p class="elite-login-footer">
+            {{t "auth.login.no-account"}}
+            <LinkTo @route="onboard" class="elite-contact">{{t "auth.login.contact-admin"}}</LinkTo>
+        </p>
+    </form>
+</div>
