@@ -787,6 +787,10 @@ user-menu:
   discord: انضم إلى مجتمع Discord
   support: المساعدة والدعم
   documentation: التوثيق
+  view-profile: عرض الملف الشخصي
+  keyboard-shortcuts: عرض اختصارات لوحة المفاتيح
+  changelog: سجل التغييرات
+  developers: المطورون
 registry-bridge:
   sidebar:
     installed: مثبّتة
@@ -842,3 +846,82 @@ header-nav:
   ledger: دفتر الأستاذ
   developers: المطورون
   extensions: الامتدادات
+
+nav-card-title:
+  orders: "الطلبات"
+  places: "الأماكن"
+  drivers: "السائقون"
+  vehicles: "المركبات"
+  fleets: "الأساطيل"
+  service-rates: "أسعار الخدمة"
+  devices: "الأجهزة"
+  reports: "التقارير"
+  orchestrator: "المنسّق"
+  users: "المستخدمون"
+  customers: "العملاء"
+  groups: "المجموعات"
+  roles: "الأدوار"
+  policies: "السياسات"
+  invoices: "الفواتير"
+  wallets: "المحافظ"
+  transactions: "المعاملات"
+  payment-gateways: "بوابات الدفع"
+  chart-of-accounts: "دليل الحسابات"
+  journal-entries: "قيود اليومية"
+  general-ledger: "دفتر الأستاذ العام"
+  api-keys: "مفاتيح API"
+  webhooks: "خطافات الويب"
+  sockets: "المقابس"
+  events: "الأحداث"
+  logs: "السجلات"
+  explore: "استكشاف"
+  installed: "المثبّتة"
+  purchased: "المشتراة"
+  products: "المنتجات"
+  networks: "الشبكات"
+  catalogs: "الكتالوجات"
+  promotions: "العروض الترويجية"
+
+nav-card-desc:
+  dispatch-fleet-management-driver-tracking-and-logistics-operations: "الإرسال وإدارة الأسطول وتتبع السائقين وعمليات الخدمات اللوجستية."
+  online-store-management-products-orders-customers-and-promotions: "إدارة المتجر الإلكتروني: المنتجات والطلبات والعملاء والعروض الترويجية."
+  api-keys-webhooks-socket-channels-event-logs-and-developer-tooling: "مفاتيح API وخطافات الويب وقنوات المقابس وسجلات الأحداث وأدوات المطورين."
+  identity-and-access-management-users-roles-policies-and-permissions: "إدارة الهوية والوصول: المستخدمون والأدوار والسياسات والأذونات."
+  invoicing-payments-accounting-and-real-time-financial-reporting: "الفوترة والمدفوعات والمحاسبة والتقارير المالية الفورية."
+  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "اكتشف وثبّت وانشر الامتدادات في سجل امتدادات Fleetbase."
+  create-and-manage-api-keys-for-authenticating-your-integrations: "أنشئ وأدر مفاتيح API لمصادقة عمليات الدمج الخاصة بك."
+  configure-webhook-endpoints-to-receive-real-time-event-notifications: "كوّن نقاط نهاية خطافات الويب لتلقي إشعارات الأحداث الفورية."
+  monitor-active-websocket-channels-and-connected-clients: "راقب قنوات WebSocket النشطة والعملاء المتصلين."
+  browse-the-full-history-of-platform-events-and-payloads: "تصفّح السجل الكامل لأحداث المنصة وحمولاتها."
+  inspect-api-request-and-response-logs-for-debugging: "افحص سجلات طلبات واستجابات API لتصحيح الأخطاء."
+  create-dispatch-and-track-delivery-orders-in-real-time: "أنشئ وأرسل وتتبع طلبات التوصيل في الوقت الفعلي."
+  manage-saved-locations-addresses-and-points-of-interest: "أدر المواقع المحفوظة والعناوين ونقاط الاهتمام."
+  manage-driver-profiles-assignments-and-live-locations: "أدر ملفات السائقين والتعيينات والمواقع المباشرة."
+  view-and-manage-your-vehicle-fleet-and-telematics: "اعرض وأدر أسطول مركباتك وأنظمة التتبع."
+  organise-drivers-and-vehicles-into-operational-fleets: "نظّم السائقين والمركبات في أساطيل تشغيلية."
+  configure-pricing-rules-and-service-rate-cards: "كوّن قواعد التسعير وبطاقات أسعار الخدمة."
+  manage-connected-telematics-devices-and-their-sensor-data: "أدر أجهزة التتبع المتصلة وبيانات مستشعراتها."
+  generate-and-review-operational-analytics-reports: "أنشئ وراجع تقارير التحليلات التشغيلية."
+  intelligently-allocate-and-dispatch-orders-to-available-drivers: "خصّص وأرسل الطلبات بذكاء إلى السائقين المتاحين."
+  manage-console-user-accounts-and-their-access-levels: "أدر حسابات مستخدمي وحدة التحكم ومستويات وصولهم."
+  view-and-manage-driver-accounts-linked-to-your-organisation: "اعرض وأدر حسابات السائقين المرتبطة بمؤسستك."
+  view-and-manage-customer-accounts-linked-to-your-organisation: "اعرض وأدر حسابات العملاء المرتبطة بمؤسستك."
+  organise-users-into-groups-for-bulk-permission-management: "نظّم المستخدمين في مجموعات لإدارة الأذونات بالجملة."
+  define-named-roles-that-bundle-sets-of-permissions: "عرّف أدوارًا مسماة تجمع مجموعات من الأذونات."
+  create-fine-grained-access-control-policies-for-resources: "أنشئ سياسات تحكم دقيقة بالوصول للموارد."
+  create-send-and-manage-customer-invoices: "أنشئ وأرسل وأدر فواتير العملاء."
+  manage-driver-customer-and-company-wallets-and-balances: "أدر محافظ وأرصدة السائقين والعملاء والشركة."
+  a-chronological-record-of-every-transaction: "سجل زمني لكل معاملة."
+  configure-and-manage-payment-gateway-integrations: "كوّن وأدر عمليات دمج بوابات الدفع."
+  view-and-manage-the-full-chart-of-accounts: "اعرض وأدر دليل الحسابات الكامل."
+  browse-and-create-double-entry-journal-entries: "تصفّح وأنشئ قيود اليومية المزدوجة."
+  review-all-posted-transactions-across-every-account: "راجع جميع المعاملات المسجلة عبر كل حساب."
+  browse-and-discover-extensions-available-in-the-registry: "تصفّح واكتشف الامتدادات المتاحة في السجل."
+  view-and-manage-extensions-currently-installed-in-your-console: "اعرض وأدر الامتدادات المثبّتة حاليًا في وحدة التحكم."
+  access-extensions-you-have-purchased-from-the-registry: "ادخل إلى الامتدادات التي اشتريتها من السجل."
+  manage-your-product-catalogue-categories-and-inventory: "أدر كتالوج منتجاتك وفئاتك ومخزونك."
+  view-and-fulfil-incoming-storefront-orders: "اعرض ونفّذ طلبات المتجر الواردة."
+  browse-and-manage-your-storefront-customer-accounts: "تصفّح وأدر حسابات عملاء متجرك."
+  connect-and-manage-multi-store-networks-and-marketplaces: "اربط وأدر شبكات المتاجر المتعددة والأسواق."
+  organise-products-into-shareable-catalogs: "نظّم المنتجات في كتالوجات قابلة للمشاركة."
+  create-push-notifications-and-promotional-campaigns: "أنشئ إشعارات فورية وحملات ترويجية."

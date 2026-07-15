@@ -1,3 +1,187 @@
+diff --git a/addon/components/layout/header/dropdown/item.hbs b/addon/components/layout/header/dropdown/item.hbs
+index a6f0b35cbe39a3ece89d996906a737028e9f2a11..3ee4187f77eb229788372a76297324f94b0c911d 100644
+--- a/addon/components/layout/header/dropdown/item.hbs
++++ b/addon/components/layout/header/dropdown/item.hbs
+@@ -45,7 +45,7 @@
+                         {{/if}}
+                     {{/each}}
+                 {{else}}
+-                    <div class="{{@item.class}}">{{@item.text}}</div>
++                    <div class="{{@item.class}}">{{this.displayText}}</div>
+                 {{/if}}
+             {{/if}}
+         </div>
+@@ -61,7 +61,7 @@
+             {{#if @item.intl}}
+                 <span>{{t @item.intl}}</span>
+             {{else}}
+-                <span>{{@item.text}}</span>
++                <span>{{this.displayText}}</span>
+             {{/if}}
+         </LinkTo>
+     </div>
+@@ -82,7 +82,7 @@
+             {{#if @item.intl}}
+                 <span>{{t @item.intl}}</span>
+             {{else}}
+-                <span>{{@item.text}}</span>
++                <span>{{this.displayText}}</span>
+             {{/if}}
+         </a>
+     </div>
+@@ -97,7 +97,7 @@
+             {{#if @item.intl}}
+                 <span>{{t @item.intl}}</span>
+             {{else}}
+-                <span>{{@item.text}}</span>
++                <span>{{this.displayText}}</span>
+             {{/if}}
+         </a>
+     </div>
+diff --git a/addon/components/layout/header/dropdown/item.js b/addon/components/layout/header/dropdown/item.js
+index 87548c0ab2b2d0425b1a02c5f8d6797638201998..c666e8a7cf938092555da4c5c50cb83bd4163180 100644
+--- a/addon/components/layout/header/dropdown/item.js
++++ b/addon/components/layout/header/dropdown/item.js
+@@ -11,6 +11,36 @@ export default class LayoutHeaderDropdownItemComponent extends Component {
+     @service router;
+     @service hostRouter;
+     @service abilities;
++    @service intl;
++
++    /**
++     * Localized label for header dropdown items. The org/user menus register
++     * hardcoded (or boot-time snapshotted) English labels; map them to
++     * translation keys so they follow the active locale at render time.
++     */
++    get displayText() {
++        const text = this.args.item?.text;
++        if (typeof text !== 'string') {
++            return text;
++        }
++        const keyByText = {
++            Home: 'user-menu.home',
++            'Organization settings': 'user-menu.organization-settings',
++            'Create or join organizations': 'user-menu.create-or-join',
++            'Explore extensions': 'user-menu.explore-extensions',
++            Admin: 'user-menu.admin',
++            Logout: 'user-menu.logout',
++            'View Profile': 'user-menu.view-profile',
++            'Show keyboard shortcuts': 'user-menu.keyboard-shortcuts',
++            Changelog: 'user-menu.changelog',
++            Developers: 'user-menu.developers',
++            'Join Discord Community': 'user-menu.discord',
++            'Help & Support': 'user-menu.support',
++            Documentation: 'user-menu.documentation',
++        };
++        const key = keyByText[text];
++        return key ? this.intl.t(key) : text;
++    }
+ 
+     @bool('args.item.onClick') isInteractive;
+     @bool('args.item.href') isAnchor;
+diff --git a/addon/components/layout/header/smart-nav-menu/dropdown.hbs b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
+index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c90f4b5095 100644
+--- a/addon/components/layout/header/smart-nav-menu/dropdown.hbs
++++ b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
+@@ -87,7 +87,7 @@
+                             @route={{item.route}}
+                             id={{concat (dasherize (or item.route item.id "sc")) "-dropdown-card"}}
+                             class="snm-dropdown-card"
+-                            title={{item.title}}
++                            title={{localize-label item.title "nav-card-title"}}
+                         >
+                             <div class="snm-dropdown-card-header">
+                                 <span class="snm-dropdown-card-icon">
+@@ -98,14 +98,14 @@
+                                     {{/if}}
+                                 </span>
+                                 <span class="snm-dropdown-card-title-group">
+-                                    <span class="snm-dropdown-card-title">{{item.title}}</span>
++                                    <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
+                                     {{#if item._parentTitle}}
+-                                        <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
++                                        <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
+                                     {{/if}}
+                                 </span>
+                             </div>
+                             {{#if item.description}}
+-                                <p class="snm-dropdown-card-description">{{item.description}}</p>
++                                <p class="snm-dropdown-card-description">{{localize-label item.description "nav-card-desc"}}</p>
+                             {{else if item._parentTitle}}
+                                 <p class="snm-dropdown-card-description snm-dropdown-card-description--from"><em>from {{item._parentTitle}}</em></p>
+                             {{/if}}
+@@ -115,7 +115,7 @@
+                                 type="button"
+                                 class="snm-dropdown-pin-btn"
+                                 title="Pin to navigation bar"
+-                                aria-label="Pin {{item.title}} to navigation bar"
++                                aria-label="Pin {{localize-label item.title "nav-card-title"}} to navigation bar"
+                                 {{on "click" (fn @onQuickPin item)}}
+                             >
+                                 <FaIcon @icon="thumbtack" @size="xs" />
+@@ -129,7 +129,7 @@
+                             <a
+                                 href="javascript:;"
+                                 class="snm-dropdown-card"
+-                                title={{item.title}}
++                                title={{localize-label item.title "nav-card-title"}}
+                                 {{on "click" (fn this.handleItemClick item)}}
+                             >
+                                 <div class="snm-dropdown-card-header">
+@@ -141,14 +141,14 @@
+                                         {{/if}}
+                                     </span>
+                                     <span class="snm-dropdown-card-title-group">
+-                                        <span class="snm-dropdown-card-title">{{item.title}}</span>
++                                        <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
+                                         {{#if item._parentTitle}}
+-                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
++                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
+                                         {{/if}}
+                                     </span>
+                                 </div>
+                                 {{#if item.description}}
+-                                    <p class="snm-dropdown-card-description">{{item.description}}</p>
++                                    <p class="snm-dropdown-card-description">{{localize-label item.description "nav-card-desc"}}</p>
+                                 {{/if}}
+                             </a>
+                         {{else}}
+@@ -156,7 +156,7 @@
+                                 @route={{item.route}}
+                                 id={{concat (dasherize (or item.route item.id "nav")) "-dropdown-card"}}
+                                 class="snm-dropdown-card"
+-                                title={{item.title}}
++                                title={{localize-label item.title "nav-card-title"}}
+                             >
+                                 <div class="snm-dropdown-card-header">
+                                     <span class="snm-dropdown-card-icon">
+@@ -167,14 +167,14 @@
+                                         {{/if}}
+                                     </span>
+                                     <span class="snm-dropdown-card-title-group">
+-                                        <span class="snm-dropdown-card-title">{{item.title}}</span>
++                                        <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
+                                         {{#if item._parentTitle}}
+-                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
++                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
+                                         {{/if}}
+                                     </span>
+                                 </div>
+                                 {{#if item.description}}
+-                                    <p class="snm-dropdown-card-description">{{item.description}}</p>
++                                    <p class="snm-dropdown-card-description">{{localize-label item.description "nav-card-desc"}}</p>
+                                 {{/if}}
+                             </LinkToExternal>
+                         {{/if}}
+@@ -183,7 +183,7 @@
+                                 type="button"
+                                 class="snm-dropdown-pin-btn"
+                                 title="Pin to navigation bar"
+-                                aria-label="Pin {{item.title}} to navigation bar"
++                                aria-label="Pin {{localize-label item.title "nav-card-title"}} to navigation bar"
+                                 {{on "click" (fn @onQuickPin item)}}
+                             >
+                                 <FaIcon @icon="thumbtack" @size="xs" />
 diff --git a/addon/components/layout/header/smart-nav-menu/item.hbs b/addon/components/layout/header/smart-nav-menu/item.hbs
 index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce082b74d2f4 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.hbs
@@ -146,3 +330,63 @@ index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff661
                  action: 'invalidateSession',
                  icon: 'person-running',
              },
+diff --git a/addon/components/locale-selector-tray.hbs b/addon/components/locale-selector-tray.hbs
+index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9aef08d88bd 100644
+--- a/addon/components/locale-selector-tray.hbs
++++ b/addon/components/locale-selector-tray.hbs
+@@ -25,7 +25,7 @@
+                                 <div class="flex flex-row items-center justify-between w-full">
+                                     <div class="flex-1">
+                                         <span class="mr-1">{{country.emoji}}</span>
+-                                        <span>{{country.language}}</span>
++                                        <span>{{or (get this.localeNames key) country.language}}</span>
+                                     </div>
+                                     {{#if (eq this.currentLocale key)}}
+                                         <div>
+diff --git a/addon/components/locale-selector-tray.js b/addon/components/locale-selector-tray.js
+index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..7b9ea7dbc35bda38c28c7e08b9b00c8f66b5bf8b 100644
+--- a/addon/components/locale-selector-tray.js
++++ b/addon/components/locale-selector-tray.js
+@@ -7,6 +7,10 @@ import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
+ 
+ export default class LocaleSelectorTrayComponent extends Component {
+     @service intl;
++
++    get localeNames() {
++        return { 'en-us': 'English', 'ar-ae': 'العربية' };
++    }
+     @service fetch;
+     @service media;
+     @service language;
+diff --git a/addon/helpers/localize-label.js b/addon/helpers/localize-label.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..4168fadee8b47819fc42fa5afbe310298ed55527
+--- /dev/null
++++ b/addon/helpers/localize-label.js
+@@ -0,0 +1,26 @@
++import Helper from '@ember/component/helper';
++import { inject as service } from '@ember/service';
++
++/**
++ * {{localize-label someText "prefix"}}
++ *
++ * Slugifies the English label and looks up `prefix.<slug>` in the active
++ * locale, falling back to the original text when no translation exists.
++ * Lets us localize dynamically-registered nav/launcher labels without
++ * touching every engine's extension.js.
++ */
++export default class LocalizeLabelHelper extends Helper {
++    @service intl;
++
++    compute([text, prefix]) {
++        if (!text || typeof text !== 'string') {
++            return text;
++        }
++        const slug = text
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        const key = `${prefix}.${slug}`;
++        return this.intl.exists(key) ? this.intl.t(key) : text;
++    }
++}
