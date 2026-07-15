@@ -11,6 +11,10 @@ common:
   delete: حذف
   delete-selected: حذف المحدد
   delete-selected-count: حذف {count} المحدد
+  your-profile: الملف الشخصي
+  date-of-birth: تاريخ الميلاد
+  organization: المؤسسة
+  two-factor: المصادقة الثنائية
   remove: إزالة
   cancel: إلغاء
   confirm: تأكيد
@@ -103,6 +107,7 @@ common:
   warning: تحذير
   info: معلومات
   ready: جاهز
+  activity: النشاط
   active: نشط
   inactive: غير نشط
   enabled: مفعل
@@ -178,6 +183,7 @@ common:
   notes: ملاحظات
   reference: مرجع
   filter-by: تصفية حسب
+  filter-by-field: تصفية حسب {field}
   sort-by: ترتيب حسب
   ascending: تصاعدي
   descending: تنازلي
@@ -219,6 +225,7 @@ common:
   documentation: التوثيق
   language: اللغة
   version: الإصدار
+  timezone: المنطقة الزمنية
   theme: الثيم
   light-mode: الوضع الفاتح
   dark-mode: الوضع الداكن
@@ -234,6 +241,7 @@ common:
   companies: شركات
   user: مستخدم
   users: مستخدمون
+  country: بلد
   role: دور
   roles: أدوار
   permission: إذن
@@ -286,8 +294,8 @@ common:
   zoom-out: تصغير
   fullscreen: شاشة كاملة
   exit-fullscreen: خروج من الشاشة الكاملة
-  true: 'true'
-  false: 'false'
+  yes: نعم
+  no: لا
   ok: موافق
   none-available: لا يوجد
   default: افتراضي
@@ -308,6 +316,8 @@ common:
   cancel-resource: إلغاء {resource}
   delete-resource: حذف {resource}
   delete-resource-name: 'حذف: {resourceName}'
+  resource-actions: إجراءات {resource}
+  resource-location: موقع {resource}
   delete-resource-named: حذف {resource} ({resourceName})
   delete-resource-prompt: لا يمكن التراجع عن هذا الإجراء. بمجرد الحذف، سيتم إزالة
     السجل نهائيًا.
@@ -332,6 +342,8 @@ common:
   continue-without-saving: المتابعة بدون حفظ؟
   continue-without-saving-prompt: لديك تغييرات غير محفوظة على هذا {resource}. المتابعة
     ستتجاهلها. انقر متابعة للمتابعة.
+  changelog: سجل التغييرات
+  reload: إعادة تحميل
 resource:
   alert: تنبيه
   alerts: تنبيهات
@@ -355,6 +367,7 @@ resource:
   comments: تعليقات
   company: شركة
   companies: شركات
+  country: الدولة
   custom-field-value: قيمة الحقل المخصص
   custom-field-values: قيم الحقول المخصصة
   custom-field: حقل مخصص
@@ -432,6 +445,14 @@ dashboard-widget-panel:
   widget-name: أداة {widgetName}
   select-widgets: اختر الأدوات
   close-and-save: إغلاق وحفظ
+  filter-widgets: البحث عن الأدوات…
+  no-widgets-match: لا توجد أدوات تطابق بحثك.
+  tab-all: الكل
+  tab-default: الموصى بها
+  tab-added: على لوحة التحكم
+  badge-default: افتراضي
+  add: إضافة
+  add-another: إضافة أخرى
 filters-picker:
   filters: الفلاتر
   filter-data: تصفية البيانات
@@ -492,6 +513,7 @@ component:
     save-dashboard: حفظ لوحة التحكم
     you-cannot-delete-this-dashboard: لا يمكنك حذف هذه اللوحة.
     are-you-sure-you-want-delete-dashboard: هل أنت متأكد من حذف {dashboardName}؟
+    create-to-customize-hint: أنشئ لوحة تحكم لتخصيص الأدوات.
   dashboard-widget-panel:
     widget-name: أداة {widgetName}
     select-widgets: اختر الأدوات
@@ -737,11 +759,13 @@ onboard:
       resend-email: إعادة إرسال البريد الإلكتروني
       send-by-sms: الإرسال عبر الرسائل النصية
 install:
-  not-configured-title: Elite Logistics is not installed or configured
-  not-configured-message: Complete setup from the Elite Logistics CLI or application container, then reload this page once the database, migrations, and seed data are ready.
-  running-locally-docs: See running locally docs
-  cloud-docs: See cloud deployment docs
-  refreshing: Installation complete, refreshing...
+  not-configured-title: Elite Logistics غير مثبت أو غير مهيأ
+  not-configured-message: أكمل الإعداد من واجهة سطر أوامر Elite Logistics أو حاوية
+    التطبيق، ثم أعد تحميل هذه الصفحة بعد أن تصبح قاعدة البيانات والترحيلات والبيانات
+    الأولية جاهزة.
+  running-locally-docs: راجع توثيق التشغيل المحلي
+  cloud-docs: راجع توثيق النشر السحابي
+  refreshing: اكتمل التثبيت، جارٍ التحديث...
 layout:
   header:
     menus:
@@ -753,3 +777,13 @@ layout:
         view-profile: عرض الملف الشخصي
         keyboard-shortcuts: عرض اختصارات لوحة المفاتيح
         changelog: سجل التغييرات
+user-menu:
+  home: الرئيسية
+  organization-settings: إعدادات المؤسسة
+  create-or-join: إنشاء مؤسسة أو الانضمام إليها
+  explore-extensions: استكشاف الإضافات
+  admin: الإدارة
+  logout: تسجيل الخروج
+  discord: انضم إلى مجتمع Discord
+  support: المساعدة والدعم
+  documentation: التوثيق

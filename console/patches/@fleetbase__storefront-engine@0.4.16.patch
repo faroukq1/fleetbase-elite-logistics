@@ -1,0 +1,563 @@
+diff --git a/addon/components/widget/customer-insights.hbs b/addon/components/widget/customer-insights.hbs
+index b0b98c38aeae91c3e98e7faa75d9b5886dac6ec3..63724a8820ecdeba8e239e161e82207e9870e3af 100644
+--- a/addon/components/widget/customer-insights.hbs
++++ b/addon/components/widget/customer-insights.hbs
+@@ -1,8 +1,8 @@
+ <div class="storefront-dashboard-widget flex h-full flex-col rounded-md border bg-white shadow-sm dark:bg-gray-800" ...attributes>
+     <div class="storefront-widget-header">
+         <div>
+-            <div class="storefront-widget-title">Customer Insights</div>
+-            <div class="storefront-widget-subtitle">New vs returning buyers</div>
++            <div class="storefront-widget-title">{{t "storefront.widget.customer-insights.title"}}</div>
++            <div class="storefront-widget-subtitle">{{t "storefront.widget.customer-insights.subtitle"}}</div>
+         </div>
+         <Button @icon="refresh" @size="xs" @onClick={{perform this.load}} />
+     </div>
+@@ -15,18 +15,18 @@
+         {{else if this.data}}
+             <div class="grid grid-cols-2 gap-2">
+                 <div class="storefront-mini-stat">
+-                    <span>New</span>
++                    <span>{{t "storefront.widget.customer-insights.new"}}</span>
+                     <strong>{{this.data.new_customers}}</strong>
+                 </div>
+                 <div class="storefront-mini-stat">
+-                    <span>Returning</span>
++                    <span>{{t "storefront.widget.customer-insights.returning"}}</span>
+                     <strong>{{this.data.returning_customers}}</strong>
+                 </div>
+             </div>
+ 
+             <div class="storefront-repeat-rate">
+                 <div class="mb-2 flex items-center justify-between text-xs">
+-                    <span class="font-semibold text-gray-600 dark:text-gray-300">Repeat purchase rate</span>
++                    <span class="font-semibold text-gray-600 dark:text-gray-300">{{t "storefront.widget.customer-insights.repeat-rate"}}</span>
+                     <span class="font-bold text-gray-900 dark:text-white">{{this.data.repeat_rate}}%</span>
+                 </div>
+                 <div class="h-2 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+@@ -35,10 +35,10 @@
+             </div>
+ 
+             <div class="storefront-insight-note">
+-                {{this.data.total_customers}} buyers ordered during this period.
++                {{t "storefront.widget.customer-insights.period-note" count=this.data.total_customers}}
+             </div>
+         {{else}}
+-            <div class="storefront-widget-empty">No customer activity yet.</div>
++            <div class="storefront-widget-empty">{{t "storefront.widget.customer-insights.empty"}}</div>
+         {{/if}}
+     </div>
+ </div>
+diff --git a/addon/components/widget/kpi-active-orders.hbs b/addon/components/widget/kpi-active-orders.hbs
+index 6d4f5ec38f3b9691e457de8940d245991166aac4..76afa34b04e1dbeb4c97800a47d41aa81d832d31 100644
+--- a/addon/components/widget/kpi-active-orders.hbs
++++ b/addon/components/widget/kpi-active-orders.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="active_orders" @title="Active Orders" @icon="bolt" @accent="amber" ...attributes />
++<Widget::StorefrontKpiTile @metric="active_orders" @titleKey="storefront.widget.kpi.active-orders" @icon="bolt" @accent="amber" ...attributes />
+diff --git a/addon/components/widget/kpi-aov.hbs b/addon/components/widget/kpi-aov.hbs
+index c2609f7f7e9b1dee8983a64fc83494bc9f426bb4..81c7761f3506a7e9bc73ebc434e4a12af53b7306 100644
+--- a/addon/components/widget/kpi-aov.hbs
++++ b/addon/components/widget/kpi-aov.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="average_order_value" @title="Average Order Value" @icon="receipt" @accent="slate" ...attributes />
++<Widget::StorefrontKpiTile @metric="average_order_value" @titleKey="storefront.widget.kpi.aov" @icon="receipt" @accent="slate" ...attributes />
+diff --git a/addon/components/widget/kpi-cancellation-rate.hbs b/addon/components/widget/kpi-cancellation-rate.hbs
+index 3924389514cf070746cc3e6006c21ca6e702184d..fc7d9638fb28f9d48da85ae18d9a648948f362af 100644
+--- a/addon/components/widget/kpi-cancellation-rate.hbs
++++ b/addon/components/widget/kpi-cancellation-rate.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="cancellation_rate" @title="Cancellation Rate" @icon="ban" @accent="rose" ...attributes />
++<Widget::StorefrontKpiTile @metric="cancellation_rate" @titleKey="storefront.widget.kpi.cancellation-rate" @icon="ban" @accent="rose" ...attributes />
+diff --git a/addon/components/widget/kpi-cart-conversion.hbs b/addon/components/widget/kpi-cart-conversion.hbs
+index fd80a004a1606b0d7afe1f975bd4e535f1a7c249..b8803a8bbaeb29b2ad3471cc983ec4bf2525aa74 100644
+--- a/addon/components/widget/kpi-cart-conversion.hbs
++++ b/addon/components/widget/kpi-cart-conversion.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="cart_conversion" @title="Cart Conversion" @icon="cart-shopping" @accent="green" ...attributes />
++<Widget::StorefrontKpiTile @metric="cart_conversion" @titleKey="storefront.widget.kpi.cart-conversion" @icon="cart-shopping" @accent="green" ...attributes />
+diff --git a/addon/components/widget/kpi-completed-orders.hbs b/addon/components/widget/kpi-completed-orders.hbs
+index b644506778fd02fd69034ca172edf5fbcc2e5457..1958db1f86d1def3028b8e51cecdc1fb3cb63090 100644
+--- a/addon/components/widget/kpi-completed-orders.hbs
++++ b/addon/components/widget/kpi-completed-orders.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="completed_orders" @title="Completed Orders" @icon="circle-check" @accent="green" ...attributes />
++<Widget::StorefrontKpiTile @metric="completed_orders" @titleKey="storefront.widget.kpi.completed-orders" @icon="circle-check" @accent="green" ...attributes />
+diff --git a/addon/components/widget/kpi-customers.hbs b/addon/components/widget/kpi-customers.hbs
+index f12f292f7042734b1d6466e2bde797ffd585a26c..376187b751885b4d6812a2856ace452c440bc53a 100644
+--- a/addon/components/widget/kpi-customers.hbs
++++ b/addon/components/widget/kpi-customers.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="customers" @title="Customers" @icon="users" @accent="violet" ...attributes />
++<Widget::StorefrontKpiTile @metric="customers" @titleKey="storefront.widget.kpi.customers" @icon="users" @accent="violet" ...attributes />
+diff --git a/addon/components/widget/kpi-orders.hbs b/addon/components/widget/kpi-orders.hbs
+index 919c51f20b5c304c4798f17dd1f8f3f5042c6258..13ef5764ca052697c75634ab6fcbb9805d5e0bea 100644
+--- a/addon/components/widget/kpi-orders.hbs
++++ b/addon/components/widget/kpi-orders.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="orders" @title="Orders" @icon="bag-shopping" @accent="blue" ...attributes />
++<Widget::StorefrontKpiTile @metric="orders" @titleKey="storefront.widget.kpi.orders" @icon="bag-shopping" @accent="blue" ...attributes />
+diff --git a/addon/components/widget/kpi-revenue.hbs b/addon/components/widget/kpi-revenue.hbs
+index c019fb63d05b48dc9ad036f29e023a4c5ce811cb..d3d65a3e9634742bfb31b7875678c9387e0f87b8 100644
+--- a/addon/components/widget/kpi-revenue.hbs
++++ b/addon/components/widget/kpi-revenue.hbs
+@@ -1 +1 @@
+-<Widget::StorefrontKpiTile @metric="revenue" @title="Revenue" @icon="sack-dollar" @accent="green" ...attributes />
++<Widget::StorefrontKpiTile @metric="revenue" @titleKey="storefront.widget.kpi.revenue" @icon="sack-dollar" @accent="green" ...attributes />
+diff --git a/addon/components/widget/orders-by-status.hbs b/addon/components/widget/orders-by-status.hbs
+index 7f4ba08b4f3466193c2a26b84f31c45c89613c0e..5d73b608960ddfeefb65e46122bcb078d5c551a4 100644
+--- a/addon/components/widget/orders-by-status.hbs
++++ b/addon/components/widget/orders-by-status.hbs
+@@ -1,8 +1,8 @@
+ <div class="storefront-dashboard-widget storefront-chart-widget flex h-full flex-col rounded-md border bg-white shadow-sm dark:bg-gray-800" ...attributes>
+     <div class="storefront-widget-header">
+         <div>
+-            <div class="storefront-widget-title">Order Status Mix</div>
+-            <div class="storefront-widget-subtitle">{{or this.data.total 0}} orders this period</div>
++            <div class="storefront-widget-title">{{t "storefront.widget.orders-by-status.title"}}</div>
++            <div class="storefront-widget-subtitle">{{t "storefront.widget.orders-by-status.subtitle" total=(or this.data.total 0)}}</div>
+         </div>
+         <Button @icon="refresh" @size="xs" @onClick={{perform this.load}} />
+     </div>
+@@ -17,7 +17,7 @@
+                 <Chart @type="bar" @labels={{this.data.labels}} @datasets={{this.data.datasets}} @options={{this.chartOptions}} />
+             </div>
+         {{else}}
+-            <div class="storefront-widget-empty">No order activity yet.</div>
++            <div class="storefront-widget-empty">{{t "storefront.widget.orders-by-status.empty"}}</div>
+         {{/if}}
+     </div>
+ </div>
+diff --git a/addon/components/widget/orders.hbs b/addon/components/widget/orders.hbs
+index 3ea48856a5b06bf413519620b53b40eb0edfd2bd..97779940712848aa6807e41921cbdad4a5d64bd9 100644
+--- a/addon/components/widget/orders.hbs
++++ b/addon/components/widget/orders.hbs
+@@ -2,11 +2,11 @@
+     <div class="storefront-orders-header">
+         <div class="min-w-0">
+             <div class="storefront-widget-title">{{this.title}}</div>
+-            <div class="storefront-widget-subtitle">{{this.orders.length}} recent orders{{#if this.orders.length}} · {{format-currency this.total this.currency}}{{/if}}</div>
++            <div class="storefront-widget-subtitle">{{t "storefront.widget.orders-widget.subtitle" count=this.orders.length}}{{#if this.orders.length}} · {{format-currency this.total this.currency}}{{/if}}</div>
+         </div>
+         <div class="storefront-orders-actions">
+-            <Button @icon="refresh" @size="xs" @helpText="Refresh orders" @onClick={{perform this.loadOrders}} />
+-            <Toggle @label="Active only" @isToggled={{this.activeFilter}} @onToggle={{this.toggleActiveFilter}} />
++            <Button @icon="refresh" @size="xs" @helpText={{t "storefront.widget.orders-widget.refresh"}} @onClick={{perform this.loadOrders}} />
++            <Toggle @label={{t "storefront.widget.orders-widget.active-only"}} @isToggled={{this.activeFilter}} @onToggle={{this.toggleActiveFilter}} />
+         </div>
+     </div>
+ 
+@@ -42,7 +42,7 @@
+                     </div>
+                 </article>
+             {{else}}
+-                <div class="storefront-widget-empty">No recent orders yet.</div>
++                <div class="storefront-widget-empty">{{t "storefront.widget.orders-widget.empty"}}</div>
+             {{/each}}
+         </div>
+     {{else}}
+@@ -50,12 +50,12 @@
+             <table class="storefront-orders-table">
+                 <thead>
+                     <tr>
+-                        <th>Order</th>
+-                        <th>Amount</th>
+-                        <th>Customer</th>
+-                        <th>Fulfillment</th>
+-                        <th>Status</th>
+-                        <th><span class="sr-only">Actions</span></th>
++                        <th>{{t "storefront.widget.orders-widget.table.order"}}</th>
++                        <th>{{t "storefront.widget.orders-widget.table.amount"}}</th>
++                        <th>{{t "storefront.widget.orders-widget.table.customer"}}</th>
++                        <th>{{t "storefront.widget.orders-widget.table.fulfillment"}}</th>
++                        <th>{{t "storefront.widget.orders-widget.table.status"}}</th>
++                        <th><span class="sr-only">{{t "storefront.widget.orders-widget.table.actions"}}</span></th>
+                     </tr>
+                 </thead>
+                 <tbody>
+@@ -89,7 +89,7 @@
+                     {{else}}
+                         <tr>
+                             <td colspan="7">
+-                                <div class="storefront-widget-empty">No recent orders yet.</div>
++                                <div class="storefront-widget-empty">{{t "storefront.widget.orders-widget.empty"}}</div>
+                             </td>
+                         </tr>
+                     {{/each}}
+diff --git a/addon/components/widget/revenue-trend.hbs b/addon/components/widget/revenue-trend.hbs
+index 73ce6c8ae65a9558b388f11a82ffc8bb21d16ca3..fd070e22df45a6a974e255674da8377c6dc1c904 100644
+--- a/addon/components/widget/revenue-trend.hbs
++++ b/addon/components/widget/revenue-trend.hbs
+@@ -1,8 +1,8 @@
+ <div class="storefront-dashboard-widget storefront-chart-widget flex h-full flex-col rounded-md border bg-white shadow-sm dark:bg-gray-800" ...attributes>
+     <div class="storefront-widget-header">
+         <div class="min-w-0">
+-            <div class="storefront-widget-title">Revenue Trend</div>
+-            <div class="storefront-widget-subtitle">{{this.formattedRevenue}} across {{this.data.summary.orders}} orders</div>
++            <div class="storefront-widget-title">{{t "storefront.widget.revenue-trend.title"}}</div>
++            <div class="storefront-widget-subtitle">{{t "storefront.widget.revenue-trend.subtitle" revenue=this.formattedRevenue orders=this.data.summary.orders}}</div>
+         </div>
+     </div>
+ 
+@@ -16,7 +16,7 @@
+                 <Chart @type="line" @labels={{this.data.labels}} @datasets={{this.chartDatasets}} @options={{this.chartOptions}} />
+             </div>
+         {{else}}
+-            <div class="storefront-widget-empty">No revenue data yet.</div>
++            <div class="storefront-widget-empty">{{t "storefront.widget.revenue-trend.empty"}}</div>
+         {{/if}}
+     </div>
+ </div>
+diff --git a/addon/components/widget/storefront-kpi-tile.hbs b/addon/components/widget/storefront-kpi-tile.hbs
+index 49efe5b693f62fcd7c921c15ffd80db849e56eb1..114b8989ca1ece1072e5a8eb7f3cc0bef4e68d52 100644
+--- a/addon/components/widget/storefront-kpi-tile.hbs
++++ b/addon/components/widget/storefront-kpi-tile.hbs
+@@ -17,7 +17,7 @@
+         </div>
+ 
+         <div class="mt-3 flex items-center justify-between gap-2 text-[11px]">
+-            <span class="text-gray-500 dark:text-gray-400 truncate">{{or @period "vs previous period"}}</span>
++            <span class="text-gray-500 dark:text-gray-400 truncate">{{this.vsPreviousLabel}}</span>
+             <span class="storefront-kpi-delta storefront-animate-value inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold">
+                 <FaIcon @icon={{this.deltaIcon}} />
+                 {{this.deltaText}}
+diff --git a/addon/components/widget/storefront-kpi-tile.js b/addon/components/widget/storefront-kpi-tile.js
+index 3dfcc3dcf04a565329f4d97e9ccda98a2b75ee12..f0d5c220ffe806ee862de8ae9688ae61e745533d 100644
+--- a/addon/components/widget/storefront-kpi-tile.js
++++ b/addon/components/widget/storefront-kpi-tile.js
+@@ -7,6 +7,7 @@ import formatCurrency from '@fleetbase/ember-ui/utils/format-currency';
+ export default class WidgetStorefrontKpiTileComponent extends Component {
+     @service fetch;
+     @service storefront;
++    @service intl;
+     @service storefrontDashboard;
+ 
+     @tracked data = null;
+@@ -15,13 +16,13 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
+     constructor() {
+         super(...arguments);
+         this.load.perform();
+-        this.storefront.on('order.broadcasted', () => {
++        this.storefront?.on('order.broadcasted', () => {
+             this.load.perform();
+         });
+-        this.storefront.on('storefront.changed', () => {
++        this.storefront?.on('storefront.changed', () => {
+             this.load.perform();
+         });
+-        this.storefrontDashboard.on('periodChanged', () => {
++        this.storefrontDashboard?.on('periodChanged', () => {
+             this.load.perform();
+         });
+     }
+@@ -35,7 +36,14 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
+     }
+ 
+     get title() {
+-        return this.args.title ?? 'Metric';
++        if (this.args.titleKey) {
++            return this.intl.t(this.args.titleKey);
++        }
++        return this.args.title ?? this.intl.t('storefront.widget.kpi.default-title');
++    }
++
++    get vsPreviousLabel() {
++        return this.args.period ?? this.intl.t('storefront.widget.kpi.vs-previous-period');
+     }
+ 
+     get formattedValue() {
+@@ -89,7 +97,7 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
+             this.data = yield this.fetch.get('analytics/overview', this.storefrontDashboard.withStore(this.storeId), { namespace: 'storefront/int/v1' });
+             this.error = null;
+         } catch (error) {
+-            this.error = error?.message ?? 'Unable to load metric';
++            this.error = error?.message ?? this.intl.t('storefront.widget.kpi.load-error');
+         }
+     }
+ }
+diff --git a/addon/components/widget/top-products.hbs b/addon/components/widget/top-products.hbs
+index 3ae41901246e8e775f4ad35a99c01b590c284b86..d221798045cd55d6fcb2b8fe514592b62cb127e2 100644
+--- a/addon/components/widget/top-products.hbs
++++ b/addon/components/widget/top-products.hbs
+@@ -1,8 +1,8 @@
+ <div class="storefront-dashboard-widget flex h-full flex-col rounded-md border bg-white shadow-sm dark:bg-gray-800" ...attributes>
+     <div class="storefront-widget-header">
+         <div>
+-            <div class="storefront-widget-title">Top Products</div>
+-            <div class="storefront-widget-subtitle">Best sellers by revenue</div>
++            <div class="storefront-widget-title">{{t "storefront.widget.top-products.title"}}</div>
++            <div class="storefront-widget-subtitle">{{t "storefront.widget.top-products.subtitle"}}</div>
+         </div>
+         <Button @icon="refresh" @size="xs" @onClick={{perform this.load}} />
+     </div>
+@@ -24,13 +24,13 @@
+                     />
+                     <div class="min-w-0 flex-1">
+                         <div class="storefront-row-title">{{product.name}}</div>
+-                        <div class="storefront-row-subtitle">{{product.quantity}} sold</div>
++                        <div class="storefront-row-subtitle">{{t "storefront.widget.top-products.sold" qty=product.quantity}}</div>
+                     </div>
+                     <div class="storefront-row-value">{{format-currency product.revenue product.currency}}</div>
+                 </div>
+             {{/each}}
+         {{else}}
+-            <div class="storefront-widget-empty">No product sales yet.</div>
++            <div class="storefront-widget-empty">{{t "storefront.widget.top-products.empty"}}</div>
+         {{/if}}
+     </div>
+ </div>
+diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
+index 3d592ac3acdb3422ad2af63d776fb5dd3afb2b3c..83020a1dadb29fdbf238d1c28d592574ba4a400c 100644
+--- a/addon/templates/application.hbs
++++ b/addon/templates/application.hbs
+@@ -1,6 +1,6 @@
+ <EmberWormhole @to="sidebar-menu-items">
+     <StoreSelector @stores={{@model}} @activeStore={{this.activeStore}} @buttonClass="mb-2" @onCreateStore={{this.createNewStorefront}} @onSwitchStore={{this.switchActiveStore}} />
+-    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder="Search Storefront..." @searchProvider={{this.searchNavigation}} />
++    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder={{t "storefront.sidebar.search-placeholder"}} @searchProvider={{this.searchNavigation}} />
+ </EmberWormhole>
+ 
+ <Layout::Section::Container>
+diff --git a/addon/templates/home.hbs b/addon/templates/home.hbs
+index 1b424f6a9d6dc21c9cc6dd0d3f8cecbd9cfcd0be..39f406b10d8f961090881e94766c2899539b5267 100644
+--- a/addon/templates/home.hbs
++++ b/addon/templates/home.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Section::Body class="overflow-y-scroll h-full">
+     <Dashboard
+         @defaultDashboardId="storefront"
+-        @defaultDashboardName="Storefront Dashboard"
++        @defaultDashboardName={{t "storefront.home.title"}}
+         @extension="storefront"
+         @leftHeaderWrapperClass="storefront-dashboard-title"
+         @rightHeaderWrapperClass="storefront-dashboard-actions"
+diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
+index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f94769856 100644
+--- a/translations/ar-ae.yaml
++++ b/translations/ar-ae.yaml
+@@ -82,8 +82,10 @@ storefront:
+     customers: العملاء
+     orders: الطلبات
+     networks: الشبكات
++    promotions: العروض الترويجية
+     settings: الإعدادات
+     launch-app: تشغيل التطبيق
++    search-placeholder: البحث في واجهة المتجر...
+   component:
+     storefront-order-summary:
+       order-summary-title: ملخص طلبات واجهة المتجر
+@@ -395,6 +397,9 @@ storefront:
+               tax-percentage-input-label: نسبة الضريبة
+               tax-percentage-input-help-text: نسبة ضريبة المبيعات التي يتم تطبيقها
+                 على الطلبات.
++              enable-minimum-order-amount: تفعيل الحد الأدنى للطلب
++              minimum-order-amount-input-label: الحد الأدنى لمبلغ الطلب
++              minimum-order-amount-input-help-text: الحد الأدنى للمبلغ المطلوب للطلب لإتمام عملية الدفع.
+               auto-accept-incoming-orders: قبول الطلبات الواردة تلقائيًا
+               auto-dispatch-orders: إرسال الطلبات تلقائيًا
+               require-proof-of-delivery: طلب إثبات التسليم
+@@ -651,6 +656,9 @@ storefront:
+       enable-tax: تفعيل الضريبة
+       tax-percentage: نسبة الضريبة
+       tax-percentage-help-text: نسبة ضريبة المبيعات التي تطبق على الطلبات.
++      enable-minimum-order-amount: تفعيل الحد الأدنى للطلب
++      minimum-order-amount: الحد الأدنى لمبلغ الطلب
++      minimum-order-amount-help-text: الحد الأدنى للمبلغ المطلوب للطلب لإتمام عملية الدفع.
+       auto-accept-incoming-order: قبول الطلبات الواردة تلقائيًا
+       auto-dispatch-order: إرسال الطلبات تلقائيًا
+       require-proof-of-delivery: طلب إثبات التسليم
+@@ -704,3 +712,101 @@ storefront:
+       storefront-create-success: تم إنشاء واجهة متجرك الجديدة بنجاح!
+   application:
+     launch-app: تشغيل التطبيق
++  promotions:
++    title: العروض الترويجية
++    push-notifications:
++      tab-title: الإشعارات الفورية
++      header: إرسال الإشعارات الفورية
++      description: أرسل إشعارات ترويجية فورية لعملائك
++      title-label: عنوان الإشعار
++      title-placeholder: أدخل عنوان الإشعار
++      title-help-text: العنوان الذي سيظهر في الإشعار الفوري
++      body-label: نص الإشعار
++      body-placeholder: أدخل رسالة الإشعار
++      body-help-text: محتوى الرسالة التي سيتم إرسالها للعملاء
++      select-all-customers: تحديد جميع العملاء
++      select-all-customers-help-text: إرسال الإشعار لجميع عملاء هذا المتجر
++      customers-label: اختر العملاء
++      customers-placeholder: اختر العملاء لإرسال الإشعار إليهم
++      send-button: إرسال الإشعار
++      validation-title-body-required: يرجى إدخال العنوان والنص للإشعار
++      validation-customers-required: يرجى اختيار عميل واحد على الأقل لإرسال الإشعار إليه
++      notification-sent-success: تم إرسال الإشعار الفوري بنجاح للعملاء المحددين
++      notification-sent-error: فشل إرسال الإشعار الفوري. يرجى المحاولة مرة أخرى.
++
++  widget:
++    kpi:
++      revenue: الإيرادات
++      orders: الطلبات
++      customers: العملاء
++      completed-orders: الطلبات المكتملة
++      aov: متوسط قيمة الطلب
++      active-orders: الطلبات النشطة
++      cart-conversion: تحويل السلة
++      cancellation-rate: معدل الإلغاء
++      vs-previous-period: مقارنة بالفترة السابقة
++      default-title: مقياس
++      load-error: غير قادر على تحميل المقياس
++    metrics:
++      title: المقاييس
++    revenue-trend:
++      title: اتجاه الإيرادات
++      subtitle: "{revenue} عبر {orders} طلب"
++      empty: لا توجد بيانات إيرادات بعد.
++      load-error: غير قادر على تحميل اتجاه الإيرادات
++    top-products:
++      title: أفضل المنتجات
++      subtitle: الأكثر مبيعاً حسب الإيرادات
++      sold: "{qty} مباع"
++      empty: لا توجد مبيعات منتجات بعد.
++      load-error: غير قادر على تحميل أفضل المنتجات
++    orders-widget:
++      title: الطلبات الأخيرة
++      subtitle: "{count} طلب حديث"
++      refresh: تحديث الطلبات
++      active-only: النشطة فقط
++      empty: لا توجد طلبات حديثة بعد.
++      table:
++        order: الطلب
++        amount: المبلغ
++        customer: العميل
++        fulfillment: التنفيذ
++        status: الحالة
++        actions: الإجراءات
++    orders-by-status:
++      title: توزيع حالات الطلبات
++      subtitle: "{total} طلب في هذه الفترة"
++      empty: لا يوجد نشاط طلبات بعد.
++      load-error: غير قادر على تحميل توزيع الحالات
++    customers-widget:
++      title: العملاء الجدد
++      subtitle: "{count} عميل حديث"
++      empty: لا يوجد عملاء جدد بعد.
++    customer-insights:
++      title: رؤى العملاء
++      subtitle: المشترين الجدد مقابل العائدين
++      new: جديد
++      returning: عائد
++      repeat-rate: معدل الشراء المتكرر
++      period-note: "{count} مشترٍ طلب خلال هذه الفترة."
++      empty: لا يوجد نشاط عملاء بعد.
++      load-error: غير قادر على تحميل رؤى العملاء
++  dashboard:
++    default-range: آخر 30 يوماً
++    custom-range: مخصص
++    range:
++      last-7-days: آخر 7 أيام
++      last-30-days: آخر 30 يوماً
++      last-90-days: آخر 90 يوماً
++      this-month: هذا الشهر
++      last-month: الشهر الماضي
++      this-quarter: هذا الربع
++      last-quarter: الربع الماضي
++      this-year: هذه السنة
++      last-year: السنة الماضية
++      black-friday: أسبوع الجمعة البيضاء
++      holiday-season: موسم الأعياد
++      q1: الربع الأول {year}
++      q2: الربع الثاني {year}
++      q3: الربع الثالث {year}
++      q4: الربع الرابع {year}
+diff --git a/translations/en-us.yaml b/translations/en-us.yaml
+index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..d831dd4d7b735411726380c6bc8915ac6f73bc04 100644
+--- a/translations/en-us.yaml
++++ b/translations/en-us.yaml
+@@ -85,6 +85,7 @@ storefront:
+     promotions: Promotions
+     settings: Settings
+     launch-app: Launch App
++    search-placeholder: Search Storefront...
+   component:
+     storefront-order-summary:
+       order-summary-title: Storefront Order Summary
+@@ -690,3 +691,80 @@ storefront:
+       validation-customers-required: Please select at least one customer to send the notification to
+       notification-sent-success: Push notification sent successfully to selected customers
+       notification-sent-error: Failed to send push notification. Please try again.
++
++  widget:
++    kpi:
++      revenue: Revenue
++      orders: Orders
++      customers: Customers
++      completed-orders: Completed Orders
++      aov: Average Order Value
++      active-orders: Active Orders
++      cart-conversion: Cart Conversion
++      cancellation-rate: Cancellation Rate
++      vs-previous-period: vs previous period
++      default-title: Metric
++      load-error: Unable to load metric
++    metrics:
++      title: Metrics
++    revenue-trend:
++      title: Revenue Trend
++      subtitle: "{revenue} across {orders} orders"
++      empty: No revenue data yet.
++      load-error: Unable to load revenue trend
++    top-products:
++      title: Top Products
++      subtitle: Best sellers by revenue
++      sold: "{qty} sold"
++      empty: No product sales yet.
++      load-error: Unable to load top products
++    orders-widget:
++      title: Recent Orders
++      subtitle: "{count} recent orders"
++      refresh: Refresh orders
++      active-only: Active only
++      empty: No recent orders yet.
++      table:
++        order: Order
++        amount: Amount
++        customer: Customer
++        fulfillment: Fulfillment
++        status: Status
++        actions: Actions
++    orders-by-status:
++      title: Order Status Mix
++      subtitle: "{total} orders this period"
++      empty: No order activity yet.
++      load-error: Unable to load order status mix
++    customers-widget:
++      title: Recent Customers
++      subtitle: "{count} recent customers"
++      empty: No recent customers yet.
++    customer-insights:
++      title: Customer Insights
++      subtitle: New vs returning buyers
++      new: New
++      returning: Returning
++      repeat-rate: Repeat purchase rate
++      period-note: "{count} buyers ordered during this period."
++      empty: No customer activity yet.
++      load-error: Unable to load customer insights
++  dashboard:
++    default-range: Last 30 Days
++    custom-range: Custom
++    range:
++      last-7-days: Last 7 Days
++      last-30-days: Last 30 Days
++      last-90-days: Last 90 Days
++      this-month: This Month
++      last-month: Last Month
++      this-quarter: This Quarter
++      last-quarter: Last Quarter
++      this-year: This Year
++      last-year: Last Year
++      black-friday: Black Friday Week
++      holiday-season: Holiday Season
++      q1: Q1 {year}
++      q2: Q2 {year}
++      q3: Q3 {year}
++      q4: Q4 {year}

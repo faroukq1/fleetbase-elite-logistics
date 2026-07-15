@@ -15,3 +15,10 @@ allowBuilds:
   "@fortawesome/free-solid-svg-icons": false
   core-js: false
   fsevents: false
+patchedDependencies:
+  '@fleetbase/dev-engine@0.2.14': patches/@fleetbase__dev-engine@0.2.14.patch
+  '@fleetbase/ember-ui@0.3.41': patches/@fleetbase__ember-ui@0.3.41.patch
+  '@fleetbase/fleetops-engine@0.6.57': patches/@fleetbase__fleetops-engine@0.6.57.patch
+  '@fleetbase/iam-engine@0.1.10': patches/@fleetbase__iam-engine@0.1.10.patch
+  '@fleetbase/ledger-engine@0.0.7': patches/@fleetbase__ledger-engine@0.0.7.patch
+  '@fleetbase/storefront-engine@0.4.16': patches/@fleetbase__storefront-engine@0.4.16.patch

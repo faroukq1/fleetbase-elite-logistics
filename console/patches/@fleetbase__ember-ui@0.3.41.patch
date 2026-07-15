@@ -1,0 +1,96 @@
+diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
+index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff6615fd6e79e 100644
+--- a/addon/components/layout/header.js
++++ b/addon/components/layout/header.js
+@@ -22,6 +22,7 @@ export default class LayoutHeaderComponent extends Component {
+     @service abilities;
+     @service fetch;
+     @service docsPanel;
++    @service intl;
+     @tracked company;
+     @tracked organizationMenuItems = [];
+     @tracked userMenuItems = [];
+@@ -81,19 +82,19 @@ export default class LayoutHeaderComponent extends Component {
+             {
+                 id: 'console-home',
+                 route: 'console.home',
+-                text: 'Home',
++                text: this.intl.t('user-menu.home'),
+                 icon: 'house',
+             },
+             {
+                 id: 'organization-settings',
+                 route: 'console.settings.index',
+-                text: 'Organization settings',
++                text: this.intl.t('user-menu.organization-settings'),
+                 icon: 'gear',
+             },
+             {
+                 id: 'create-or-join-organizations',
+                 href: 'javascript:;',
+-                text: 'Create or join organizations',
++                text: this.intl.t('user-menu.create-or-join'),
+                 action: 'createOrJoinOrg',
+                 icon: 'building',
+             },
+@@ -104,7 +105,7 @@ export default class LayoutHeaderComponent extends Component {
+             staticMenuItems.pushObject({
+                 id: 'explore-extensions',
+                 route: 'console.extensions',
+-                text: 'Explore extensions',
++                text: this.intl.t('user-menu.explore-extensions'),
+                 icon: 'puzzle-piece',
+             });
+         }
+@@ -149,7 +150,7 @@ export default class LayoutHeaderComponent extends Component {
+                 },
+                 {
+                     route: 'console.admin',
+-                    text: 'Admin',
++                    text: this.intl.t('user-menu.admin'),
+                     icon: 'toolbox',
+                 },
+             ]);
+@@ -162,7 +163,7 @@ export default class LayoutHeaderComponent extends Component {
+             },
+             {
+                 href: 'javascript:;',
+-                text: 'Logout',
++                text: this.intl.t('user-menu.logout'),
+                 action: 'invalidateSession',
+                 icon: 'person-running',
+             },
+@@ -229,7 +230,7 @@ export default class LayoutHeaderComponent extends Component {
+                 id: 'discord',
+                 href: 'https://discord.gg/MJQgxHwN',
+                 target: '_discord',
+-                text: 'Join Discord Community',
++                text: this.intl.t('user-menu.discord'),
+                 icon: 'arrow-up-right-from-square',
+             },
+             {
+@@ -237,13 +238,13 @@ export default class LayoutHeaderComponent extends Component {
+                 wrapperClass: 'support-user-nav-item',
+                 href: 'https://github.com/fleetbase/fleetbase/issues',
+                 target: '_support',
+-                text: 'Help & Support',
++                text: this.intl.t('user-menu.support'),
+                 icon: 'arrow-up-right-from-square',
+             },
+             {
+                 id: 'docs-user-nav-item',
+                 wrapperClass: 'docs-user-nav-item',
+-                text: 'Documentation',
++                text: this.intl.t('user-menu.documentation'),
+                 icon: 'book-open',
+                 onClick: () => this.docsPanel.open('https://www.fleetbase.io/docs', { title: 'Fleetbase Documentation', source: 'user-menu' }),
+             },
+@@ -279,7 +280,7 @@ export default class LayoutHeaderComponent extends Component {
+             },
+             {
+                 href: 'javascript:;',
+-                text: 'Logout',
++                text: this.intl.t('user-menu.logout'),
+                 action: 'invalidateSession',
+                 icon: 'person-running',
+             },

@@ -808,3 +808,13 @@ layout:
         view-profile: View profile
         keyboard-shortcuts: Show keyboard shortcuts
         changelog: Changelog
+user-menu:
+  home: Home
+  organization-settings: Organization settings
+  create-or-join: Create or join organizations
+  explore-extensions: Explore extensions
+  admin: Admin
+  logout: Logout
+  discord: Join Discord Community
+  support: Help & Support
+  documentation: Documentation
