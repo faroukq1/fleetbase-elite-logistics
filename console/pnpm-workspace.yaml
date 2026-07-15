@@ -21,4 +21,5 @@ patchedDependencies:
   '@fleetbase/fleetops-engine@0.6.57': patches/@fleetbase__fleetops-engine@0.6.57.patch
   '@fleetbase/iam-engine@0.1.10': patches/@fleetbase__iam-engine@0.1.10.patch
   '@fleetbase/ledger-engine@0.0.7': patches/@fleetbase__ledger-engine@0.0.7.patch
+  '@fleetbase/registry-bridge-engine@0.1.9': patches/@fleetbase__registry-bridge-engine@0.1.9.patch
   '@fleetbase/storefront-engine@0.4.16': patches/@fleetbase__storefront-engine@0.4.16.patch
