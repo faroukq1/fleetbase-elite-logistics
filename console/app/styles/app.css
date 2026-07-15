@@ -168,3 +168,50 @@
 .onboard-route-wrapper.elite-auth .elite-auth-card {
     color: #f8f8f8;
 }
+
+/* ── Onboard / create-account form (inside the wide auth card) ──────────── */
+.elite-onboard-welcome {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: rgba(93, 214, 44, 0.1);
+    border: 1px solid rgba(93, 214, 44, 0.35);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.9rem;
+    margin: 0.5rem 0 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #d1fae5;
+}
+.elite-onboard-welcome-icon {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    color: #5dd62c;
+}
+.elite-onboard-form .input-group {
+    margin-bottom: 1rem;
+}
+.elite-onboard-form label {
+    color: #f8f8f8 !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+.elite-onboard-form .form-input,
+.elite-onboard-form input {
+    width: 100%;
+    background: #f8f8f8 !important;
+    color: #111 !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 0.8rem !important;
+}
+.elite-onboard-form .form-input:focus,
+.elite-onboard-form input:focus {
+    outline: none !important;
+    border-color: #5dd62c !important;
+    box-shadow: 0 0 0 3px rgba(93, 214, 44, 0.25) !important;
+}
+.elite-onboard-submit {
+    margin-top: 0.5rem;
+}
