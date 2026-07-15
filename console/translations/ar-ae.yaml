@@ -835,3 +835,10 @@ config:
   upload-p8-key-file: "رفع ملف مفتاح P8"
   upload-service-account-json: "رفع JSON حساب الخدمة"
   use-tls: "استخدام TLS"
+header-nav:
+  fleet-ops: عمليات الأسطول
+  storefront: واجهة المتجر
+  iam: إدارة الهوية
+  ledger: دفتر الأستاذ
+  developers: المطورون
+  extensions: الامتدادات

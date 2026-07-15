@@ -38,6 +38,31 @@ export default class ConsoleController extends Controller {
     }
 
     /**
+     * Translate the hardcoded engine header-nav titles (Fleet-Ops, Storefront,
+     * IAM, Ledger, Developers, Extensions) to the active locale.
+     *
+     * @param {Array} items
+     * @void
+     */
+    @action mutateHeaderMenuItems(items) {
+        const keyByTitle = {
+            'Fleet-Ops': 'header-nav.fleet-ops',
+            Storefront: 'header-nav.storefront',
+            IAM: 'header-nav.iam',
+            Ledger: 'header-nav.ledger',
+            Developers: 'header-nav.developers',
+            Extensions: 'header-nav.extensions',
+        };
+
+        (items ?? []).forEach((item) => {
+            const key = keyByTitle[item.title];
+            if (key) {
+                item.title = this.intl.t(key);
+            }
+        });
+    }
+
+    /**
      * Action to invalidate and log user out
      *
      * @void

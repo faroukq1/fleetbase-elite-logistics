@@ -866,3 +866,10 @@ config:
   upload-p8-key-file: "Upload P8 Key File"
   upload-service-account-json: "Upload Service Account JSON"
   use-tls: "Use TLS"
+header-nav:
+  fleet-ops: Fleet-Ops
+  storefront: Storefront
+  iam: IAM
+  ledger: Ledger
+  developers: Developers
+  extensions: Extensions
