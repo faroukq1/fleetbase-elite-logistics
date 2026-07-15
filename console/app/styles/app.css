@@ -216,6 +216,31 @@
     margin-top: 0.5rem;
 }
 
+/* ── Sidebar: fixed brand color in BOTH light and dark mode ─────────────── */
+/* Client request: the side nav must stay the same (dark + green) whether the
+   app is in day or night mode — it must not flip to a light background. */
+.next-sidebar {
+    background-color: #0f0f0f !important;
+}
+.next-sidebar::after {
+    background-color: rgba(93, 214, 44, 0.35) !important;
+}
+.next-sidebar .next-sidebar-footer {
+    border-color: rgba(93, 214, 44, 0.2) !important;
+}
+/* Keep nav text readable on the now-always-dark sidebar (esp. in light mode). */
+.next-sidebar a,
+.next-sidebar button,
+.next-sidebar span,
+.next-sidebar label,
+.next-sidebar .next-nav-item {
+    color: #e5e5e5;
+}
+.next-sidebar a:hover,
+.next-sidebar .next-nav-item:hover {
+    color: #5dd62c;
+}
+
 /* ── Smooth light/dark theme toggle ────────────────────────────────────── */
 /* Transition surfaces/borders/text when [data-theme] flips on <html>. Scoped
    to common containers to avoid janking every element on the page. */

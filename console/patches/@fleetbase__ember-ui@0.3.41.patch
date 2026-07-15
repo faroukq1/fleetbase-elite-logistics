@@ -247,6 +247,19 @@ index 0df254b34b13a5267950a778bc35671fd5e294f7..8bbd3a4dd8203f9d2845f1c76129c839
  
      /**
       * Whether the item's route matches the current route, making it "active".
+diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
+index 0f85afe5db0501d86c41bb4762982d326a140d20..a1afa8d2bcc738afa8673e334be0da0cf0ca0dfa 100644
+--- a/addon/components/layout/header.hbs
++++ b/addon/components/layout/header.hbs
+@@ -1,7 +1,7 @@
+ <header class="next-view-header" ...attributes>
+     <div class="next-view-header-left">
+         <LinkToExternal @route="console" class="logo navbar-logo mr-4">
+-            <LogoIcon @brand={{@brand}} @size="8" />
++            <LogoIcon @brand={{@brand}} @size="12" />
+         </LinkToExternal>
+         {{#if (and @showSidebarToggle (not (media "isMobile")))}}
+             <Layout::Header::SidebarToggle class="mr-2" @onToggle={{@onSidebarToggle}} @disabled={{eq @sidebarToggleEnabled false}} />
 diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
 index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff6615fd6e79e 100644
 --- a/addon/components/layout/header.js
@@ -1978,9 +1991,31 @@ index 156e9b4b9c3a85f5ee3f76b72ea10fb6c3ce76f7..c2176b281971903f15ab0145b10e5f8a
  }
  
 diff --git a/addon/styles/layout/legacy.css b/addon/styles/layout/legacy.css
-index e68430be1ad944dbdc46a2a3eb3e604f1818ad2c..817ed312bf8d9604386c5d1e2d3acf2bac6a57f8 100644
+index e68430be1ad944dbdc46a2a3eb3e604f1818ad2c..ae99aee87ddd0e0327c9ab14ae1fa4641e08aaba 100644
 --- a/addon/styles/layout/legacy.css
 +++ b/addon/styles/layout/legacy.css
+@@ -101,8 +101,8 @@ video {
+ }
+ 
+ a.navbar-logo {
+-    width: 32px;
+-    height: 32px;
++    width: 48px;
++    height: 48px;
+     margin-right: 1rem;
+     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+     border-radius: 0.25rem;
+@@ -114,8 +114,8 @@ a.navbar-logo:hover {
+ }
+ 
+ a.navbar-logo > img {
+-    width: 32px;
+-    height: 32px;
++    width: 48px;
++    height: 48px;
+     border-radius: 0.25rem;
+ }
+ 
 @@ -402,15 +402,15 @@ body[data-theme='dark'] .overloader {
  }
  
