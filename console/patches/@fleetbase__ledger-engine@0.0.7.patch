@@ -363,6 +363,50 @@ index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e
          {{/if}}
      </div>
  </div>
+diff --git a/addon/controllers/accounting/general-ledger.js b/addon/controllers/accounting/general-ledger.js
+index 8607e44de909c4db645916012636b2512cfe8715..3621c4d5f18b417c2c99add6f7989c0631780088 100644
+--- a/addon/controllers/accounting/general-ledger.js
++++ b/addon/controllers/accounting/general-ledger.js
+@@ -5,17 +5,9 @@ import { inject as service } from '@ember/service';
+ import { isArray } from '@ember/array';
+ import { task } from 'ember-concurrency';
+ 
+-const ACCOUNT_TYPES = [
+-    { label: 'All Types', value: null },
+-    { label: 'Asset', value: 'asset' },
+-    { label: 'Liability', value: 'liability' },
+-    { label: 'Equity', value: 'equity' },
+-    { label: 'Revenue', value: 'revenue' },
+-    { label: 'Expense', value: 'expense' },
+-];
+-
+ export default class AccountingGeneralLedgerController extends Controller {
+     @service fetch;
++    @service intl;
+ 
+     @tracked accounts = [];
+     @tracked dateRange = null;
+@@ -30,11 +22,18 @@ export default class AccountingGeneralLedgerController extends Controller {
+     @tracked expandedMap = {};
+ 
+     get accountTypes() {
+-        return ACCOUNT_TYPES;
++        return [
++            { label: this.intl.t('ledger.general-ledger.types.all'), value: null },
++            { label: this.intl.t('ledger.general-ledger.types.asset'), value: 'asset' },
++            { label: this.intl.t('ledger.general-ledger.types.liability'), value: 'liability' },
++            { label: this.intl.t('ledger.general-ledger.types.equity'), value: 'equity' },
++            { label: this.intl.t('ledger.general-ledger.types.revenue'), value: 'revenue' },
++            { label: this.intl.t('ledger.general-ledger.types.expense'), value: 'expense' },
++        ];
+     }
+ 
+     get selectedType() {
+-        return ACCOUNT_TYPES.find((t) => t.value === this.type) ?? ACCOUNT_TYPES[0];
++        return this.accountTypes.find((t) => t.value === this.type) ?? this.accountTypes[0];
+     }
+ 
+     get allExpanded() {
 diff --git a/addon/controllers/application.js b/addon/controllers/application.js
 index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2066f52e1 100644
 --- a/addon/controllers/application.js
@@ -551,6 +595,214 @@ index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2
                          description: 'Configure accounting automation and posting behavior.',
                          icon: 'calculator',
                          route: 'console.ledger.settings.accounting',
+diff --git a/addon/controllers/reports/ar-aging.js b/addon/controllers/reports/ar-aging.js
+index 47739fc36502cca1973852a3dfb60a01faab24c2..6cb42db1f34e9c9d086607d7a37efe4cee4404a4 100644
+--- a/addon/controllers/reports/ar-aging.js
++++ b/addon/controllers/reports/ar-aging.js
+@@ -8,6 +8,7 @@ import { task } from 'ember-concurrency';
+ export default class ReportsArAgingController extends Controller {
+     @service fetch;
+     @service currentUser;
++    @service intl;
+ 
+     @tracked data = null;
+     @tracked as_of = null;
+@@ -21,17 +22,23 @@ export default class ReportsArAgingController extends Controller {
+         return Object.values(this.data.buckets);
+     }
+ 
++    translateBucketLabel(bucket) {
++        const keyMap = { 0: 'current', '1-30': 'days-1-30', '31-60': 'days-31-60', '61-90': 'days-61-90', '90+': 'days-90-plus' };
++        const key = keyMap[bucket.days_range];
++        return key ? this.intl.t(`ledger.reports.ar-aging.buckets.${key}`) : bucket.label;
++    }
++
+     get bucketSummary() {
+         if (!this.data?.buckets) return [];
+         return Object.values(this.data.buckets).map((b) => ({
+-            label: b.label,
++            label: this.translateBucketLabel(b),
+             total: b.total ?? 0,
+         }));
+     }
+ 
+     get allInvoices() {
+         if (!this.data?.buckets) return [];
+-        return Object.values(this.data.buckets).flatMap((b) => (b.invoices ?? []).map((inv) => ({ ...inv, bucketLabel: b.label, daysRange: b.days_range })));
++        return Object.values(this.data.buckets).flatMap((b) => (b.invoices ?? []).map((inv) => ({ ...inv, bucketLabel: this.translateBucketLabel(b), daysRange: b.days_range })));
+     }
+ 
+     @task *loadReport() {
+diff --git a/addon/controllers/reports/index.js b/addon/controllers/reports/index.js
+index 719ace7fd6de5a43f928a6409eeee20da6af197f..eaecf7a6aaa52a5dc96e40b48aae979039f32248 100644
+--- a/addon/controllers/reports/index.js
++++ b/addon/controllers/reports/index.js
+@@ -6,6 +6,7 @@ import { task } from 'ember-concurrency';
+ 
+ export default class ReportsIndexController extends Controller {
+     @service fetch;
++    @service intl;
+ 
+     @tracked activeReport = 'balance-sheet';
+     @tracked reportData = null;
+@@ -14,12 +15,14 @@ export default class ReportsIndexController extends Controller {
+     @tracked dateTo = null;
+     @tracked asOf = null;
+ 
+-    reportTabs = [
+-        { id: 'balance-sheet', label: 'Balance Sheet' },
+-        { id: 'income-statement', label: 'Income Statement' },
+-        { id: 'cash-flow', label: 'Cash Flow' },
+-        { id: 'ar-aging', label: 'AR Aging' },
+-    ];
++    get reportTabs() {
++        return [
++            { id: 'balance-sheet', label: this.intl.t('ledger.sidebar.balance-sheet') },
++            { id: 'income-statement', label: this.intl.t('ledger.sidebar.income-statement') },
++            { id: 'cash-flow', label: this.intl.t('ledger.sidebar.cash-flow') },
++            { id: 'ar-aging', label: this.intl.t('ledger.sidebar.ar-aging') },
++        ];
++    }
+ 
+     @task *loadReport() {
+         this.isLoading = true;
+diff --git a/addon/templates/accounting/accounts/index/edit.hbs b/addon/templates/accounting/accounts/index/edit.hbs
+index d74c972e11afe151898ccfee8fa86821d2a5e04c..4ce3e83fc8d949026aa28bf9a579af8ddfd13d8c 100644
+--- a/addon/templates/accounting/accounts/index/edit.hbs
++++ b/addon/templates/accounting/accounts/index/edit.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Resource::Panel
+     @resource={{@model}}
+     @controller={{this}}
+-    @headerTitle="Edit Account — {{@model.name}}"
++    @headerTitle="{{t 'ledger.accounting.edit-account'}} — {{@model.name}}"
+     @actionButtons={{this.actionButtons}}
+     @saveTask={{this.save}}
+     @onPressCancel={{this.cancel}}
+diff --git a/addon/templates/accounting/accounts/index/new.hbs b/addon/templates/accounting/accounts/index/new.hbs
+index 7db6fb99902bdaee6281dccff367bc9fe98a2be1..625df9ee92959839dd7f93668422c2ef169ca843 100644
+--- a/addon/templates/accounting/accounts/index/new.hbs
++++ b/addon/templates/accounting/accounts/index/new.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Resource::Panel
+     @resource={{this.account}}
+     @controller={{this}}
+-    @headerTitle="Create New Account"
++    @headerTitle={{t "ledger.accounting.create-account"}}
+     @actionButtons={{this.actionButtons}}
+     @saveTask={{this.save}}
+     @onPressCancel={{transition-to "accounting.accounts.index"}}
+diff --git a/addon/templates/accounting/general-ledger.hbs b/addon/templates/accounting/general-ledger.hbs
+index f2393c123ab17395e849ca2d9a02cbc90e9561b8..8364abca7ca6350fd887bb25adfa98634f30b106 100644
+--- a/addon/templates/accounting/general-ledger.hbs
++++ b/addon/templates/accounting/general-ledger.hbs
+@@ -1,4 +1,4 @@
+-<Layout::Section::Header @title="General Ledger" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.general-ledger.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="general-ledger-filters flex flex-row items-center space-x-2">
+         <DatePicker
+             @value={{this.dateRange}}
+@@ -6,7 +6,7 @@
+             @onSelect={{this.onDateRangeChanged}}
+             @autoClose={{true}}
+             @buttons={{array "clear"}}
+-            @placeholder="Select date range"
++            @placeholder={{t "ledger.general-ledger.select-date-range"}}
+             class="w-52"
+         />
+         <div class="fleetbase-model-select fleetbase-power-select ember-model-select w-40">
+@@ -26,7 +26,7 @@
+             @size="sm"
+             @type="default"
+             @icon={{if this.allExpanded "chevron-up" "chevron-down"}}
+-            @helpText={{if this.allExpanded "Collapse All" "Expand All"}}
++            @helpText={{if this.allExpanded (t "ledger.general-ledger.collapse-all") (t "ledger.general-ledger.expand-all")}}
+             {{on "click" this.toggleExpandAll}}
+         />
+     </div>
+@@ -58,7 +58,7 @@
+                             </div>
+                             <div class="flex items-center gap-6 text-right">
+                                 {{#if row.summary.entry_count}}
+-                                    <span class="text-xs text-gray-400">{{row.summary.entry_count}} entries</span>
++                                    <span class="text-xs text-gray-400">{{t "ledger.general-ledger.entries" count=row.summary.entry_count}}</span>
+                                 {{/if}}
+                                 <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                                     {{format-currency row.summary.net_balance acct.currency}}
+@@ -73,12 +73,12 @@
+                                     <table class="w-full text-sm">
+                                         <thead>
+                                             <tr class="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+-                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Date</th>
+-                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Ref #</th>
+-                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">Description</th>
+-                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">Debit</th>
+-                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">Credit</th>
+-                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">Balance</th>
++                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.date"}}</th>
++                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.ref"}}</th>
++                                                <th class="text-left px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.description"}}</th>
++                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.debit"}}</th>
++                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.credit"}}</th>
++                                                <th class="text-right px-4 py-2 text-xs font-medium text-gray-500 uppercase">{{t "ledger.general-ledger.balance"}}</th>
+                                             </tr>
+                                         </thead>
+                                         <tbody>
+@@ -107,7 +107,7 @@
+                                         </tbody>
+                                         <tfoot>
+                                             <tr class="border-t-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
+-                                                <td colspan="3" class="px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Totals</td>
++                                                <td colspan="3" class="px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">{{t "ledger.reports.common.totals"}}</td>
+                                                 <td class="px-4 py-2 text-right text-xs font-semibold text-gray-900 dark:text-white">
+                                                     {{format-currency row.summary.total_debits acct.currency}}
+                                                 </td>
+@@ -123,7 +123,7 @@
+                                 </div>
+                             {{else}}
+                                 <div class="px-4 py-6 text-center text-xs text-gray-400 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+-                                    No journal entries for this account{{#if this.date_from}} in the selected period{{/if}}.
++                                    {{if this.date_from (t "ledger.general-ledger.no-entries-period") (t "ledger.general-ledger.no-entries")}}
+                                 </div>
+                             {{/if}}
+                         {{/if}}
+@@ -134,8 +134,8 @@
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+                 <FaIcon @icon="book-open" class="w-12 h-12 mb-3 opacity-30" />
+-                <p class="text-sm font-medium">No accounts found.</p>
+-                <p class="text-xs mt-1">Create accounts in the Chart of Accounts to see entries here.</p>
++                <p class="text-sm font-medium">{{t "ledger.general-ledger.no-accounts"}}</p>
++                <p class="text-xs mt-1">{{t "ledger.general-ledger.no-accounts-hint"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/accounting/journal/index/edit.hbs b/addon/templates/accounting/journal/index/edit.hbs
+index e2ce95df889e6b2a0b21dd10d023acc8dbb7ebfe..f131e71c0c0de02f9ee041e28491b28323303c6e 100644
+--- a/addon/templates/accounting/journal/index/edit.hbs
++++ b/addon/templates/accounting/journal/index/edit.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Resource::Panel
+     @resource={{@model}}
+     @controller={{this}}
+-    @headerTitle="Edit Journal Entry — {{@model.number}}"
++    @headerTitle="{{t 'ledger.accounting.edit-journal-entry'}} — {{@model.number}}"
+     @actionButtons={{this.actionButtons}}
+     @saveTask={{this.save}}
+     @onPressCancel={{this.cancel}}
+diff --git a/addon/templates/accounting/journal/index/new.hbs b/addon/templates/accounting/journal/index/new.hbs
+index f015621d59e84c860f20865f76e4f81788ee6c53..709804750c56043f2611b3492c5d6537954f8f0d 100644
+--- a/addon/templates/accounting/journal/index/new.hbs
++++ b/addon/templates/accounting/journal/index/new.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Resource::Panel
+     @resource={{this.journalEntry}}
+     @controller={{this}}
+-    @headerTitle="Create Journal Entry"
++    @headerTitle={{t "ledger.accounting.create-journal-entry"}}
+     @actionButtons={{this.actionButtons}}
+     @saveTask={{this.save}}
+     @onPressCancel={{transition-to "accounting.journal.index"}}
 diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
 index 31f5e9a04ac20966a319aa459cd0c910478d4365..5a98fbaff47e9b7e0a88904f95396b3a74dd8e72 100644
 --- a/addon/templates/application.hbs
@@ -562,12 +814,588 @@ index 31f5e9a04ac20966a319aa459cd0c910478d4365..5a98fbaff47e9b7e0a88904f95396b3a
  </EmberWormhole>
  <Layout::Section::Container>
      {{outlet}}
+diff --git a/addon/templates/reports/ar-aging.hbs b/addon/templates/reports/ar-aging.hbs
+index c269b722d2f39e9664d0d60740d8507b6c4d659d..3a137cf90fe5faa8da2803947c3f1e32d824d3bc 100644
+--- a/addon/templates/reports/ar-aging.hbs
++++ b/addon/templates/reports/ar-aging.hbs
+@@ -1,7 +1,7 @@
+-<Layout::Section::Header @title="AR Aging" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.ar-aging.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+-        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder="As of date" class="w-44 form-input form-input-sm" />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder={{t "ledger.reports.common.as-of-date"}} class="w-44 form-input form-input-sm" />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -11,14 +11,14 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Accounts Receivable Aging</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.ar-aging.full-title"}}</h2>
+                     {{#if this.data.as_of_date}}
+-                        <p class="text-sm text-gray-500 mt-0.5">As of {{format-date-fns this.data.as_of_date "MMMM d, yyyy"}}</p>
++                        <p class="text-sm text-gray-500 mt-0.5">{{t "ledger.reports.common.as-of" date=(format-date-fns this.data.as_of_date "MMMM d, yyyy")}}</p>
+                     {{/if}}
+                 </div>
+                 {{#if this.data.grand_total}}
+                     <div class="text-right">
+-                        <p class="text-xs text-gray-500 uppercase tracking-wide">Total Outstanding</p>
++                        <p class="text-xs text-gray-500 uppercase tracking-wide">{{t "ledger.reports.ar-aging.total-outstanding"}}</p>
+                         <p class="text-lg font-bold text-gray-900 dark:text-white">{{format-currency this.data.grand_total this.companyCurrency}}</p>
+                     </div>
+                 {{/if}}
+@@ -38,16 +38,16 @@
+ 
+             <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Outstanding Invoices</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.outstanding-invoices"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <thead>
+                         <tr class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+-                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Invoice</th>
+-                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Customer</th>
+-                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Due Date</th>
+-                            <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+-                            <th class="px-4 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Bucket</th>
++                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.invoice"}}</th>
++                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.customer"}}</th>
++                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.due-date"}}</th>
++                            <th class="px-4 py-2 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.balance"}}</th>
++                            <th class="px-4 py-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.ar-aging.bucket"}}</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+@@ -64,14 +64,14 @@
+                                 </td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">No outstanding receivables</td></tr>
++                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">{{t "ledger.reports.ar-aging.no-receivables"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                 </table>
+             </div>
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a date and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-date"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/balance-sheet.hbs b/addon/templates/reports/balance-sheet.hbs
+index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..e24aa2288c062e008aaa5fe18b568098637849ec 100644
+--- a/addon/templates/reports/balance-sheet.hbs
++++ b/addon/templates/reports/balance-sheet.hbs
+@@ -1,7 +1,7 @@
+-<Layout::Section::Header @title="Balance Sheet" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.balance-sheet.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+-        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder="As of date" class="w-44 form-input form-input-sm" />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder={{t "ledger.reports.common.as-of-date"}} class="w-44 form-input form-input-sm" />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -11,18 +11,18 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Balance Sheet</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.balance-sheet.title"}}</h2>
+                     {{#if this.data.as_of_date}}
+-                        <p class="text-sm text-gray-500 mt-0.5">As of {{format-date-fns this.data.as_of_date "MMMM d, yyyy"}}</p>
++                        <p class="text-sm text-gray-500 mt-0.5">{{t "ledger.reports.common.as-of" date=(format-date-fns this.data.as_of_date "MMMM d, yyyy")}}</p>
+                     {{/if}}
+                 </div>
+-                <Badge @color={{if this.data.balanced "green" "red"}}>{{if this.data.balanced "Balanced" "Unbalanced"}}</Badge>
++                <Badge @color={{if this.data.balanced "green" "red"}}>{{if this.data.balanced (t "ledger.reports.common.balanced") (t "ledger.reports.common.unbalanced")}}</Badge>
+             </div>
+             {{#each
+                 (array
+-                    (hash label="Assets" items=this.data.assets total=this.data.total_assets)
+-                    (hash label="Liabilities" items=this.data.liabilities total=this.data.total_liabilities)
+-                    (hash label="Equity" items=this.data.equity total=this.data.total_equity)
++                    (hash label=(t "ledger.reports.balance-sheet.assets") items=this.data.assets total=this.data.total_assets)
++                    (hash label=(t "ledger.reports.balance-sheet.liabilities") items=this.data.liabilities total=this.data.total_liabilities)
++                    (hash label=(t "ledger.reports.balance-sheet.equity") items=this.data.equity total=this.data.total_equity)
+                 )
+                 as |section|
+             }}
+@@ -39,12 +39,12 @@
+                                     <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">{{format-currency item.balance this.companyCurrency}}</td>
+                                 </tr>
+                             {{else}}
+-                                <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">No {{section.label}} accounts</td></tr>
++                                <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">{{t "ledger.reports.balance-sheet.no-section-accounts" label=section.label}}</td></tr>
+                             {{/each}}
+                         </tbody>
+                         <tfoot>
+                             <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                                <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Total {{section.label}}</td>
++                                <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.balance-sheet.total-section" label=section.label}}</td>
+                                 <td class="px-4 py-2.5 text-right font-bold text-gray-900 dark:text-white">{{format-currency section.total this.companyCurrency}}</td>
+                             </tr>
+                         </tfoot>
+@@ -53,13 +53,13 @@
+             {{/each}}
+             <div class="border-t-2 border-gray-400 dark:border-gray-700 pt-4">
+                 <div class="flex justify-between items-center py-1">
+-                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Total Liabilities &amp; Equity</span>
++                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{t "ledger.reports.balance-sheet.total-liabilities-equity"}}</span>
+                     <span class="text-sm font-bold text-gray-900 dark:text-white">{{format-currency this.data.total_liabilities_and_equity this.companyCurrency}}</span>
+                 </div>
+             </div>
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a date and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-date"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/cash-flow.hbs b/addon/templates/reports/cash-flow.hbs
+index cfc7abecabf42021df677e0d6ce706c9b5114ed9..b344c67a2b0c040b659999a5a7012f5cdf73bb8f 100644
+--- a/addon/templates/reports/cash-flow.hbs
++++ b/addon/templates/reports/cash-flow.hbs
+@@ -1,4 +1,4 @@
+-<Layout::Section::Header @title="Cash Flow" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.cash-flow.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+         <DatePicker
+             @value={{this.dateRange}}
+@@ -6,10 +6,10 @@
+             @onSelect={{this.onDateRangeChanged}}
+             @autoClose={{true}}
+             @buttons={{array "clear"}}
+-            @placeholder="Select period"
++            @placeholder={{t "ledger.reports.common.select-period"}}
+             class="w-52 form-input form-input-sm"
+         />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -19,7 +19,7 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Cash Flow Statement</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.cash-flow.statement-title"}}</h2>
+                     {{#if this.data.period}}
+                         <p class="text-sm text-gray-500 mt-0.5">{{this.data.period}}</p>
+                     {{/if}}
+@@ -29,7 +29,7 @@
+             {{! Operating Activities }}
+             <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Operating Activities</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.cash-flow.operating"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <tbody>
+@@ -41,12 +41,12 @@
+                                 </td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="2" class="px-4 py-3 text-center text-gray-400 text-xs">No operating activity data</td></tr>
++                            <tr><td colspan="2" class="px-4 py-3 text-center text-gray-400 text-xs">{{t "ledger.reports.cash-flow.no-operating"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                     <tfoot>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                            <td class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Net Operating Cash Flow</td>
++                            <td class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.cash-flow.net-operating"}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold {{if (gt this.data.net_operating 0) 'text-green-600 dark:text-green-400' 'text-red-600 dark:text-red-400'}}">
+                                 {{format-currency this.data.net_operating this.companyCurrency}}
+                             </td>
+@@ -58,7 +58,7 @@
+             {{! Financing Activities }}
+             <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Financing Activities</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.cash-flow.financing"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <tbody>
+@@ -70,12 +70,12 @@
+                                 </td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="2" class="px-4 py-3 text-center text-gray-400 text-xs">No financing activity data</td></tr>
++                            <tr><td colspan="2" class="px-4 py-3 text-center text-gray-400 text-xs">{{t "ledger.reports.cash-flow.no-financing"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                     <tfoot>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                            <td class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Net Financing Cash Flow</td>
++                            <td class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.cash-flow.net-financing"}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold {{if (gt this.data.net_financing 0) 'text-green-600 dark:text-green-400' 'text-red-600 dark:text-red-400'}}">
+                                 {{format-currency this.data.net_financing this.companyCurrency}}
+                             </td>
+@@ -87,7 +87,7 @@
+             {{! Net Change in Cash }}
+             <div class="border-t-2 border-gray-400 dark:border-gray-700 pt-4">
+                 <div class="flex justify-between items-center py-1">
+-                    <span class="text-base font-bold text-gray-900 dark:text-white">Net Change in Cash</span>
++                    <span class="text-base font-bold text-gray-900 dark:text-white">{{t "ledger.reports.cash-flow.net-change"}}</span>
+                     <span class="text-base font-bold {{if (gt this.data.net_change 0) 'text-green-600 dark:text-green-400' 'text-red-600 dark:text-red-400'}}">
+                         {{format-currency this.data.net_change this.companyCurrency}}
+                     </span>
+@@ -95,7 +95,7 @@
+             </div>
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a period and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-period"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/income-statement.hbs b/addon/templates/reports/income-statement.hbs
+index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3424288d0 100644
+--- a/addon/templates/reports/income-statement.hbs
++++ b/addon/templates/reports/income-statement.hbs
+@@ -1,4 +1,4 @@
+-<Layout::Section::Header @title="Income Statement" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.income-statement.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+         <DatePicker
+             @value={{this.dateRange}}
+@@ -6,10 +6,10 @@
+             @onSelect={{this.onDateRangeChanged}}
+             @autoClose={{true}}
+             @buttons={{array "clear"}}
+-            @placeholder="Select period"
++            @placeholder={{t "ledger.reports.common.select-period"}}
+             class="w-52 form-input form-input-sm"
+         />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -19,18 +19,18 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Income Statement</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.income-statement.title"}}</h2>
+                     {{#if this.data.period}}
+                         <p class="text-sm text-gray-500 mt-0.5">{{this.data.period}}</p>
+                     {{/if}}
+                 </div>
+-                <Badge @color={{if this.data.profitable "green" "red"}}>{{if this.data.profitable "Profitable" "Net Loss"}}</Badge>
++                <Badge @color={{if this.data.profitable "green" "red"}}>{{if this.data.profitable (t "ledger.reports.income-statement.profitable") (t "ledger.reports.income-statement.net-loss")}}</Badge>
+             </div>
+ 
+             {{! Revenue }}
+             <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Revenue</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.income-statement.revenue"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <tbody>
+@@ -41,12 +41,12 @@
+                                 <td class="px-4 py-2 text-right font-medium text-green-600 dark:text-green-400">{{format-currency item.amount (or item.currency this.companyCurrency)}}</td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">No revenue recorded</td></tr>
++                            <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">{{t "ledger.reports.income-statement.no-revenue"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                     <tfoot>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                            <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Total Revenue</td>
++                            <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.income-statement.total-revenue"}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold text-green-600 dark:text-green-400">{{format-currency this.data.total_revenue this.companyCurrency}}</td>
+                         </tr>
+                     </tfoot>
+@@ -56,7 +56,7 @@
+             {{! Expenses }}
+             <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Expenses</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.income-statement.expenses"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <tbody>
+@@ -67,12 +67,12 @@
+                                 <td class="px-4 py-2 text-right font-medium text-red-600 dark:text-red-400">{{format-currency item.amount (or item.currency this.companyCurrency)}}</td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">No expenses recorded</td></tr>
++                            <tr><td colspan="3" class="px-4 py-3 text-center text-gray-400 text-xs">{{t "ledger.reports.income-statement.no-expenses"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                     <tfoot>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                            <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Total Expenses</td>
++                            <td colspan="2" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.income-statement.total-expenses"}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold text-red-600 dark:text-red-400">{{format-currency this.data.total_expenses this.companyCurrency}}</td>
+                         </tr>
+                     </tfoot>
+@@ -82,7 +82,7 @@
+             {{! Net Income }}
+             <div class="border-t-2 border-gray-400 dark:border-gray-700 pt-4">
+                 <div class="flex justify-between items-center py-1">
+-                    <span class="text-base font-bold text-gray-900 dark:text-white">Net Income</span>
++                    <span class="text-base font-bold text-gray-900 dark:text-white">{{t "ledger.reports.income-statement.net-income"}}</span>
+                     <span class="text-base font-bold {{if this.data.profitable 'text-green-600 dark:text-green-400' 'text-red-600 dark:text-red-400'}}">
+                         {{format-currency this.data.net_income this.companyCurrency}}
+                     </span>
+@@ -90,7 +90,7 @@
+             </div>
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a period and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-period"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/index.hbs b/addon/templates/reports/index.hbs
+index cada4ab4c6c573ae3ddcfcc8d6979d76b5126525..25a21fdf47fca545a9058f9462aaf9188d46cbf3 100644
+--- a/addon/templates/reports/index.hbs
++++ b/addon/templates/reports/index.hbs
+@@ -1,4 +1,4 @@
+-<Layout::Section::Header @title="Reports" @hideActions={{true}} />
++<Layout::Section::Header @title={{t "ledger.reports.index.title"}} @hideActions={{true}} />
+ <Layout::Section::Body>
+     <div class="p-4 space-y-4">
+         {{! Report selector tabs }}
+@@ -20,7 +20,7 @@
+             <div class="flex-1"></div>
+             <Button @type="primary" @size="sm" {{on "click" this.runReport}}>
+                 <FaIcon @icon="play" class="mr-1" />
+-                Run Report
++                {{t "ledger.reports.index.run-report"}}
+             </Button>
+         </div>
+ 
+@@ -40,7 +40,7 @@
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-16 text-gray-400">
+                 <FaIcon @icon="file-contract" class="w-12 h-12 mb-3 opacity-30" />
+-                <p class="text-sm">Select a report and click "Run Report" to generate it.</p>
++                <p class="text-sm">{{t "ledger.reports.index.hint"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/trial-balance.hbs b/addon/templates/reports/trial-balance.hbs
+index ff62cb91960966abd98f17e68afe6b5066722402..ca7548a728da610014a72b96ff56586f38a1cc29 100644
+--- a/addon/templates/reports/trial-balance.hbs
++++ b/addon/templates/reports/trial-balance.hbs
+@@ -1,7 +1,7 @@
+-<Layout::Section::Header @title="Trial Balance" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.trial-balance.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+-        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder="As of date" class="w-44 form-input form-input-sm" />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <DatePicker @value={{this.as_of}} @onSelect={{this.onDateChanged}} @autoClose={{true}} @buttons={{array "clear"}} @placeholder={{t "ledger.reports.common.as-of-date"}} class="w-44 form-input form-input-sm" />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -11,23 +11,23 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Trial Balance</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.trial-balance.title"}}</h2>
+                     {{#if this.data.as_of_date}}
+-                        <p class="text-sm text-gray-500 mt-0.5">As of {{format-date-fns this.data.as_of_date "MMMM d, yyyy"}}</p>
++                        <p class="text-sm text-gray-500 mt-0.5">{{t "ledger.reports.common.as-of" date=(format-date-fns this.data.as_of_date "MMMM d, yyyy")}}</p>
+                     {{/if}}
+                 </div>
+-                <Badge @color={{if this.data.balanced "green" "red"}}>{{if this.data.balanced "Balanced" "Unbalanced"}}</Badge>
++                <Badge @color={{if this.data.balanced "green" "red"}}>{{if this.data.balanced (t "ledger.reports.common.balanced") (t "ledger.reports.common.unbalanced")}}</Badge>
+             </div>
+ 
+             <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <table class="w-full text-sm overflow-hidden">
+                     <thead>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+-                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
+-                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Account</th>
+-                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+-                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debit</th>
+-                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit</th>
++                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.trial-balance.code"}}</th>
++                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.trial-balance.account"}}</th>
++                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.trial-balance.type"}}</th>
++                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.trial-balance.debit"}}</th>
++                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.trial-balance.credit"}}</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+@@ -46,12 +46,12 @@
+                                 </td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">No account data available</td></tr>
++                            <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">{{t "ledger.reports.trial-balance.no-account-data"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                     <tfoot>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-t-2 border-gray-300 dark:border-gray-700">
+-                            <td colspan="3" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">Totals</td>
++                            <td colspan="3" class="px-4 py-2.5 font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.common.totals"}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold text-gray-900 dark:text-white">{{format-currency this.data.total_debits this.companyCurrency}}</td>
+                             <td class="px-4 py-2.5 text-right font-bold text-gray-900 dark:text-white">{{format-currency this.data.total_credits this.companyCurrency}}</td>
+                         </tr>
+@@ -60,7 +60,7 @@
+             </div>
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a date and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-date"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/templates/reports/wallet-summary.hbs b/addon/templates/reports/wallet-summary.hbs
+index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690cb74db070 100644
+--- a/addon/templates/reports/wallet-summary.hbs
++++ b/addon/templates/reports/wallet-summary.hbs
+@@ -1,4 +1,4 @@
+-<Layout::Section::Header @title="Wallet Summary" @actionsWrapperClass="flex flex-row items-center space-x-2">
++<Layout::Section::Header @title={{t "ledger.reports.wallet-summary.title"}} @actionsWrapperClass="flex flex-row items-center space-x-2">
+     <div class="flex flex-row items-center space-x-2">
+         <DatePicker
+             @value={{this.dateRange}}
+@@ -6,10 +6,10 @@
+             @onSelect={{this.onDateRangeChanged}}
+             @autoClose={{true}}
+             @buttons={{array "clear"}}
+-            @placeholder="Select period"
++            @placeholder={{t "ledger.reports.common.select-period"}}
+             class="w-52 form-input form-input-sm"
+         />
+-        <Button @size="sm" @type="default" @icon="refresh" @helpText="Refresh" {{on "click" this.reload}} />
++        <Button @size="sm" @type="default" @icon="refresh" @helpText={{t "ledger.reports.common.refresh"}} {{on "click" this.reload}} />
+     </div>
+ </Layout::Section::Header>
+ <Layout::Section::Body class="overflow-y-auto h-full">
+@@ -19,7 +19,7 @@
+         {{else if this.data}}
+             <div class="flex items-center justify-between mb-6">
+                 <div>
+-                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Wallet Summary</h2>
++                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{t "ledger.reports.wallet-summary.title"}}</h2>
+                     {{#if this.data.period}}
+                         <p class="text-sm text-gray-500 mt-0.5">
+                             {{this.data.period.from}}
+@@ -33,15 +33,15 @@
+             {{! Wallet counts by owner type }}
+             <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                 <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Wallets by Owner Type</h3>
++                    <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.wallets-by-owner-type"}}</h3>
+                 </div>
+                 <table class="w-full text-sm overflow-hidden">
+                     <thead>
+                         <tr class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+-                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Owner Type</th>
+-                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Count</th>
+-                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Balance</th>
+-                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
++                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.owner-type"}}</th>
++                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.count"}}</th>
++                            <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.total-balance"}}</th>
++                            <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.currency"}}</th>
+                         </tr>
+                     </thead>
+                     <tbody>
+@@ -57,7 +57,7 @@
+                                 <td class="px-4 py-2 text-gray-500 font-mono text-xs">{{or row.currency "—"}}</td>
+                             </tr>
+                         {{else}}
+-                            <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">No wallet data</td></tr>
++                            <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">{{t "ledger.reports.wallet-summary.no-wallet-data"}}</td></tr>
+                         {{/each}}
+                     </tbody>
+                 </table>
+@@ -67,16 +67,16 @@
+             {{#if this.periodStats.length}}
+                 <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                     <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Period Transaction Activity</h3>
++                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.period-activity"}}</h3>
+                     </div>
+                     <table class="w-full text-sm overflow-hidden">
+                         <thead>
+                             <tr class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+-                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
+-                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credits</th>
+-                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credit Count</th>
+-                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debits</th>
+-                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Debit Count</th>
++                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.currency"}}</th>
++                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.credits"}}</th>
++                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.credit-count"}}</th>
++                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.debits"}}</th>
++                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.debit-count"}}</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+@@ -93,7 +93,7 @@
+                                     <td class="px-4 py-2 text-right text-gray-500">{{stat.debit_count}}</td>
+                                 </tr>
+                             {{else}}
+-                                <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">No transactions in this period</td></tr>
++                                <tr><td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">{{t "ledger.reports.wallet-summary.no-transactions"}}</td></tr>
+                             {{/each}}
+                         </tbody>
+                     </table>
+@@ -104,15 +104,15 @@
+             {{#if this.data.top_wallets}}
+                 <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                     <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+-                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Top Wallets by Balance</h3>
++                        <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.top-wallets"}}</h3>
+                     </div>
+                     <table class="w-full text-sm overflow-hidden">
+                         <thead>
+                             <tr class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+-                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Wallet</th>
+-                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Owner</th>
+-                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+-                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
++                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.wallet"}}</th>
++                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.owner"}}</th>
++                                <th class="px-4 py-2.5 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.type"}}</th>
++                                <th class="px-4 py-2.5 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "ledger.reports.wallet-summary.balance"}}</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+@@ -128,7 +128,7 @@
+                                     </td>
+                                 </tr>
+                             {{else}}
+-                                <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">No wallets found</td></tr>
++                                <tr><td colspan="4" class="px-4 py-6 text-center text-gray-400 text-sm">{{t "ledger.reports.wallet-summary.no-wallets"}}</td></tr>
+                             {{/each}}
+                         </tbody>
+                     </table>
+@@ -136,7 +136,7 @@
+             {{/if}}
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+-                <p class="text-sm">No report data available. Select a period and refresh.</p>
++                <p class="text-sm">{{t "ledger.reports.common.no-data-period"}}</p>
+             </div>
+         {{/if}}
+     </div>
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..7d8cfda3b9349d47c026045152f5cb5782e763b8
+index 0000000000000000000000000000000000000000..a725821e5e64422f95b951edf07187b5bf583b37
 --- /dev/null
 +++ b/translations/ar-ae.yaml
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,300 @@
 +ledger:
 +  extension-name: دفتر الأستاذ
 +  sidebar:
@@ -645,6 +1473,124 @@ index 0000000000000000000000000000000000000000..7d8cfda3b9349d47c026045152f5cb57
 +      ar-aging: تقادم الذمم المدينة
 +      wallet-summary: ملخص المحافظ
 +      general-ledger: دفتر الأستاذ العام
++
++  reports:
++    common:
++      select-period: اختر الفترة
++      as-of-date: حتى تاريخ
++      refresh: تحديث
++      as-of: "كما في {date}"
++      totals: الإجماليات
++      balanced: متوازن
++      unbalanced: غير متوازن
++      no-data-period: لا توجد بيانات للتقرير. اختر فترة ثم اضغط تحديث.
++      no-data-date: لا توجد بيانات للتقرير. اختر تاريخًا ثم اضغط تحديث.
++    index:
++      title: التقارير
++      run-report: تشغيل التقرير
++      hint: اختر تقريرًا ثم اضغط "تشغيل التقرير" لإنشائه.
++    income-statement:
++      title: قائمة الدخل
++      profitable: رابح
++      net-loss: خسارة صافية
++      revenue: الإيرادات
++      expenses: المصروفات
++      no-revenue: لا توجد إيرادات مسجلة
++      no-expenses: لا توجد مصروفات مسجلة
++      total-revenue: إجمالي الإيرادات
++      total-expenses: إجمالي المصروفات
++      net-income: صافي الدخل
++    cash-flow:
++      title: التدفق النقدي
++      statement-title: قائمة التدفق النقدي
++      operating: الأنشطة التشغيلية
++      financing: الأنشطة التمويلية
++      no-operating: لا توجد بيانات نشاط تشغيلي
++      no-financing: لا توجد بيانات نشاط تمويلي
++      net-operating: صافي التدفق النقدي التشغيلي
++      net-financing: صافي التدفق النقدي التمويلي
++      net-change: صافي التغير في النقد
++    ar-aging:
++      title: تقادم الذمم المدينة
++      full-title: تقادم الذمم المدينة
++      total-outstanding: إجمالي المستحقات
++      outstanding-invoices: الفواتير المستحقة
++      invoice: الفاتورة
++      customer: العميل
++      due-date: تاريخ الاستحقاق
++      balance: الرصيد
++      bucket: الفئة
++      no-receivables: لا توجد ذمم مدينة مستحقة
++      buckets:
++        current: جارية
++        days-1-30: 1–30 يومًا
++        days-31-60: 31–60 يومًا
++        days-61-90: 61–90 يومًا
++        days-90-plus: أكثر من 90 يومًا
++    wallet-summary:
++      title: ملخص المحفظة
++      wallets-by-owner-type: المحافظ حسب نوع المالك
++      owner-type: نوع المالك
++      count: العدد
++      total-balance: إجمالي الرصيد
++      currency: العملة
++      no-wallet-data: لا توجد بيانات محافظ
++      period-activity: نشاط المعاملات خلال الفترة
++      credits: الإيداعات
++      credit-count: عدد الإيداعات
++      debits: السحوبات
++      debit-count: عدد السحوبات
++      no-transactions: لا توجد معاملات في هذه الفترة
++      top-wallets: أعلى المحافظ رصيدًا
++      wallet: المحفظة
++      owner: المالك
++      type: النوع
++      balance: الرصيد
++      no-wallets: لا توجد محافظ
++    balance-sheet:
++      title: الميزانية العمومية
++      assets: الأصول
++      liabilities: الالتزامات
++      equity: حقوق الملكية
++      no-section-accounts: "لا توجد حسابات {label}"
++      total-section: "إجمالي {label}"
++      total-liabilities-equity: إجمالي الالتزامات وحقوق الملكية
++    trial-balance:
++      title: ميزان المراجعة
++      code: الرمز
++      account: الحساب
++      type: النوع
++      debit: مدين
++      credit: دائن
++      no-account-data: لا توجد بيانات حسابات
++  general-ledger:
++    title: دفتر الأستاذ العام
++    select-date-range: اختر نطاق التاريخ
++    expand-all: توسيع الكل
++    collapse-all: طي الكل
++    entries: "{count} قيد"
++    date: التاريخ
++    ref: رقم المرجع
++    description: الوصف
++    debit: مدين
++    credit: دائن
++    balance: الرصيد
++    no-entries: لا توجد قيود يومية لهذا الحساب.
++    no-entries-period: لا توجد قيود يومية لهذا الحساب في الفترة المحددة.
++    no-accounts: لم يتم العثور على حسابات.
++    no-accounts-hint: أنشئ حسابات في دليل الحسابات لعرض القيود هنا.
++    types:
++      all: كل الأنواع
++      asset: أصل
++      liability: التزام
++      equity: حقوق ملكية
++      revenue: إيراد
++      expense: مصروف
++  accounting:
++    create-account: إنشاء حساب جديد
++    edit-account: تعديل الحساب
++    create-journal-entry: إنشاء قيد يومية
++    edit-journal-entry: تعديل قيد اليومية
 +
 +common:
 +  ledger: دفتر الأستاذ
@@ -751,10 +1697,10 @@ index 0000000000000000000000000000000000000000..7d8cfda3b9349d47c026045152f5cb57
 +    void: إلغاء الفاتورة
 +    edit: تعديل الفاتورة
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index ab0883de2c82375e4085beba527d4d468f690c86..08c6307e37a0c92233d7a133c9968c2bd11ebeac 100644
+index ab0883de2c82375e4085beba527d4d468f690c86..6f7d64dab8559420263476e3460db41177393b4b 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -1,5 +1,80 @@
+@@ -1,5 +1,198 @@
  ledger:
    extension-name: Ledger
 +  sidebar:
@@ -832,6 +1778,124 @@ index ab0883de2c82375e4085beba527d4d468f690c86..08c6307e37a0c92233d7a133c9968c2b
 +      ar-aging: AR Aging
 +      wallet-summary: Wallet Summary
 +      general-ledger: General Ledger
++
++  reports:
++    common:
++      select-period: Select period
++      as-of-date: As of date
++      refresh: Refresh
++      as-of: "As of {date}"
++      totals: Totals
++      balanced: Balanced
++      unbalanced: Unbalanced
++      no-data-period: No report data available. Select a period and refresh.
++      no-data-date: No report data available. Select a date and refresh.
++    index:
++      title: Reports
++      run-report: Run Report
++      hint: Select a report and click "Run Report" to generate it.
++    income-statement:
++      title: Income Statement
++      profitable: Profitable
++      net-loss: Net Loss
++      revenue: Revenue
++      expenses: Expenses
++      no-revenue: No revenue recorded
++      no-expenses: No expenses recorded
++      total-revenue: Total Revenue
++      total-expenses: Total Expenses
++      net-income: Net Income
++    cash-flow:
++      title: Cash Flow
++      statement-title: Cash Flow Statement
++      operating: Operating Activities
++      financing: Financing Activities
++      no-operating: No operating activity data
++      no-financing: No financing activity data
++      net-operating: Net Operating Cash Flow
++      net-financing: Net Financing Cash Flow
++      net-change: Net Change in Cash
++    ar-aging:
++      title: AR Aging
++      full-title: Accounts Receivable Aging
++      total-outstanding: Total Outstanding
++      outstanding-invoices: Outstanding Invoices
++      invoice: Invoice
++      customer: Customer
++      due-date: Due Date
++      balance: Balance
++      bucket: Bucket
++      no-receivables: No outstanding receivables
++      buckets:
++        current: Current
++        days-1-30: 1–30 Days
++        days-31-60: 31–60 Days
++        days-61-90: 61–90 Days
++        days-90-plus: 90+ Days
++    wallet-summary:
++      title: Wallet Summary
++      wallets-by-owner-type: Wallets by Owner Type
++      owner-type: Owner Type
++      count: Count
++      total-balance: Total Balance
++      currency: Currency
++      no-wallet-data: No wallet data
++      period-activity: Period Transaction Activity
++      credits: Credits
++      credit-count: Credit Count
++      debits: Debits
++      debit-count: Debit Count
++      no-transactions: No transactions in this period
++      top-wallets: Top Wallets by Balance
++      wallet: Wallet
++      owner: Owner
++      type: Type
++      balance: Balance
++      no-wallets: No wallets found
++    balance-sheet:
++      title: Balance Sheet
++      assets: Assets
++      liabilities: Liabilities
++      equity: Equity
++      no-section-accounts: "No {label} accounts"
++      total-section: "Total {label}"
++      total-liabilities-equity: Total Liabilities & Equity
++    trial-balance:
++      title: Trial Balance
++      code: Code
++      account: Account
++      type: Type
++      debit: Debit
++      credit: Credit
++      no-account-data: No account data available
++  general-ledger:
++    title: General Ledger
++    select-date-range: Select date range
++    expand-all: Expand All
++    collapse-all: Collapse All
++    entries: "{count} entries"
++    date: Date
++    ref: "Ref #"
++    description: Description
++    debit: Debit
++    credit: Credit
++    balance: Balance
++    no-entries: No journal entries for this account.
++    no-entries-period: No journal entries for this account in the selected period.
++    no-accounts: No accounts found.
++    no-accounts-hint: Create accounts in the Chart of Accounts to see entries here.
++    types:
++      all: All Types
++      asset: Asset
++      liability: Liability
++      equity: Equity
++      revenue: Revenue
++      expense: Expense
++  accounting:
++    create-account: Create New Account
++    edit-account: Edit Account
++    create-journal-entry: Create Journal Entry
++    edit-journal-entry: Edit Journal Entry
  
  common:
    ledger: Ledger
