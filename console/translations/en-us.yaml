@@ -885,6 +885,40 @@ header-nav:
   developers: Developers
   extensions: Extensions
 
+pagination:
+  previous: Previous
+  next: Next
+  showing: Showing
+  to: to
+  of: of
+  results: results
+
+smart-nav:
+  more-extensions: More extensions
+  customise-navigation: Customise navigation
+  customizer:
+    title: Customise Navigation
+    close: Close
+    pinned-to-bar: Pinned to bar
+    all-extensions: All extensions
+    drag-to-reorder: Drag to reorder
+    remove-from-bar: Remove from bar
+    no-pinned: No extensions pinned yet.
+    add-from-right: Add extensions from the list on the right.
+    click-to-pin: Click to pin to bar
+    click-to-unpin: Click to unpin
+    reset-to-default: Reset to default
+    cancel: Cancel
+    apply: Apply
+  dropdown:
+    title: Extensions
+    close: Close
+    search-placeholder: Search extensions...
+    clear-search: Clear search
+    no-results: No extensions match
+    from: from
+    pin-to-bar: Pin to navigation bar
+
 nav-card-title:
   orders: "Orders"
   places: "Places"

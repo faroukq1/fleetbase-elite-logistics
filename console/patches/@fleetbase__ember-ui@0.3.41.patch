@@ -92,28 +92,229 @@ index 87548c0ab2b2d0425b1a02c5f8d6797638201998..c666e8a7cf938092555da4c5c50cb83b
  
      @bool('args.item.onClick') isInteractive;
      @bool('args.item.href') isAnchor;
+diff --git a/addon/components/layout/header/dropdown.js b/addon/components/layout/header/dropdown.js
+index af903427e7a772a6cc3fffd0d474ad24f059e813..b2c7508bd08658b28405d0cbfd8a4bac0fd0d17e 100644
+--- a/addon/components/layout/header/dropdown.js
++++ b/addon/components/layout/header/dropdown.js
+@@ -1,7 +1,6 @@
+ import Component from '@glimmer/component';
+ import { action } from '@ember/object';
+ import { inject as service } from '@ember/service';
+-import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
+ 
+ export default class LayoutHeaderDropdownComponent extends Component {
+     @service media;
+@@ -36,6 +35,9 @@ export default class LayoutHeaderDropdownComponent extends Component {
+             return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
+         }
+ 
+-        return calculatePosition(...arguments);
++        // Desktop renders in place: CSS anchors the menu below the trigger and
++        // postcss-rtlcss mirrors the alignment for RTL, so no JS coordinates
++        // (ember-basic-dropdown's LTR math pushes the menu off-screen in RTL).
++        return { style: {} };
+     }
+ }
+diff --git a/addon/components/layout/header/smart-nav-menu/customizer.hbs b/addon/components/layout/header/smart-nav-menu/customizer.hbs
+index b11e316a42e6b6ddfeceee77f92e5c74dedc7a4c..917ac3484a8f16d86da619bb512697f567c73cc6 100644
+--- a/addon/components/layout/header/smart-nav-menu/customizer.hbs
++++ b/addon/components/layout/header/smart-nav-menu/customizer.hbs
+@@ -10,18 +10,18 @@
+     class="snm-customizer-panel"
+     role="dialog"
+     aria-modal="true"
+-    aria-label="Customise navigation"
++    aria-label={{t "smart-nav.customise-navigation"}}
+ >
+     {{! ── Header ──────────────────────────────────────────────────────────── }}
+     <div class="snm-customizer-header">
+         <div class="snm-customizer-header-left">
+             <FaIcon @icon="sliders" @size="sm" class="mr-2 text-blue-400" />
+-            <h2 class="snm-customizer-title">Customise Navigation</h2>
++            <h2 class="snm-customizer-title">{{t "smart-nav.customizer.title"}}</h2>
+         </div>
+         <button
+             type="button"
+             class="snm-customizer-close"
+-            aria-label="Close"
++            aria-label={{t "smart-nav.customizer.close"}}
+             {{on "click" this.cancel}}
+         >
+             <FaIcon @icon="xmark" @size="sm" />
+@@ -35,7 +35,7 @@
+             <div class="snm-customizer-col-header">
+                 <span class="snm-customizer-col-title">
+                     <FaIcon @icon="thumbtack" @size="xs" class="mr-1.5 text-blue-400" />
+-                    Pinned to bar
++                    {{t "smart-nav.customizer.pinned-to-bar"}}
+                 </span>
+                 <span class="snm-customizer-col-badge {{if this.atPinnedLimit 'at-limit'}}">
+                     {{this.workingPinned.length}} / {{@maxVisible}}
+@@ -52,7 +52,7 @@
+                     as |item|
+                 >
+                     <div class="snm-customizer-pinned-item">
+-                        <span class="snm-drag-handle" title="Drag to reorder">
++                        <span class="snm-drag-handle" title={{t "smart-nav.customizer.drag-to-reorder"}}>
+                             <FaIcon @icon="grip-vertical" @size="sm" />
+                         </span>
+                         <div class="snm-customizer-item-icon">
+@@ -62,14 +62,14 @@
+                                 <FaIcon @icon={{or item.icon "circle-dot"}} @prefix={{item.iconPrefix}} @size="sm" />
+                             {{/if}}
+                         </div>
+-                        <span class="snm-customizer-item-title truncate">{{item.title}}</span>
++                        <span class="snm-customizer-item-title truncate">{{localize-label item.title "header-nav" "nav-card-title"}}</span>
+                         {{#if item._parentTitle}}
+-                            <span class="snm-customizer-item-parent-label">· {{item._parentTitle}}</span>
++                            <span class="snm-customizer-item-parent-label">· {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</span>
+                         {{/if}}
+                         <button
+                             type="button"
+                             class="snm-customizer-unpin-btn"
+-                            title="Remove from bar"
++                            title={{t "smart-nav.customizer.remove-from-bar"}}
+                             {{on "click" (fn this.togglePin item)}}
+                         >
+                             <FaIcon @icon="xmark" @size="xs" />
+@@ -79,8 +79,8 @@
+             {{else}}
+                 <div class="snm-customizer-empty-state">
+                     <FaIcon @icon="inbox" @size="lg" class="mb-2 text-gray-500" />
+-                    <p>No extensions pinned yet.</p>
+-                    <p class="text-xs">Add extensions from the list on the right.</p>
++                    <p>{{t "smart-nav.customizer.no-pinned"}}</p>
++                    <p class="text-xs">{{t "smart-nav.customizer.add-from-right"}}</p>
+                 </div>
+             {{/if}}
+         </div>
+@@ -93,7 +93,7 @@
+             <div class="snm-customizer-col-header">
+                 <span class="snm-customizer-col-title">
+                     <FaIcon @icon="grid-2" @size="xs" class="mr-1.5 text-gray-400" />
+-                    All extensions
++                    {{t "smart-nav.customizer.all-extensions"}}
+                 </span>
+             </div>
+ 
+@@ -102,7 +102,7 @@
+                     <button
+                         type="button"
+                         class="snm-customizer-all-item {{if (this.isPinned item) 'is-pinned'}} {{if (and this.atPinnedLimit (not (this.isPinned item))) 'is-disabled'}}"
+-                        title={{if (this.isPinned item) "Click to unpin" "Click to pin to bar"}}
++                        title={{if (this.isPinned item) (t "smart-nav.customizer.click-to-unpin") (t "smart-nav.customizer.click-to-pin")}}
+                         disabled={{and this.atPinnedLimit (not (this.isPinned item))}}
+                         {{on "click" (fn this.togglePin item)}}
+                     >
+@@ -113,9 +113,9 @@
+                                 <FaIcon @icon={{or item.icon "circle-dot"}} @prefix={{item.iconPrefix}} @size="sm" />
+                             {{/if}}
+                         </div>
+-                        <span class="snm-customizer-item-title truncate">{{item.title}}</span>
++                        <span class="snm-customizer-item-title truncate">{{localize-label item.title "header-nav" "nav-card-title"}}</span>
+                         {{#if item._parentTitle}}
+-                            <span class="snm-customizer-item-parent-label">· {{item._parentTitle}}</span>
++                            <span class="snm-customizer-item-parent-label">· {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</span>
+                         {{/if}}
+                         {{#if (this.isPinned item)}}
+                             <FaIcon @icon="check" @size="xs" class="snm-customizer-pinned-check ml-auto flex-shrink-0" />
+@@ -134,7 +134,7 @@
+             {{on "click" this.resetToDefault}}
+         >
+             <FaIcon @icon="rotate-left" @size="xs" class="mr-1.5" />
+-            Reset to default
++            {{t "smart-nav.customizer.reset-to-default"}}
+         </button>
+         <div class="snm-customizer-footer-actions">
+             <button
+@@ -142,7 +142,7 @@
+                 class="snm-btn snm-btn-secondary"
+                 {{on "click" this.cancel}}
+             >
+-                Cancel
++                {{t "smart-nav.customizer.cancel"}}
+             </button>
+             <button
+                 type="button"
+@@ -150,7 +150,7 @@
+                 {{on "click" this.apply}}
+             >
+                 <FaIcon @icon="check" @size="xs" class="mr-1.5" />
+-                Apply
++                {{t "smart-nav.customizer.apply"}}
+             </button>
+         </div>
+     </div>
 diff --git a/addon/components/layout/header/smart-nav-menu/dropdown.hbs b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
-index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c90f4b5095 100644
+index 55e06f15789a1d7a9691037463cc873e0619ebca..3decc9597768e8b7e3024205c37d7f33462e16d0 100644
 --- a/addon/components/layout/header/smart-nav-menu/dropdown.hbs
 +++ b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
+@@ -28,15 +28,15 @@
+     class="snm-dropdown snm-dropdown--wide"
+     style={{this.positionStyle}}
+     role="dialog"
+-    aria-label="More extensions"
++    aria-label={{t "smart-nav.more-extensions"}}
+ >
+     {{! ── Header: title + close ────────────────────────────────────────────── }}
+     <div class="snm-dropdown-header">
+-        <span class="snm-dropdown-title">Extensions</span>
++        <span class="snm-dropdown-title">{{t "smart-nav.dropdown.title"}}</span>
+         <button
+             type="button"
+             class="snm-dropdown-close"
+-            aria-label="Close"
++            aria-label={{t "smart-nav.dropdown.close"}}
+             {{on "click" @onClose}}
+         >
+             <FaIcon @icon="xmark" @size="sm" />
+@@ -51,16 +51,16 @@
+         <input
+             type="text"
+             class="snm-dropdown-search-input"
+-            placeholder="Search extensions..."
++            placeholder={{t "smart-nav.dropdown.search-placeholder"}}
+             value={{this.searchQuery}}
+-            aria-label="Search extensions"
++            aria-label={{t "smart-nav.dropdown.search-placeholder"}}
+             {{on "input" this.updateSearch}}
+         />
+         {{#if this.searchQuery}}
+             <button
+                 type="button"
+                 class="snm-dropdown-search-clear"
+-                aria-label="Clear search"
++                aria-label={{t "smart-nav.dropdown.clear-search"}}
+                 {{on "click" this.clearSearch}}
+             >
+                 <FaIcon @icon="xmark" @size="xs" />
+@@ -74,7 +74,7 @@
+             <div class="snm-dropdown-empty">
+                 <FaIcon @icon="magnifying-glass" @size="lg" class="snm-dropdown-empty-icon" />
+                 <p class="snm-dropdown-empty-text">
+-                    No extensions match
++                    {{t "smart-nav.dropdown.no-results"}}
+                     <strong>{{this.searchQuery}}</strong>
+                 </p>
+             </div>
 @@ -87,7 +87,7 @@
                              @route={{item.route}}
                              id={{concat (dasherize (or item.route item.id "sc")) "-dropdown-card"}}
                              class="snm-dropdown-card"
 -                            title={{item.title}}
-+                            title={{localize-label item.title "nav-card-title"}}
++                            title={{localize-label item.title "header-nav" "nav-card-title"}}
                          >
                              <div class="snm-dropdown-card-header">
                                  <span class="snm-dropdown-card-icon">
-@@ -98,14 +98,14 @@
+@@ -98,24 +98,24 @@
                                      {{/if}}
                                  </span>
                                  <span class="snm-dropdown-card-title-group">
 -                                    <span class="snm-dropdown-card-title">{{item.title}}</span>
-+                                    <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
++                                    <span class="snm-dropdown-card-title">{{localize-label item.title "header-nav" "nav-card-title"}}</span>
                                      {{#if item._parentTitle}}
 -                                        <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
-+                                        <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
++                                        <span class="snm-dropdown-card-parent-label" aria-label="{{t 'smart-nav.dropdown.from'}} {{localize-label item._parentTitle 'header-nav' 'nav-card-title'}}">· {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</span>
                                      {{/if}}
                                  </span>
                              </div>
@@ -121,14 +322,18 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
 -                                <p class="snm-dropdown-card-description">{{item.description}}</p>
 +                                <p class="snm-dropdown-card-description">{{localize-label item.description "nav-card-desc"}}</p>
                              {{else if item._parentTitle}}
-                                 <p class="snm-dropdown-card-description snm-dropdown-card-description--from"><em>from {{item._parentTitle}}</em></p>
+-                                <p class="snm-dropdown-card-description snm-dropdown-card-description--from"><em>from {{item._parentTitle}}</em></p>
++                                <p class="snm-dropdown-card-description snm-dropdown-card-description--from"><em>{{t "smart-nav.dropdown.from"}} {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</em></p>
                              {{/if}}
-@@ -115,7 +115,7 @@
+                         </LinkToExternal>
+                         {{#unless @atPinnedLimit}}
+                             <button
                                  type="button"
                                  class="snm-dropdown-pin-btn"
-                                 title="Pin to navigation bar"
+-                                title="Pin to navigation bar"
 -                                aria-label="Pin {{item.title}} to navigation bar"
-+                                aria-label="Pin {{localize-label item.title "nav-card-title"}} to navigation bar"
++                                title={{t "smart-nav.dropdown.pin-to-bar"}}
++                                aria-label={{t "smart-nav.dropdown.pin-to-bar"}}
                                  {{on "click" (fn @onQuickPin item)}}
                              >
                                  <FaIcon @icon="thumbtack" @size="xs" />
@@ -137,7 +342,7 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
                                  href="javascript:;"
                                  class="snm-dropdown-card"
 -                                title={{item.title}}
-+                                title={{localize-label item.title "nav-card-title"}}
++                                title={{localize-label item.title "header-nav" "nav-card-title"}}
                                  {{on "click" (fn this.handleItemClick item)}}
                              >
                                  <div class="snm-dropdown-card-header">
@@ -146,10 +351,10 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
                                      </span>
                                      <span class="snm-dropdown-card-title-group">
 -                                        <span class="snm-dropdown-card-title">{{item.title}}</span>
-+                                        <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
++                                        <span class="snm-dropdown-card-title">{{localize-label item.title "header-nav" "nav-card-title"}}</span>
                                          {{#if item._parentTitle}}
 -                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
-+                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
++                                            <span class="snm-dropdown-card-parent-label" aria-label="{{t 'smart-nav.dropdown.from'}} {{localize-label item._parentTitle 'header-nav' 'nav-card-title'}}">· {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</span>
                                          {{/if}}
                                      </span>
                                  </div>
@@ -164,7 +369,7 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
                                  id={{concat (dasherize (or item.route item.id "nav")) "-dropdown-card"}}
                                  class="snm-dropdown-card"
 -                                title={{item.title}}
-+                                title={{localize-label item.title "nav-card-title"}}
++                                title={{localize-label item.title "header-nav" "nav-card-title"}}
                              >
                                  <div class="snm-dropdown-card-header">
                                      <span class="snm-dropdown-card-icon">
@@ -173,10 +378,10 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
                                      </span>
                                      <span class="snm-dropdown-card-title-group">
 -                                        <span class="snm-dropdown-card-title">{{item.title}}</span>
-+                                        <span class="snm-dropdown-card-title">{{localize-label item.title "nav-card-title"}}</span>
++                                        <span class="snm-dropdown-card-title">{{localize-label item.title "header-nav" "nav-card-title"}}</span>
                                          {{#if item._parentTitle}}
 -                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{item._parentTitle}}</span>
-+                                            <span class="snm-dropdown-card-parent-label" aria-label="from {{item._parentTitle}}">· {{localize-label item._parentTitle "header-nav"}}</span>
++                                            <span class="snm-dropdown-card-parent-label" aria-label="{{t 'smart-nav.dropdown.from'}} {{localize-label item._parentTitle 'header-nav' 'nav-card-title'}}">· {{localize-label item._parentTitle "header-nav" "nav-card-title"}}</span>
                                          {{/if}}
                                      </span>
                                  </div>
@@ -186,15 +391,26 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..55169af660af7c6aa7125f535d84c8c9
                                  {{/if}}
                              </LinkToExternal>
                          {{/if}}
-@@ -183,7 +183,7 @@
+@@ -182,8 +182,8 @@
+                             <button
                                  type="button"
                                  class="snm-dropdown-pin-btn"
-                                 title="Pin to navigation bar"
+-                                title="Pin to navigation bar"
 -                                aria-label="Pin {{item.title}} to navigation bar"
-+                                aria-label="Pin {{localize-label item.title "nav-card-title"}} to navigation bar"
++                                title={{t "smart-nav.dropdown.pin-to-bar"}}
++                                aria-label={{t "smart-nav.dropdown.pin-to-bar"}}
                                  {{on "click" (fn @onQuickPin item)}}
                              >
                                  <FaIcon @icon="thumbtack" @size="xs" />
+@@ -203,7 +203,7 @@
+             {{on "click" @onOpenCustomizer}}
+         >
+             <FaIcon @icon="sliders" @size="xs" class="mr-1.5" />
+-            Customise navigation
++            {{t "smart-nav.customise-navigation"}}
+         </button>
+     </div>
+ </div>
 diff --git a/addon/components/layout/header/smart-nav-menu/item.hbs b/addon/components/layout/header/smart-nav-menu/item.hbs
 index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce082b74d2f4 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.hbs
@@ -217,10 +433,10 @@ index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce08
      </LinkToExternal>
  {{/if}}
 diff --git a/addon/components/layout/header/smart-nav-menu/item.js b/addon/components/layout/header/smart-nav-menu/item.js
-index 0df254b34b13a5267950a778bc35671fd5e294f7..8bbd3a4dd8203f9d2845f1c76129c839458290e2 100644
+index 0df254b34b13a5267950a778bc35671fd5e294f7..e369e075dc2faeaf5018ac8af619d28e6ab5c677 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.js
 +++ b/addon/components/layout/header/smart-nav-menu/item.js
-@@ -14,6 +14,26 @@ import { inject as service } from '@ember/service';
+@@ -14,6 +14,34 @@ import { inject as service } from '@ember/service';
  export default class LayoutHeaderSmartNavMenuItemComponent extends Component {
      @service router;
      @service hostRouter;
@@ -228,25 +444,68 @@ index 0df254b34b13a5267950a778bc35671fd5e294f7..8bbd3a4dd8203f9d2845f1c76129c839
 +
 +    /**
 +     * Localized nav label. Engines register header items with hardcoded English
-+     * titles (Fleet-Ops, Storefront, ...); map them to translation keys so they
-+     * follow the active locale. Falls back to the raw title when unmapped.
++     * titles (Fleet-Ops, Storefront, Products, ...); slugify the title and look
++     * it up under `header-nav.<slug>` then `nav-card-title.<slug>` so both
++     * extension titles and pinned shortcuts follow the active locale. Falls
++     * back to the raw title when no translation exists. Never mutate the
++     * registered item — the universe registry is a singleton and a mutated
++     * title sticks across locale switches.
 +     */
 +    get displayTitle() {
 +        const title = this.args.item?.title;
-+        const keyByTitle = {
-+            'Fleet-Ops': 'header-nav.fleet-ops',
-+            Storefront: 'header-nav.storefront',
-+            IAM: 'header-nav.iam',
-+            Ledger: 'header-nav.ledger',
-+            Developers: 'header-nav.developers',
-+            Extensions: 'header-nav.extensions',
-+        };
-+        const key = keyByTitle[title];
-+        return key ? this.intl.t(key) : title;
++        if (!title || typeof title !== 'string') {
++            return title;
++        }
++        const slug = title
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        for (const prefix of ['header-nav', 'nav-card-title']) {
++            const key = `${prefix}.${slug}`;
++            if (this.intl.exists(key)) {
++                return this.intl.t(key);
++            }
++        }
++        return title;
 +    }
  
      /**
       * Whether the item's route matches the current route, making it "active".
+diff --git a/addon/components/layout/header/smart-nav-menu.hbs b/addon/components/layout/header/smart-nav-menu.hbs
+index 94c81b20462ead270707a8d6ea5327e1f539fa7e..005b9e27d8b3f03251f626b5eb61274eb0a837b2 100644
+--- a/addon/components/layout/header/smart-nav-menu.hbs
++++ b/addon/components/layout/header/smart-nav-menu.hbs
+@@ -14,7 +14,7 @@
+ <div
+     class="snm-container flex items-center"
+     role="menubar"
+-    aria-label="Extension navigation"
++    aria-label={{t "smart-nav.dropdown.title"}}
+     {{did-insert this.setupContainer}}
+     ...attributes
+ >
+@@ -30,8 +30,8 @@
+             class="snm-more-btn next-view-header-item {{if this.isMoreOpen 'is-open'}}"
+             aria-haspopup="true"
+             aria-expanded={{if this.isMoreOpen "true" "false"}}
+-            aria-label="More extensions"
+-            title="More extensions"
++            aria-label={{t "smart-nav.more-extensions"}}
++            title={{t "smart-nav.more-extensions"}}
+             {{did-insert this.registerMoreBtn}}
+             {{on "click" this.toggleMore}}
+         >
+@@ -44,8 +44,8 @@
+         <button
+             type="button"
+             class="snm-customise-btn next-view-header-item ml-0.5"
+-            title="Customise navigation"
+-            aria-label="Customise navigation"
++            title={{t "smart-nav.customise-navigation"}}
++            aria-label={{t "smart-nav.customise-navigation"}}
+             {{on "click" this.openCustomizer}}
+         >
+             <FaIcon @icon="sliders" @size="sm" />
 diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
 index 0f85afe5db0501d86c41bb4762982d326a140d20..a1afa8d2bcc738afa8673e334be0da0cf0ca0dfa 100644
 --- a/addon/components/layout/header.hbs
@@ -356,6 +615,32 @@ index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff661
                  action: 'invalidateSession',
                  icon: 'person-running',
              },
+diff --git a/addon/components/layout/resource/tabular-actions.hbs b/addon/components/layout/resource/tabular-actions.hbs
+index 615c4c5b5ad4a7a36520d8da196c58533b24b4a8..87f4eb7eea12d83821142fc47e9eec2893c649b8 100644
+--- a/addon/components/layout/resource/tabular-actions.hbs
++++ b/addon/components/layout/resource/tabular-actions.hbs
+@@ -4,7 +4,7 @@
+         @type="text"
+         @value={{@searchQuery}}
+         aria-label={{t "common.search"}}
+-        placeholder={{or @searchPlaceholder (concat (t "common.search") " " (pluralize @title))}}
++        placeholder={{or @searchPlaceholder (concat (t "common.search") " " @title)}}
+         class="w-64 form-input form-input-sm {{@searchInputClass}}"
+         disabled={{@searchDisabled}}
+         {{on "keyup" @onSearch}}
+diff --git a/addon/components/layout/section/header.hbs b/addon/components/layout/section/header.hbs
+index d52a85c1146138588638b6bf8d3cc6e1bdae9322..5ca14cef15167c5b8bd26f3fa1c0ea4813a2dd77 100644
+--- a/addon/components/layout/section/header.hbs
++++ b/addon/components/layout/section/header.hbs
+@@ -36,7 +36,7 @@
+                         @type="text"
+                         @value={{@searchQuery}}
+                         aria-label={{t "common.search-input"}}
+-                        placeholder={{or @searchPlaceholder (concat (t "common.search") " " (pluralize @title))}}
++                        placeholder={{or @searchPlaceholder (concat (t "common.search") " " @title)}}
+                         class="w-64 form-input form-input-sm {{@searchInputClass}}"
+                         disabled={{@searchDisabled}}
+                         {{on "keyup" @onSearch}}
 diff --git a/addon/components/locale-selector-tray.hbs b/addon/components/locale-selector-tray.hbs
 index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9aef08d88bd 100644
 --- a/addon/components/locale-selector-tray.hbs
@@ -370,10 +655,14 @@ index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9ae
                                      {{#if (eq this.currentLocale key)}}
                                          <div>
 diff --git a/addon/components/locale-selector-tray.js b/addon/components/locale-selector-tray.js
-index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..7b9ea7dbc35bda38c28c7e08b9b00c8f66b5bf8b 100644
+index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..ff19498ecadcddf67754f72fcbd61d0240521522 100644
 --- a/addon/components/locale-selector-tray.js
 +++ b/addon/components/locale-selector-tray.js
-@@ -7,6 +7,10 @@ import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
+@@ -3,10 +3,13 @@ import { tracked } from '@glimmer/tracking';
+ import { inject as service } from '@ember/service';
+ import { action } from '@ember/object';
+ import { task } from 'ember-concurrency';
+-import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
  
  export default class LocaleSelectorTrayComponent extends Component {
      @service intl;
@@ -384,27 +673,100 @@ index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..7b9ea7dbc35bda38c28c7e08b9b00c8f
      @service fetch;
      @service media;
      @service language;
+@@ -19,7 +22,9 @@ export default class LocaleSelectorTrayComponent extends Component {
+             return this.args.renderInPlace;
+         }
+ 
+-        return false;
++        // Render in place on desktop so the menu is anchored to the trigger by
++        // CSS instead of JS-computed viewport coordinates, which drift in RTL.
++        return true;
+     }
+ 
+     /**
+@@ -55,7 +60,9 @@ export default class LocaleSelectorTrayComponent extends Component {
+             return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
+         }
+ 
+-        return calculatePosition(...arguments);
++        // Desktop renders in place: CSS anchors the menu below the trigger and
++        // postcss-rtlcss mirrors the alignment for RTL, so no JS coordinates.
++        return { style: {} };
+     }
+ 
+     /**
+diff --git a/addon/components/pagination.hbs b/addon/components/pagination.hbs
+index ba5c1e182766033fbc4d0a061bb5307be4572d58..cd3f866fd65d6daf259b94ad7d6c80e6cac5275d 100644
+--- a/addon/components/pagination.hbs
++++ b/addon/components/pagination.hbs
+@@ -6,38 +6,38 @@
+             class="direction-button {{@directionButtonClass}} {{if this.cannotStepBackward 'disabled'}}"
+             disabled={{this.cannotStepBackward}}
+             tabindex="-1"
+-            aria-label="Previous"
++            aria-label={{t "pagination.previous"}}
+             {{on "click" (fn this.incrementPage -1)}}
+         >
+-            Previous
++            {{t "pagination.previous"}}
+         </a>
+         <a
+             href="#"
+             id="fleetbase-pagination-next-button"
+             class="ml-3 direction-button {{@directionButtonClass}} {{if this.cannotStepForward 'disabled'}}"
+             disabled={{this.cannotStepForward}}
+-            aria-label="Next"
++            aria-label={{t "pagination.next"}}
+             {{on "click" (fn this.incrementPage 1)}}
+         >
+-            Next
++            {{t "pagination.next"}}
+         </a>
+     </div>
+     <div class="fleetbase-pagination-meta-info-wrapper hidden sm:flex-1 sm:flex sm:items-center sm:justify-between {{@metaInfoWrapperClass}}">
+         <div class={{concat "fleetbase-pagination-meta-info" " " @metaInfoClass}}>
+             <p class="fleetbase-pagination-meta-info-content text-sm leading-5 text-gray-700 pagination-showing {{@metaInfoParagraph}}">
+-                Showing
++                {{t "pagination.showing"}}
+                 <span class="font-medium">
+                     {{this.from}}
+                 </span>
+-                to
++                {{t "pagination.to"}}
+                 <span class="font-medium">
+                     {{this.to}}
+                 </span>
+-                of
++                {{t "pagination.of"}}
+                 <span class="font-medium">
+                     {{this.totalResults}}
+                 </span>
+-                results
++                {{t "pagination.results"}}
+             </p>
+         </div>
+ 
 diff --git a/addon/helpers/localize-label.js b/addon/helpers/localize-label.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..4168fadee8b47819fc42fa5afbe310298ed55527
+index 0000000000000000000000000000000000000000..5a628d072b9ddb230eef130af04e948615972698
 --- /dev/null
 +++ b/addon/helpers/localize-label.js
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,31 @@
 +import Helper from '@ember/component/helper';
 +import { inject as service } from '@ember/service';
 +
 +/**
-+ * {{localize-label someText "prefix"}}
++ * {{localize-label someText "prefix" "fallbackPrefix" ...}}
 + *
-+ * Slugifies the English label and looks up `prefix.<slug>` in the active
-+ * locale, falling back to the original text when no translation exists.
-+ * Lets us localize dynamically-registered nav/launcher labels without
++ * Slugifies the English label and looks up `<prefix>.<slug>` under each given
++ * prefix in order, falling back to the original text when no translation
++ * exists. Lets us localize dynamically-registered nav/launcher labels without
 + * touching every engine's extension.js.
 + */
 +export default class LocalizeLabelHelper extends Helper {
 +    @service intl;
 +
-+    compute([text, prefix]) {
++    compute([text, ...prefixes]) {
 +        if (!text || typeof text !== 'string') {
 +            return text;
 +        }
@@ -412,8 +774,13 @@ index 0000000000000000000000000000000000000000..4168fadee8b47819fc42fa5afbe31029
 +            .toLowerCase()
 +            .replace(/[^a-z0-9]+/g, '-')
 +            .replace(/^-|-$/g, '');
-+        const key = `${prefix}.${slug}`;
-+        return this.intl.exists(key) ? this.intl.t(key) : text;
++        for (const prefix of prefixes) {
++            const key = `${prefix}.${slug}`;
++            if (this.intl.exists(key)) {
++                return this.intl.t(key);
++            }
++        }
++        return text;
 +    }
 +}
 diff --git a/addon/styles/addon.css b/addon/styles/addon.css

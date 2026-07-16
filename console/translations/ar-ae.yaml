@@ -854,6 +854,40 @@ header-nav:
   developers: المطورون
   extensions: الامتدادات
 
+pagination:
+  previous: "السابق"
+  next: "التالي"
+  showing: "عرض"
+  to: "إلى"
+  of: "من"
+  results: "نتيجة"
+
+smart-nav:
+  more-extensions: "مزيد من الامتدادات"
+  customise-navigation: "تخصيص شريط التنقل"
+  customizer:
+    title: "تخصيص شريط التنقل"
+    close: "إغلاق"
+    pinned-to-bar: "مثبّت في الشريط"
+    all-extensions: "جميع الامتدادات"
+    drag-to-reorder: "اسحب لإعادة الترتيب"
+    remove-from-bar: "إزالة من الشريط"
+    no-pinned: "لا توجد امتدادات مثبّتة بعد."
+    add-from-right: "أضف امتدادات من القائمة المجاورة."
+    click-to-pin: "انقر للتثبيت في الشريط"
+    click-to-unpin: "انقر لإلغاء التثبيت"
+    reset-to-default: "إعادة التعيين إلى الافتراضي"
+    cancel: "إلغاء"
+    apply: "تطبيق"
+  dropdown:
+    title: "الامتدادات"
+    close: "إغلاق"
+    search-placeholder: "ابحث في الامتدادات..."
+    clear-search: "مسح البحث"
+    no-results: "لا توجد امتدادات مطابقة"
+    from: "من"
+    pin-to-bar: "تثبيت في شريط التنقل"
+
 nav-card-title:
   orders: "الطلبات"
   places: "الأماكن"

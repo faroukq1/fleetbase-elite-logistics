@@ -1,5 +1,6 @@
 import BaseLanguageService from '@fleetbase/ember-core/services/language';
 import { inject as service } from '@ember/service';
+import { action } from '@ember/object';
 
 /**
  * Locales offered in the language selector.
@@ -19,6 +20,32 @@ const RTL_LOCALES = ['ar-ae'];
 
 export default class LanguageService extends BaseLanguageService {
     @service intl;
+    @service currentUser;
+
+    /**
+     * Switch locale, persist it, then hard-reload.
+     *
+     * The reload is load-bearing: many labels are computed once in JS at
+     * construction time (table column defs, registered menu items, cached
+     * controller state) and never re-evaluate on an in-place locale change,
+     * leaving the UI half-translated. Persisting to the currentUser option
+     * first means the boot-time `initializeLocale` reads the new locale on
+     * the reload, and the server save is awaited so it isn't cancelled by
+     * the navigation.
+     */
+    @action async changeLocale(selectedLocale) {
+        this.currentUser.setOption('locale', selectedLocale);
+        this.currentLocale = selectedLocale;
+        this.intl.setLocale(selectedLocale);
+
+        try {
+            await this.saveUserLocale.perform(selectedLocale);
+        } catch (_) {
+            // Non-fatal — locale still applied locally.
+        }
+
+        window.location.reload();
+    }
 
     constructor() {
         super(...arguments);

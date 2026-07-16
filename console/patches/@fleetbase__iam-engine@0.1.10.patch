@@ -303,11 +303,122 @@ index d8ba7d6bae6b376c24710a8397fc420730dea6f0..42ab40b9d68ffaaa908f730c273670db
      @icon="chart-column"
      as |data|
  >
+diff --git a/addon/controllers/application.js b/addon/controllers/application.js
+index 6605b553ec727ebef62a1b1bd1e00b0126b20c8b..29960d6919828ada8da3822eec7c69cd54dfe93e 100644
+--- a/addon/controllers/application.js
++++ b/addon/controllers/application.js
+@@ -11,7 +11,7 @@ export default class ApplicationController extends Controller {
+         return [
+             {
+                 label: this.intl.t('iam.common.dashboard'),
+-                description: 'Identity and access overview.',
++                description: this.intl.t('iam.sidebar.dashboard-desc'),
+                 tooltip: true,
+                 icon: 'home',
+                 route: 'console.iam.home',
+@@ -19,7 +19,7 @@ export default class ApplicationController extends Controller {
+             },
+             {
+                 label: this.intl.t('iam.common.user'),
+-                description: 'Manage identities and account types.',
++                description: this.intl.t('iam.sidebar.users-parent-desc'),
+                 icon: 'id-card',
+                 route: 'console.iam.users',
+                 permission: 'iam list user',
+@@ -27,8 +27,8 @@ export default class ApplicationController extends Controller {
+                 keywords: ['identity', 'accounts', 'members'],
+                 children: [
+                     {
+-                        label: 'Users',
+-                        description: 'All console users.',
++                        label: this.intl.t('iam.sidebar.users'),
++                        description: this.intl.t('iam.sidebar.users-desc'),
+                         icon: 'user',
+                         route: 'console.iam.users.index',
+                         permission: 'iam list user',
+@@ -36,8 +36,8 @@ export default class ApplicationController extends Controller {
+                         keywords: ['people', 'members'],
+                     },
+                     {
+-                        label: 'Drivers',
+-                        description: 'Driver accounts.',
++                        label: this.intl.t('iam.sidebar.drivers'),
++                        description: this.intl.t('iam.sidebar.drivers-desc'),
+                         icon: 'id-card',
+                         route: 'console.iam.users.drivers',
+                         permission: 'iam list user',
+@@ -45,8 +45,8 @@ export default class ApplicationController extends Controller {
+                         keywords: ['fleet operators'],
+                     },
+                     {
+-                        label: 'Customers',
+-                        description: 'Customer accounts.',
++                        label: this.intl.t('iam.sidebar.customers'),
++                        description: this.intl.t('iam.sidebar.customers-desc'),
+                         icon: 'users',
+                         route: 'console.iam.users.customers',
+                         permission: 'iam list user',
+@@ -57,7 +57,7 @@ export default class ApplicationController extends Controller {
+             },
+             {
+                 label: this.intl.t('iam.common.group'),
+-                description: 'Organize users into access groups.',
++                description: this.intl.t('iam.sidebar.groups-desc'),
+                 icon: 'building',
+                 route: 'console.iam.groups',
+                 permission: 'iam list group',
+@@ -66,7 +66,7 @@ export default class ApplicationController extends Controller {
+             },
+             {
+                 label: this.intl.t('iam.common.roles'),
+-                description: 'Define reusable permission bundles.',
++                description: this.intl.t('iam.sidebar.roles-desc'),
+                 icon: 'tag',
+                 route: 'console.iam.roles',
+                 permission: 'iam list role',
+@@ -75,7 +75,7 @@ export default class ApplicationController extends Controller {
+             },
+             {
+                 label: this.intl.t('iam.common.policies'),
+-                description: 'Manage fine-grained access policies.',
++                description: this.intl.t('iam.sidebar.policies-desc'),
+                 icon: 'shield',
+                 route: 'console.iam.policies',
+                 permission: 'iam list policy',
+diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
+index 492f6bd3af336ecd51766ea9b530eb36d0229256..27fecab332d59f394069eed490b046afbbead3f0 100644
+--- a/addon/templates/application.hbs
++++ b/addon/templates/application.hbs
+@@ -1,5 +1,5 @@
+ <EmberWormhole @to="sidebar-menu-items">
+-    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder="Search IAM..." @searchProvider={{this.searchNavigation}} />
++    <Layout::Sidebar::Navigator @items={{this.navigationItems}} @searchPlaceholder={{t "iam.sidebar.search-placeholder"}} @searchProvider={{this.searchNavigation}} />
+ </EmberWormhole>
+ 
+ <Layout::Section::Container>
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
-index 3022dd7643a9521ecc6118536ede2ca98a65220e..05b73438b10e5f74550787e8732ddb371df24bae 100644
+index 3022dd7643a9521ecc6118536ede2ca98a65220e..1ced3e6b778a6fe7ebe0b7457afec511ac247a4b 100644
 --- a/translations/ar-ae.yaml
 +++ b/translations/ar-ae.yaml
-@@ -34,6 +34,65 @@ iam:
+@@ -1,4 +1,17 @@
+ iam:
++  sidebar:
++    search-placeholder: "البحث في إدارة الهوية..."
++    dashboard-desc: "نظرة عامة على الهوية والوصول."
++    users-parent-desc: "إدارة الهويات وأنواع الحسابات."
++    users: "المستخدمون"
++    users-desc: "جميع مستخدمي وحدة التحكم."
++    drivers: "السائقون"
++    drivers-desc: "حسابات السائقين."
++    customers: "العملاء"
++    customers-desc: "حسابات العملاء."
++    groups-desc: "تنظيم المستخدمين في مجموعات وصول."
++    roles-desc: "تعريف حزم أذونات قابلة لإعادة الاستخدام."
++    policies-desc: "إدارة سياسات وصول دقيقة."
+   extension-name: IAM
+   common:
+     address: العنوان
+@@ -34,6 +47,65 @@ iam:
      reload-data: إعادة تحميل البيانات
    components:
      widget:
@@ -373,7 +484,7 @@ index 3022dd7643a9521ecc6118536ede2ca98a65220e..05b73438b10e5f74550787e8732ddb37
        metrics:
          title: مقاييس إدارة الهوية والوصول
      modals:
-@@ -164,6 +223,22 @@ iam:
+@@ -164,6 +236,22 @@ iam:
        confirming-fleetbase-will-re-send-invitation-for-user-to-join-your-organization: بالتأكيد،
          ستقوم Fleetbase بإعادة إرسال الدعوة لهذا المستخدم للانضمام إلى مؤسستك.
        invitation-resent: تمت إعادة إرسال الدعوة.
@@ -397,10 +508,28 @@ index 3022dd7643a9521ecc6118536ede2ca98a65220e..05b73438b10e5f74550787e8732ddb37
      access-management: إدارة الوصول
    home:
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index 07675c079fc8eeaf6efaadbde4a8c77c378a363e..cbb8df35c2253a0d2f57ed3611dabb05809b3052 100644
+index 07675c079fc8eeaf6efaadbde4a8c77c378a363e..316c7023e333095344d5821dbec0fe8fed17d9ce 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -34,6 +34,65 @@ iam:
+@@ -1,4 +1,17 @@
+ iam:
++  sidebar:
++    search-placeholder: Search IAM...
++    dashboard-desc: Identity and access overview.
++    users-parent-desc: Manage identities and account types.
++    users: Users
++    users-desc: All console users.
++    drivers: Drivers
++    drivers-desc: Driver accounts.
++    customers: Customers
++    customers-desc: Customer accounts.
++    groups-desc: Organize users into access groups.
++    roles-desc: Define reusable permission bundles.
++    policies-desc: Manage fine-grained access policies.
+   extension-name: IAM
+   common:
+     address: Address
+@@ -34,6 +47,65 @@ iam:
      reload-data: Reload data
    components:
      widget:

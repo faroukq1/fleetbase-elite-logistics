@@ -1,3 +1,53 @@
+diff --git a/addon/components/storefront/product/category-sidebar.hbs b/addon/components/storefront/product/category-sidebar.hbs
+index a1eba0192aa5110b95784180321dee92249040b8..1a49ddcc72786fda8bbe5309c6240ead089d8420 100644
+--- a/addon/components/storefront/product/category-sidebar.hbs
++++ b/addon/components/storefront/product/category-sidebar.hbs
+@@ -1,8 +1,8 @@
+ <aside class="storefront-product-sidebar" data-test-storefront-product-category-sidebar>
+     <div class="storefront-product-sidebar__header">
+         <div>
+-            <h3>Categories</h3>
+-            <p>Organize products for storefront browsing.</p>
++            <h3>{{t "storefront.products-page.categories-title"}}</h3>
++            <p>{{t "storefront.products-page.categories-subtitle"}}</p>
+         </div>
+         <Button
+             @type="default"
+@@ -17,8 +17,8 @@
+     <button type="button" class="storefront-product-category {{unless @activeCategory "is-active"}}" data-test-storefront-product-category="all" {{on "click" @onViewAll}}>
+         <span class="storefront-product-category__icon"><FaIcon @icon="th-large" /></span>
+         <span class="storefront-product-category__content">
+-            <strong>All Products</strong>
+-            <small>Full catalog</small>
++            <strong>{{t "storefront.products-page.all-products"}}</strong>
++            <small>{{t "storefront.products-page.full-catalog"}}</small>
+         </span>
+     </button>
+ 
+@@ -45,7 +45,7 @@
+         {{else}}
+             <div class="storefront-product-sidebar__empty">
+                 <FaIcon @icon="folder-open" />
+-                <span>No categories yet</span>
++                <span>{{t "storefront.products-page.no-categories"}}</span>
+             </div>
+         {{/each}}
+     </div>
+diff --git a/addon/components/storefront/product/collection.hbs b/addon/components/storefront/product/collection.hbs
+index c5f4dfeb542c55ba74bd45dce07d9fd86b43fa80..d2cabf0385117ccdd1b6dbb79166e216b9396443 100644
+--- a/addon/components/storefront/product/collection.hbs
++++ b/addon/components/storefront/product/collection.hbs
+@@ -32,8 +32,8 @@
+         {{else}}
+             <div class="storefront-product-empty" data-test-storefront-product-empty>
+                 <FaIcon @icon="box-open" />
+-                <h3>No products found</h3>
+-                <p>{{if @category "Create the first product in this category." "Create a category, then add products to your catalog."}}</p>
++                <h3>{{t "storefront.products-page.no-products"}}</h3>
++                <p>{{if @category (t "storefront.products-page.create-first-in-category") (t "storefront.products-page.create-category-hint")}}</p>
+             </div>
+         {{/if}}
+     </div>
 diff --git a/addon/components/widget/customer-insights.hbs b/addon/components/widget/customer-insights.hbs
 index b0b98c38aeae91c3e98e7faa75d9b5886dac6ec3..63724a8820ecdeba8e239e161e82207e9870e3af 100644
 --- a/addon/components/widget/customer-insights.hbs
@@ -332,10 +382,24 @@ index 1b424f6a9d6dc21c9cc6dd0d3f8cecbd9cfcd0be..39f406b10d8f961090881e94766c2899
          @leftHeaderWrapperClass="storefront-dashboard-title"
          @rightHeaderWrapperClass="storefront-dashboard-actions"
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
-index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f94769856 100644
+index b19c5612e48501ff79e2a53c3872b0870fce026d..949d2f9b291b5c1beb331d62a94058c4386114aa 100644
 --- a/translations/ar-ae.yaml
 +++ b/translations/ar-ae.yaml
-@@ -82,8 +82,10 @@ storefront:
+@@ -1,4 +1,13 @@
+ storefront:
++  products-page:
++    categories-title: "الفئات"
++    categories-subtitle: "نظّم المنتجات لتصفح واجهة المتجر."
++    all-products: "جميع المنتجات"
++    full-catalog: "الكتالوج الكامل"
++    no-categories: "لا توجد فئات بعد"
++    no-products: "لا توجد منتجات"
++    create-first-in-category: "أنشئ أول منتج في هذه الفئة."
++    create-category-hint: "أنشئ فئة، ثم أضف منتجات إلى الكتالوج."
+   extension-name: Storefront
+   common:
+     address: العنوان
+@@ -82,8 +91,10 @@ storefront:
      customers: العملاء
      orders: الطلبات
      networks: الشبكات
@@ -346,7 +410,7 @@ index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f
    component:
      storefront-order-summary:
        order-summary-title: ملخص طلبات واجهة المتجر
-@@ -395,6 +397,9 @@ storefront:
+@@ -395,6 +406,9 @@ storefront:
                tax-percentage-input-label: نسبة الضريبة
                tax-percentage-input-help-text: نسبة ضريبة المبيعات التي يتم تطبيقها
                  على الطلبات.
@@ -356,7 +420,7 @@ index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f
                auto-accept-incoming-orders: قبول الطلبات الواردة تلقائيًا
                auto-dispatch-orders: إرسال الطلبات تلقائيًا
                require-proof-of-delivery: طلب إثبات التسليم
-@@ -651,6 +656,9 @@ storefront:
+@@ -651,6 +665,9 @@ storefront:
        enable-tax: تفعيل الضريبة
        tax-percentage: نسبة الضريبة
        tax-percentage-help-text: نسبة ضريبة المبيعات التي تطبق على الطلبات.
@@ -366,7 +430,7 @@ index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f
        auto-accept-incoming-order: قبول الطلبات الواردة تلقائيًا
        auto-dispatch-order: إرسال الطلبات تلقائيًا
        require-proof-of-delivery: طلب إثبات التسليم
-@@ -704,3 +712,101 @@ storefront:
+@@ -704,3 +721,101 @@ storefront:
        storefront-create-success: تم إنشاء واجهة متجرك الجديدة بنجاح!
    application:
      launch-app: تشغيل التطبيق
@@ -469,10 +533,24 @@ index b19c5612e48501ff79e2a53c3872b0870fce026d..7e6e0f9c2a85095bf43ee7e35b8c055f
 +      q3: الربع الثالث {year}
 +      q4: الربع الرابع {year}
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..d831dd4d7b735411726380c6bc8915ac6f73bc04 100644
+index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..2a6ebfa1ce501120731f242149d6db12a7ac4638 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -85,6 +85,7 @@ storefront:
+@@ -1,4 +1,13 @@
+ storefront:
++  products-page:
++    categories-title: Categories
++    categories-subtitle: Organize products for storefront browsing.
++    all-products: All Products
++    full-catalog: Full catalog
++    no-categories: No categories yet
++    no-products: No products found
++    create-first-in-category: Create the first product in this category.
++    create-category-hint: Create a category, then add products to your catalog.
+   extension-name: Storefront
+   common:
+     address: Address
+@@ -85,6 +94,7 @@ storefront:
      promotions: Promotions
      settings: Settings
      launch-app: Launch App
@@ -480,7 +558,7 @@ index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..d831dd4d7b735411726380c6bc8915ac
    component:
      storefront-order-summary:
        order-summary-title: Storefront Order Summary
-@@ -690,3 +691,80 @@ storefront:
+@@ -690,3 +700,80 @@ storefront:
        validation-customers-required: Please select at least one customer to send the notification to
        notification-sent-success: Push notification sent successfully to selected customers
        notification-sent-error: Failed to send push notification. Please try again.

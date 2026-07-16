@@ -292,6 +292,23 @@ body:not([data-theme='dark']) [class*='-chart-widget'] {
     background-image: none !important;
 }
 
+/* ── Header dropdown anchoring (org / user / language menus) ───────────────
+   These dropdowns render in place (see ember-ui locale-selector-tray.js and
+   layout/header/dropdown.js) and are anchored below their trigger purely in
+   CSS. postcss-rtlcss mirrors the `right: 0` to `left: 0` for RTL, which
+   keeps the menu attached to the trigger in both directions — the previous
+   JS-computed viewport coordinates drifted off-screen in RTL.              */
+.next-user-button {
+    position: relative;
+}
+.next-user-button .ember-basic-dropdown-content:not(.is-mobile) {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    left: auto;
+    z-index: 60;
+}
+
 /* ── ELITE SKIN: panels, tables + engine surfaces (all pages) ──────────────
    Extends the reference card style beyond dashboards so every page matches:
    content panels (settings/forms), index tables (IAM, Fleet-Ops, …), the

@@ -1,8 +1,175 @@
+diff --git a/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs b/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
+index 3f31ad5d5427cfb1a73b0f9e5d16c9802184c450..9826b332c91b87d33c134f698dcc84c654e404bd 100644
+--- a/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
++++ b/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
+@@ -3,7 +3,7 @@
+ 
+     <div class="mb-2 flex items-center justify-between px-1">
+         <div class="min-w-0">
+-            <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Live Operations</div>
++            <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{this.strings.liveOperations}}</div>
+             <div class="mt-1 flex flex-col gap-0.5 text-xs text-gray-500 dark:text-gray-400">
+                 <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>{{this.driverOnlineSummary}}</span>
+                 <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>{{this.vehicleOnlineSummary}}</span>
+@@ -29,7 +29,7 @@
+         <input
+             type="search"
+             value={{this.query}}
+-            placeholder="Filter resources..."
++            placeholder={{this.strings.filterPlaceholder}}
+             class="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-xs leading-5 text-gray-700 outline-none shadow-none ring-0 focus:border-transparent focus:outline-none focus:ring-0 dark:text-gray-100"
+             data-test-operations-monitor-filter
+             {{on "input" this.updateQuery}}
+@@ -44,7 +44,7 @@
+                         <span class="h-2 w-2 shrink-0 rounded-full {{if driver.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-5">{{or driver.displayName driver.display_name driver.name driver.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">{{if driver.online "Online" "Offline"}} - {{or driver.vehicle_name driver.public_id driver.status}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{if driver.online this.strings.online this.strings.offline}} - {{or driver.vehicle_name driver.public_id driver.status}}</span>
+                         </span>
+                     </button>
+                     <div class="fleet-ops-operations-monitor-row-actions">
+@@ -88,7 +88,7 @@
+                         <span class="h-2 w-2 shrink-0 rounded-full {{if vehicle.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-5">{{or vehicle.displayName vehicle.display_name vehicle.name vehicle.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">{{if vehicle.online "Online" "Offline"}} - {{or vehicle.driver_name vehicle.public_id vehicle.status}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{if vehicle.online this.strings.online this.strings.offline}} - {{or vehicle.driver_name vehicle.public_id vehicle.status}}</span>
+                         </span>
+                     </button>
+                     <div class="fleet-ops-operations-monitor-row-actions">
+@@ -169,7 +169,7 @@
+                         <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full {{if row.driver.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-4">{{or row.driver.displayName row.driver.display_name row.driver.name row.driver.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">Driver - {{if row.driver.online "Online" "Offline"}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{this.strings.driver}} - {{if row.driver.online this.strings.online this.strings.offline}}</span>
+                         </span>
+                     </button>
+                 {{else}}
+@@ -182,7 +182,7 @@
+                         <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full {{if row.vehicle.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-4">{{or row.vehicle.displayName row.vehicle.display_name row.vehicle.name row.vehicle.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">Vehicle - {{if row.vehicle.online "Online" "Offline"}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{this.strings.vehicle}} - {{if row.vehicle.online this.strings.online this.strings.offline}}</span>
+                         </span>
+                     </button>
+                 {{/if}}
+diff --git a/addon/components/layout/fleet-ops-sidebar/operations-monitor.js b/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
+index 59a0f1113a62ad8c8fd1a49779c6d746dbde9247..8de3e7a879ab9d81a857d9f83f7eedeaaec4f393 100644
+--- a/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
++++ b/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
+@@ -6,6 +6,7 @@ import { registerDestructor } from '@ember/destroyable';
+ import { task } from 'ember-concurrency';
+ 
+ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Component {
++    @service intl;
+     @service store;
+     @service fetch;
+     @service universe;
+@@ -88,11 +89,26 @@ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Com
+     }
+ 
+     get driverOnlineSummary() {
+-        return `${this.onlineDriverCount} drivers online`;
++        return this.intl.t('fleet-ops.operations-monitor.drivers-online', { count: this.onlineDriverCount });
+     }
+ 
+     get vehicleOnlineSummary() {
+-        return `${this.onlineVehicleCount} vehicles online`;
++        return this.intl.t('fleet-ops.operations-monitor.vehicles-online', { count: this.onlineVehicleCount });
++    }
++
++    // Localized labels resolved in JS getters: inside the lazy-loaded engine
++    // context the `{{t}}` template helper can resolve against a stale locale,
++    // while `this.intl.t()` follows the active one.
++    get strings() {
++        const t = (k) => this.intl.t(`fleet-ops.operations-monitor.${k}`);
++        return {
++            liveOperations: t('live-operations'),
++            filterPlaceholder: t('filter-placeholder'),
++            online: t('online'),
++            offline: t('offline'),
++            driver: t('driver'),
++            vehicle: t('vehicle'),
++        };
+     }
+ 
+     get activeResources() {
+@@ -101,49 +117,50 @@ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Com
+ 
+     get emptyMessage() {
+         if (this.query) {
+-            return 'No resources match this search.';
++            return this.intl.t('fleet-ops.operations-monitor.no-match-title');
+         }
+ 
+-        return `No ${this.activeTab} available.`;
++        return this.intl.t(`fleet-ops.operations-monitor.no-${this.activeTab}-title`);
+     }
+ 
+     get emptyState() {
++        const t = (k) => this.intl.t(`fleet-ops.operations-monitor.${k}`);
+         if (this.hasQuery) {
+             return {
+                 icon: 'magnifying-glass',
+-                title: 'No resources match this search',
+-                description: 'Try another driver, vehicle, fleet, public ID, status, or assignment.',
+-                action: 'Clear filter',
++                title: t('no-match-title'),
++                description: t('no-match-desc'),
++                action: t('clear-filter'),
+             };
+         }
+ 
+         return {
+             drivers: {
+                 icon: 'id-card',
+-                title: 'No drivers yet',
+-                description: 'Create drivers so dispatchers can assign orders and track active work on the live map.',
+-                action: 'Create driver',
++                title: t('no-drivers-title'),
++                description: t('no-drivers-desc'),
++                action: t('create-driver'),
+             },
+             vehicles: {
+                 icon: 'truck',
+-                title: 'No vehicles yet',
+-                description: 'Add vehicles to power live map visibility, driver assignments, and fleet tracking.',
+-                action: 'Create vehicle',
++                title: t('no-vehicles-title'),
++                description: t('no-vehicles-desc'),
++                action: t('create-vehicle'),
+             },
+             fleets: {
+                 icon: 'user-group',
+-                title: 'No fleets yet',
+-                description: 'Create fleets to organize drivers and vehicles into operational groups.',
+-                action: 'Create fleet',
++                title: t('no-fleets-title'),
++                description: t('no-fleets-desc'),
++                action: t('create-fleet'),
+             },
+         }[this.activeTab];
+     }
+ 
+     get tabs() {
+         return [
+-            { id: 'fleets', label: 'Fleets' },
+-            { id: 'drivers', label: 'Drivers' },
+-            { id: 'vehicles', label: 'Vehicles' },
++            { id: 'fleets', label: this.intl.t('fleet-ops.operations-monitor.tab-fleets') },
++            { id: 'drivers', label: this.intl.t('fleet-ops.operations-monitor.tab-drivers') },
++            { id: 'vehicles', label: this.intl.t('fleet-ops.operations-monitor.tab-vehicles') },
+         ];
+     }
+ 
 diff --git a/translations/ar-ae.yml b/translations/ar-ae.yml
-index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b38a547c4 100644
+index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9864f05f4 100644
 --- a/translations/ar-ae.yml
 +++ b/translations/ar-ae.yml
-@@ -1,228 +1,977 @@
+@@ -1,228 +1,1001 @@
 -menu:
 -  fuel-providers: تكاملات الوقود
 -  fuel-transactions: معاملات الوقود
@@ -11,6 +178,30 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
 -  extension-name: Fleet-Ops
 -  common:
 -    active-manpower: القوى العاملة النشطة
++    operations-monitor:
++        live-operations: "العمليات المباشرة"
++        drivers-online: "{count} سائق متصل"
++        vehicles-online: "{count} مركبة متصلة"
++        filter-placeholder: "تصفية الموارد..."
++        online: "متصل"
++        offline: "غير متصل"
++        driver: "سائق"
++        vehicle: "مركبة"
++        tab-fleets: "الأساطيل"
++        tab-drivers: "السائقون"
++        tab-vehicles: "المركبات"
++        no-match-title: "لا توجد موارد مطابقة لهذا البحث"
++        no-match-desc: "جرّب سائقًا أو مركبة أو أسطولًا أو معرفًا عامًا أو حالة أو تعيينًا آخر."
++        clear-filter: "مسح التصفية"
++        no-drivers-title: "لا يوجد سائقون بعد"
++        no-drivers-desc: "أنشئ سائقين ليتمكن المرسلون من إسناد الطلبات وتتبع العمل النشط على الخريطة المباشرة."
++        create-driver: "إنشاء سائق"
++        no-vehicles-title: "لا توجد مركبات بعد"
++        no-vehicles-desc: "أضف مركبات لتفعيل الرؤية على الخريطة المباشرة وتعيينات السائقين وتتبع الأسطول."
++        create-vehicle: "إنشاء مركبة"
++        no-fleets-title: "لا توجد أساطيل بعد"
++        no-fleets-desc: "أنشئ أساطيل لتنظيم السائقين والمركبات في مجموعات تشغيلية."
++        create-fleet: "إنشاء أسطول"
 +    extension-name: Fleet-Ops
 +
 +common:
@@ -1164,7 +1355,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          new-custom-entity: كيان مخصص جديد
          name: الاسم
          description: الوصف
-@@ -232,187 +981,835 @@ fleet-ops:
+@@ -232,187 +1005,835 @@ fleet-ops:
          height: الارتفاع
          weight: الوزن
          delete-custom-entity-title: حذف هذا الكيان المخصص؟
@@ -2156,7 +2347,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          measurement-title: القياسات والوزن
          length: الطول
          length-text: طول الكيان.
-@@ -422,47 +1819,49 @@ fleet-ops:
+@@ -422,47 +1843,49 @@ fleet-ops:
          height-text: ارتفاع الكيان.
          weight: الوزن
          weight-text: وزن الكيان.
@@ -2225,7 +2416,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          select-vehicle: اختر المركبة
          select-type: اختر النوع
          select-category: اختر الفئة
-@@ -472,15 +1871,15 @@ fleet-ops:
+@@ -472,15 +1895,15 @@ fleet-ops:
          category-text: اختر فئة المشكلة
          report: تقرير المشكلة
          tags: علامات المشكلة
@@ -2244,7 +2435,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          set-name: قم بتعيين اسم عرض لـ {options}.
          service-type: نوع منطقة الخدمة
          service-type-text: اختر تعريف النوع لهذه المنطقة.
-@@ -488,109 +1887,111 @@ fleet-ops:
+@@ -488,109 +1911,111 @@ fleet-ops:
          customize-border: تخصيص لون الحدود لـ {options}.
          customize-fill-color: تخصيص لون التعبئة لـ {options}.
          service-area-country: بلد منطقة الخدمة
@@ -2402,7 +2593,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          make: الصنع
          model: الطراز
          year: السنة
-@@ -600,7 +2001,7 @@ fleet-ops:
+@@ -600,7 +2025,7 @@ fleet-ops:
          no-vehicle-assigned: لم يتم تعيين مركبة
          avatar: الصورة الرمزية
          model-information: معلومات الطراز
@@ -2411,7 +2602,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          body: الهيكل
          doors: الأبواب
          length: الطول (مم)
-@@ -617,24 +2018,25 @@ fleet-ops:
+@@ -617,24 +2042,25 @@ fleet-ops:
          cylinder: الأسطوانات
          position: الموضع
          power-ps: القوة (حصان)
@@ -2444,7 +2635,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
          body: نوع هيكل المركبة
          doors: عدد الأبواب
          type: نوع قيادة المركبة
-@@ -651,986 +2053,198 @@ fleet-ops:
+@@ -651,986 +2077,198 @@ fleet-ops:
          cylinder: أسطوانات المحرك
          position: موضع المحرك
          power-ps: قوة المحرك (حصان)
@@ -3597,3 +3788,36 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..5eae9c28c0bbc1da147668aec055cd9b
 +        delete-vehicle: حذف المركبة...
 +        warning-message: غير قادر على تحديد موقع المركبة.
 +        message: تصفية المركبات بالكلمة المفتاحية...
+diff --git a/translations/en-us.yaml b/translations/en-us.yaml
+index bd27d73a35bfc1eade94c7d00acc81746cc84df0..24f1e7891a7e233687452eb0793d804f77996f8f 100644
+--- a/translations/en-us.yaml
++++ b/translations/en-us.yaml
+@@ -1,4 +1,28 @@
+ fleet-ops:
++    operations-monitor:
++        live-operations: Live Operations
++        drivers-online: "{count} drivers online"
++        vehicles-online: "{count} vehicles online"
++        filter-placeholder: Filter resources...
++        online: Online
++        offline: Offline
++        driver: Driver
++        vehicle: Vehicle
++        tab-fleets: Fleets
++        tab-drivers: Drivers
++        tab-vehicles: Vehicles
++        no-match-title: No resources match this search
++        no-match-desc: Try another driver, vehicle, fleet, public ID, status, or assignment.
++        clear-filter: Clear filter
++        no-drivers-title: No drivers yet
++        no-drivers-desc: Create drivers so dispatchers can assign orders and track active work on the live map.
++        create-driver: Create driver
++        no-vehicles-title: No vehicles yet
++        no-vehicles-desc: Add vehicles to power live map visibility, driver assignments, and fleet tracking.
++        create-vehicle: Create vehicle
++        no-fleets-title: No fleets yet
++        no-fleets-desc: Create fleets to organize drivers and vehicles into operational groups.
++        create-fleet: Create fleet
+     extension-name: Fleet-Ops
+ 
+ common:
