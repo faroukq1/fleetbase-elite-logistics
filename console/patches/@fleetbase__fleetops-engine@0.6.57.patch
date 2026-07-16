@@ -1,0 +1,3823 @@
+diff --git a/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs b/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
+index 3f31ad5d5427cfb1a73b0f9e5d16c9802184c450..9826b332c91b87d33c134f698dcc84c654e404bd 100644
+--- a/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
++++ b/addon/components/layout/fleet-ops-sidebar/operations-monitor.hbs
+@@ -3,7 +3,7 @@
+ 
+     <div class="mb-2 flex items-center justify-between px-1">
+         <div class="min-w-0">
+-            <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">Live Operations</div>
++            <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">{{this.strings.liveOperations}}</div>
+             <div class="mt-1 flex flex-col gap-0.5 text-xs text-gray-500 dark:text-gray-400">
+                 <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>{{this.driverOnlineSummary}}</span>
+                 <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>{{this.vehicleOnlineSummary}}</span>
+@@ -29,7 +29,7 @@
+         <input
+             type="search"
+             value={{this.query}}
+-            placeholder="Filter resources..."
++            placeholder={{this.strings.filterPlaceholder}}
+             class="min-w-0 flex-1 appearance-none border-0 bg-transparent p-0 text-xs leading-5 text-gray-700 outline-none shadow-none ring-0 focus:border-transparent focus:outline-none focus:ring-0 dark:text-gray-100"
+             data-test-operations-monitor-filter
+             {{on "input" this.updateQuery}}
+@@ -44,7 +44,7 @@
+                         <span class="h-2 w-2 shrink-0 rounded-full {{if driver.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-5">{{or driver.displayName driver.display_name driver.name driver.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">{{if driver.online "Online" "Offline"}} - {{or driver.vehicle_name driver.public_id driver.status}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{if driver.online this.strings.online this.strings.offline}} - {{or driver.vehicle_name driver.public_id driver.status}}</span>
+                         </span>
+                     </button>
+                     <div class="fleet-ops-operations-monitor-row-actions">
+@@ -88,7 +88,7 @@
+                         <span class="h-2 w-2 shrink-0 rounded-full {{if vehicle.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-5">{{or vehicle.displayName vehicle.display_name vehicle.name vehicle.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">{{if vehicle.online "Online" "Offline"}} - {{or vehicle.driver_name vehicle.public_id vehicle.status}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{if vehicle.online this.strings.online this.strings.offline}} - {{or vehicle.driver_name vehicle.public_id vehicle.status}}</span>
+                         </span>
+                     </button>
+                     <div class="fleet-ops-operations-monitor-row-actions">
+@@ -169,7 +169,7 @@
+                         <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full {{if row.driver.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-4">{{or row.driver.displayName row.driver.display_name row.driver.name row.driver.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">Driver - {{if row.driver.online "Online" "Offline"}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{this.strings.driver}} - {{if row.driver.online this.strings.online this.strings.offline}}</span>
+                         </span>
+                     </button>
+                 {{else}}
+@@ -182,7 +182,7 @@
+                         <span class="mt-1 h-1.5 w-1.5 shrink-0 rounded-full {{if row.vehicle.online 'bg-green-500' 'bg-yellow-300'}}"></span>
+                         <span class="min-w-0 flex-1">
+                             <span class="block truncate leading-4">{{or row.vehicle.displayName row.vehicle.display_name row.vehicle.name row.vehicle.public_id}}</span>
+-                            <span class="block truncate text-xs leading-4 text-gray-400">Vehicle - {{if row.vehicle.online "Online" "Offline"}}</span>
++                            <span class="block truncate text-xs leading-4 text-gray-400">{{this.strings.vehicle}} - {{if row.vehicle.online this.strings.online this.strings.offline}}</span>
+                         </span>
+                     </button>
+                 {{/if}}
+diff --git a/addon/components/layout/fleet-ops-sidebar/operations-monitor.js b/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
+index 59a0f1113a62ad8c8fd1a49779c6d746dbde9247..8de3e7a879ab9d81a857d9f83f7eedeaaec4f393 100644
+--- a/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
++++ b/addon/components/layout/fleet-ops-sidebar/operations-monitor.js
+@@ -6,6 +6,7 @@ import { registerDestructor } from '@ember/destroyable';
+ import { task } from 'ember-concurrency';
+ 
+ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Component {
++    @service intl;
+     @service store;
+     @service fetch;
+     @service universe;
+@@ -88,11 +89,26 @@ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Com
+     }
+ 
+     get driverOnlineSummary() {
+-        return `${this.onlineDriverCount} drivers online`;
++        return this.intl.t('fleet-ops.operations-monitor.drivers-online', { count: this.onlineDriverCount });
+     }
+ 
+     get vehicleOnlineSummary() {
+-        return `${this.onlineVehicleCount} vehicles online`;
++        return this.intl.t('fleet-ops.operations-monitor.vehicles-online', { count: this.onlineVehicleCount });
++    }
++
++    // Localized labels resolved in JS getters: inside the lazy-loaded engine
++    // context the `{{t}}` template helper can resolve against a stale locale,
++    // while `this.intl.t()` follows the active one.
++    get strings() {
++        const t = (k) => this.intl.t(`fleet-ops.operations-monitor.${k}`);
++        return {
++            liveOperations: t('live-operations'),
++            filterPlaceholder: t('filter-placeholder'),
++            online: t('online'),
++            offline: t('offline'),
++            driver: t('driver'),
++            vehicle: t('vehicle'),
++        };
+     }
+ 
+     get activeResources() {
+@@ -101,49 +117,50 @@ export default class LayoutFleetOpsSidebarOperationsMonitorComponent extends Com
+ 
+     get emptyMessage() {
+         if (this.query) {
+-            return 'No resources match this search.';
++            return this.intl.t('fleet-ops.operations-monitor.no-match-title');
+         }
+ 
+-        return `No ${this.activeTab} available.`;
++        return this.intl.t(`fleet-ops.operations-monitor.no-${this.activeTab}-title`);
+     }
+ 
+     get emptyState() {
++        const t = (k) => this.intl.t(`fleet-ops.operations-monitor.${k}`);
+         if (this.hasQuery) {
+             return {
+                 icon: 'magnifying-glass',
+-                title: 'No resources match this search',
+-                description: 'Try another driver, vehicle, fleet, public ID, status, or assignment.',
+-                action: 'Clear filter',
++                title: t('no-match-title'),
++                description: t('no-match-desc'),
++                action: t('clear-filter'),
+             };
+         }
+ 
+         return {
+             drivers: {
+                 icon: 'id-card',
+-                title: 'No drivers yet',
+-                description: 'Create drivers so dispatchers can assign orders and track active work on the live map.',
+-                action: 'Create driver',
++                title: t('no-drivers-title'),
++                description: t('no-drivers-desc'),
++                action: t('create-driver'),
+             },
+             vehicles: {
+                 icon: 'truck',
+-                title: 'No vehicles yet',
+-                description: 'Add vehicles to power live map visibility, driver assignments, and fleet tracking.',
+-                action: 'Create vehicle',
++                title: t('no-vehicles-title'),
++                description: t('no-vehicles-desc'),
++                action: t('create-vehicle'),
+             },
+             fleets: {
+                 icon: 'user-group',
+-                title: 'No fleets yet',
+-                description: 'Create fleets to organize drivers and vehicles into operational groups.',
+-                action: 'Create fleet',
++                title: t('no-fleets-title'),
++                description: t('no-fleets-desc'),
++                action: t('create-fleet'),
+             },
+         }[this.activeTab];
+     }
+ 
+     get tabs() {
+         return [
+-            { id: 'fleets', label: 'Fleets' },
+-            { id: 'drivers', label: 'Drivers' },
+-            { id: 'vehicles', label: 'Vehicles' },
++            { id: 'fleets', label: this.intl.t('fleet-ops.operations-monitor.tab-fleets') },
++            { id: 'drivers', label: this.intl.t('fleet-ops.operations-monitor.tab-drivers') },
++            { id: 'vehicles', label: this.intl.t('fleet-ops.operations-monitor.tab-vehicles') },
+         ];
+     }
+ 
+diff --git a/translations/ar-ae.yml b/translations/ar-ae.yml
+index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9864f05f4 100644
+--- a/translations/ar-ae.yml
++++ b/translations/ar-ae.yml
+@@ -1,228 +1,1001 @@
+-menu:
+-  fuel-providers: تكاملات الوقود
+-  fuel-transactions: معاملات الوقود
+-
+ fleet-ops:
+-  extension-name: Fleet-Ops
+-  common:
+-    active-manpower: القوى العاملة النشطة
++    operations-monitor:
++        live-operations: "العمليات المباشرة"
++        drivers-online: "{count} سائق متصل"
++        vehicles-online: "{count} مركبة متصلة"
++        filter-placeholder: "تصفية الموارد..."
++        online: "متصل"
++        offline: "غير متصل"
++        driver: "سائق"
++        vehicle: "مركبة"
++        tab-fleets: "الأساطيل"
++        tab-drivers: "السائقون"
++        tab-vehicles: "المركبات"
++        no-match-title: "لا توجد موارد مطابقة لهذا البحث"
++        no-match-desc: "جرّب سائقًا أو مركبة أو أسطولًا أو معرفًا عامًا أو حالة أو تعيينًا آخر."
++        clear-filter: "مسح التصفية"
++        no-drivers-title: "لا يوجد سائقون بعد"
++        no-drivers-desc: "أنشئ سائقين ليتمكن المرسلون من إسناد الطلبات وتتبع العمل النشط على الخريطة المباشرة."
++        create-driver: "إنشاء سائق"
++        no-vehicles-title: "لا توجد مركبات بعد"
++        no-vehicles-desc: "أضف مركبات لتفعيل الرؤية على الخريطة المباشرة وتعيينات السائقين وتتبع الأسطول."
++        create-vehicle: "إنشاء مركبة"
++        no-fleets-title: "لا توجد أساطيل بعد"
++        no-fleets-desc: "أنشئ أساطيل لتنظيم السائقين والمركبات في مجموعات تشغيلية."
++        create-fleet: "إنشاء أسطول"
++    extension-name: Fleet-Ops
++
++common:
++    proof-of-delivery: إثبات التسليم
++    ad-hoc: فوري
++    bulk-dispatch: إرسال جماعي
++    dispatch-orders: إرسال الطلبات
++    dispatch-order: إرسال الطلب
++    assign-driver: تعيين سائق
++    unassign-driver: إلغاء تعيين السائق
++    assign-drivers: تعيين السائقين
++    no-driver-assigned: لم يتم تعيين سائق
++    details: تفاصيل
++    name: الاسم
++    title: العنوان
++    email: البريد الإلكتروني
++    phone: الهاتف
++    internal-id: المعرف الداخلي
++    type: النوع
+     address: العنوان
+-    amount: المبلغ
+-    assignee: المكلف
+-    avatar: الصورة الرمزية
+-    building: المبنى
+-    bulk-action: إجراء جماعي
+-    cancel: إلغاء
+-    category: الفئة
+-    city: المدينة
++    create-order: إنشاء طلب
+     coordinates: الإحداثيات
+-    cost: التكلفة
+-    code: الرمز
++    city: المدينة
+     country: البلد
+-    config: التكوين
+-    created-at: تم الإنشاء في
+-    date-created: تاريخ الإنشاء
++    status: الحالة
++    upload-new-photo: تحميل صورة جديدة
++    resource-actions: إجراءات {resource}
++    resource-location: موقع {resource}
++    search-countries: البحث عن البلدان
++    select-resource-filter-by: اختر {resource} للتصفية
++    table-view: عرض الجدول
++    grid-view: عرض الشبكة
++    calendar-view: عرض التقويم
++    change-layout: تغيير التخطيط
++    livemap: الخريطة المباشرة
++    tracking: التتبع
++    activity: النشاط
++    eta: الوقت المقدر للوصول
++    position: الموقع
++    positions: المواقع
++    pos: نقطة البيع
++    edit-address: تعديل العنوان
++    new-address: عنوان جديد
++    select-address: اختر العنوان
++    save: حفظ
++    save-changes: حفظ التغييرات
++    done: تم
+     delete: حذف
+-    destination: الوجهة
+-    details: التفاصيل
+-    description: الوصف
+-    distance: المسافة
+-    driver-license: رخصة السائق
+-    driver: السائق
+-    edit: تحرير
+-    email: البريد الإلكتروني
+-    export: تصدير
+-    fleet: الأسطول
+-    height: الارتفاع
+-    host: المضيف
++    overview: نظرة عامة
++    notes: ملاحظات
++    schedule: الجدول
++    optional: اختياري
++    unauthorized-access: غير مصرح لك بالوصول إلى هذا المورد.
++    online: متصل
++    refresh: تحديث
++    loading-route: جارٍ تحميل المسار...
++    hover-to-load-route: جارٍ تحميل معاينة المسار...
++    unable-to-load-route: غير قادر على تحميل معاينة المسار.
++
++menu:
++    operations: العمليات
++    dashboard: لوحة القيادة
++    orders: الطلبات
++    service-rates: أسعار الخدمة
++    scheduler: المجدول
++    order-config: تكوين الطلب
++    resources: الموارد
++    drivers: السائقين
++    vehicles: المركبات
++    fleets: الأساطيل
++    vendors: الموردين
++    contacts: جهات الاتصال
++    places: الأماكن
++    fuel-reports: تقارير الوقود
++    fuel-transactions: معاملات الوقود
++    issues: المشكلات
++    maintenance: الصيانة
++    schedules: الجداول
++    work-orders: أوامر العمل
++    equipment: المعدات
++    parts: القطع
++    maintenance-history: سجل الصيانة
++    connectivity: الاتصال
++    telematics: المعلوماتية
++    fuel-providers: تكاملات الوقود
++    devices: الأجهزة
++    sensors: المستشعرات
++    events: الأحداث
++    tracking: التتبع
++    analytics: التحليلات
++    reports: التقارير
++    settings: الإعدادات
++    navigator-app: تطبيق Navigator
++    payments: المدفوعات
++    notifications: الإشعارات
++    routing: التوجيه
++    map: الخريطة
++    custom-fields: الحقول المخصصة
++    order-board: لوحة الطلبات
++    avatars: الصور الرمزية
++    scheduling: الجدولة
++    maintenances: الصيانات
++    orchestrator: المنسق
++    orchestrator-settings: إعدادات المنسق
++
++resource:
++    asset: أصل
++    assets: أصول
++    activity: نشاط
++    activities: أنشطة
++    contact: جهة اتصال
++    contacts: جهات اتصال
++    customer-contact: جهة اتصال العميل
++    customer-contacts: جهات اتصال العملاء
++    customer-vendor: مورد العميل
++    customer-vendors: موردو العملاء
++    customer: عميل
++    customers: عملاء
++    custom-entity: كيان مخصص
++    custom-entities: كيانات مخصصة
++    device-event: حدث الجهاز
++    device-events: أحداث الأجهزة
++    device: جهاز
++    devices: أجهزة
++    driver: سائق
++    drivers: سائقين
++    entity: كيان
++    entities: كيانات
++    equipment: معدة
++    equipments: معدات
++    facilitator-contact: جهة اتصال الميسر
++    facilitator-contacts: جهات اتصال الميسرين
++    facilitator-customer: عميل الميسر
++    facilitator-customers: عملاء الميسرين
++    facilitator-integrated-vendor: مورد متكامل للميسر
++    facilitator-integrated-vendors: موردون متكاملون للميسرين
++    facilitator-vendor: مورد الميسر
++    facilitator-vendors: موردو الميسرين
++    facilitator: ميسر
++    facilitators: ميسرين
++    fleet-driver: سائق الأسطول
++    fleet-drivers: سائقو الأسطول
++    fleet: أسطول
++    fleets: أساطيل
++    fuel-report: تقرير وقود
++    fuel-reports: تقارير وقود
++    integrated-vendor: مورد متكامل
++    integrated-vendors: موردون متكاملون
++    issue: مشكلة
++    issues: مشكلات
++    maintenance: صيانة
++    maintenances: صيانات
++    maintenance-schedule: جدول الصيانة
++    maintenance-schedules: جداول الصيانة
++    order-config: تكوين الطلب
++    order-configs: تكوينات الطلبات
++    order: طلب
++    orders: طلبات
++    part: قطعة
++    parts: قطع
++    payload: حمولة
++    payloads: حمولات
++    place: مكان
++    places: أماكن
++    purchase-rate: سعر الشراء
++    purchase-rates: أسعار الشراء
++    route: مسار
++    routes: مسارات
++    sensor: مستشعر
++    sensors: مستشعرات
++    service-area: منطقة الخدمة
++    service-areas: مناطق الخدمة
++    service-quote-item: عنصر عرض الخدمة
++    service-quote-items: عناصر عروض الخدمة
++    service-quote: عرض الخدمة
++    service-quotes: عروض الخدمة
++    service-rate-fee: رسوم سعر الخدمة
++    service-rate-fees: رسوم أسعار الخدمة
++    service-rate-parcel-fee: رسوم طرد سعر الخدمة
++    service-rate-parcel-fees: رسوم طرود أسعار الخدمة
++    service-rate: سعر الخدمة
++    service-rates: أسعار الخدمة
++    telematic: معلوماتي
++    telematics: معلوماتية
++    tracking-number: رقم التتبع
++    tracking-numbers: أرقام التتبع
++    tracking-status: حالة التتبع
++    tracking-statuses: حالات التتبع
++    vehicle-device: جهاز المركبة
++    vehicle-devices: أجهزة المركبات
++    vehicle: مركبة
++    vehicles: مركبات
++    vendor: مورد
++    vendors: موردين
++    warranty: ضمان
++    warranties: ضمانات
++    waypoint: نقطة توقف
++    waypoints: نقاط توقف
++    work-order: أمر عمل
++    work-orders: أوامر عمل
++    zone: منطقة
++    zones: مناطق
++
++order-status:
++    created: تم الإنشاء
++    ready: جاهز
++    dispatched: تم الإرسال
++    started: بدأ
++    completed: مكتمل
++    canceled: ملغي
++
++column:
++    address: العنوان
++    country: البلد
++    created-at: تم الإنشاء في
+     id: المعرف
+     internal-id: المعرف الداخلي
+-    item: العنصر
+-    key: المفتاح
+-    label: التسمية
+-    length: الطول
+-    license: الرخصة
+-    loading: جارٍ التحميل...
+-    loading-resource: جارٍ تحميل {resourceName}...
+-    make: الصنع
+-    manage-message: إدارة الموردين
+-    manpower: القوى العاملة
+-    model: الطراز
+     name: الاسم
+-    namespace: مساحة الاسم
+-    neighborhood: الحي
+-    new: جديد
+-    odometer: عداد المسافات
+-    options: الخيارات
+-    orders: الطلبات
+-    parent-fleet: الأسطول الرئيسي
+     phone: الهاتف
+-    photos: الصور
+-    plate-number: رقم اللوحة
+-    postal-code: الرمز البريدي
+-    priority: الأولوية
+-    reload: إعادة تحميل
+-    reload-data: إعادة تحميل البيانات
+-    remove: إزالة
+-    reporter: المراسل
+-    sandbox: بيئة تجريبية
+-    save-changes: حفظ التغييرات
+-    schedule: الجدول الزمني
+-    search: بحث
+-    security-access-code: رمز الوصول الأمني
+-    service-area: منطقة الخدمة
+-    service: الخدمة
+-    state: الولاية
++    route-type: نوع المسار
+     status: الحالة
+-    street-1: الشارع 1
+-    street-2: الشارع 2
+-    street: الشارع
+-    task: المهمة
+-    title: العنوان
+     type: النوع
+-    unit: الوحدة
+     updated-at: تم التحديث في
+-    upload-new: تحميل جديد
+-    uploading: جارٍ التحميل...
+-    value: القيمة
+     vehicle: المركبة
+     vendor: المورد
+-    vin-number: رقم VIN
++    created: تم الإنشاء
++    email: البريد الإلكتروني
++    title: العنوان
++    updated: تم التحديث
++    fleet: الأسطول
++    license: الرخصة
++    active-manpower: القوى العاملة النشطة
++    manpower: القوى العاملة
++    parent-fleet: الأسطول الرئيسي
++    service-area: منطقة الخدمة
++    task: المهمة
++    zone: المنطقة
++    driver: السائق
++    edit-fuel: تعديل الوقود
++    odometer: عداد المسافات
++    reporter: المراسل
++    view: عرض
+     volume: الحجم
+-    weight: الوزن
+-    website-url: عنوان الموقع الإلكتروني
+-    website: الموقع الإلكتروني
+-    width: العرض
++    assignee: المكلف
++    category: الفئة
++    priority: الأولوية
++    city: المدينة
++    neighborhood: الحي
++    postal-code: الرمز البريدي
++    state: الولاية
++    make: الصنع
++    model: الطراز
++    plate-number: رقم اللوحة
+     year: السنة
+-    zone: المنطقة
+-    total: الإجمالي
+-    back: العودة
+-    done: تم
+-    tracking: رقم التتبع
++    website-url: رابط الموقع
++    created-by: أنشئ بواسطة
+     customer: العميل
+-    vehicle-name: اسم المركبة
+-    pickup: الاستلام
++    driver-assigned: السائق المعين
+     dropoff: التسليم
+-    import: استيراد
+-    order: الطلب
+-    create-order: إنشاء طلب
+-    dispatch-order: إرسال الطلب
+-  component:
+-    activity-logic-builder:
+-      activity-logic: منطق النشاط
+-      activity-logic-help-text: حدد شروط منطق مخصصة تحدد متى يصبح النشاط متاحًا في سير العمل. تتيح لك هذه الميزة تخصيص التدفق بناءً على معايير محددة، مما يضمن أن يتم تشغيل كل نشاط فقط عندما يتم استيفاء شروطه المحددة مسبقًا.
+-      activity-logic-add-logic-help-text: أنشئ مجموعة جديدة من الشروط التي ستحدد متى يجب تنشيط النشاط. انقر هنا لبدء صياغة قاعدة منطقية جديدة.
+-      activity-logic-select-logic-type-help-text: اختر نوع المنطق الذي سيتبعه هذا الشرط. اختر 'إذا' لشرط مباشر، 'و'/'أو' للشروط المركبة، أو 'ليس' لنفي شرط.
+-      activity-logic-add-condition-help-text: أضف متطلبًا محددًا يجب استيفاؤه ضمن مجموعة المنطق هذه. استخدم هذا لتحديد معايير إضافية تتحكم في توفر النشاط.
+-      field: الحقل
+-      value: القيمة
+-      add-logic: إضافة منطق
+-    activity-event-selector:
+-      activity-events: أحداث النشاط
+-      activity-events-select-to-fire: اختر الأحداث التي سيتم تفعيلها عند حدوث هذا النشاط.
+-      activity-events-select-events-info: اختر الحدث المحدد الذي تريد تشغيله استجابةً لهذا النشاط.
+-      select-event-to-add: اختر الحدث لإضافته...
+-    custom-field-form-panel:
+-      meta-col-span: 'ميتا: مدى العمود'
+-      col-span-size: حجم مدى العمود
+-      custom-field-title-concat: 'حقل مخصص: '
+-      new-custom-field: حقل مخصص جديد
+-      close-new-custom-field: إلغاء تغييرات الحقل المخصص
+-      save-custom-field: حفظ التغييرات
+-      create-custom-field: إنشاء حقل جديد
+-      field-name: اسم الحقل
+-      field-label: تسمية الحقل
+-      field-type: نوع الحقل
+-      select-field-type: اختر نوع الحقل...
+-      field-description: وصف الحقل
+-      field-help-text: نص مساعدة الحقل
+-      field-default-value: القيمة الافتراضية للحقل
+-      field-is-required: الحقل مطلوب
+-      field-is-editable: الحقل قابل للتحرير
+-      field-options: خيارات الحقل
+-      field-validation-rules: قواعد التحقق من الحقل
+-      field-model-type: نوع نموذج الحقل
+-      field-select-model-type: اختر نوع النموذج
+-      add-new-option: إضافة خيار جديد
+-    activity-form-panel:
+-      title-concat: 'نشاط: '
+-      new-activity-title: إنشاء نشاط جديد
+-      key: المفتاح
+-      code: الرمز
+-      status: الحالة
+-      details: التفاصيل
+-      proof-of-delivery: إثبات التسليم
+-      require-pod: يتطلب إثبات التسليم
+-      require-pod-help-text: يتطلب هذا النشاط إنشاء إثبات قبل أن يتم تطبيقه على الطلب.
+-      select-pod-method: طريقة إثبات التسليم
+-      pod-method-placeholder: اختر طريقة إثبات التسليم
+-      completes-order: يكمل الطلب
+-      complete: إكمال
+-      key-help: "أدخل مفتاحًا يستخدم لاتخاذ القرارات البرمجية. يمكن أن يمثل هذا المفتاح نشاطًا واحدًا أو عدة أنشطة بنفس المعرف. ملاحظة: لا يشترط أن يكون هذا المفتاح فريدًا."
+-      code-help: أدخل معرفًا فريدًا خاصًا بهذا النشاط.
+-      status-help: حدد الحالة المعروضة للمستخدم النهائي عند تشغيل هذا النشاط.
+-      details-help: قدم وصفًا تفصيليًا للنشاط لفهم المستخدم النهائي.
+-    custom-entity-issue-form-panel: 
+-        new-custom-entity: كيان مخصص جديد
+-        name: الاسم
++    facilitator: الميسر
++    items: العناصر
++    payload: الحمولة
++    pickup: الاستلام
++    scheduled-at: مجدول في
++    tracking: التتبع
++    transaction: المعاملة
++    updated-by: تم التحديث بواسطة
++    vehicle-assigned: المركبة المعينة
++    service: الخدمة
++    location: الموقع
++    coordinates: الإحداثيات
++    current-job: الوظيفة الحالية
++    last-seen: آخر ظهور
++    place: المكان
++    subject: الموضوع
++    summary: الملخص
++    total-cost: التكلفة الإجمالية
++    due-at: مستحق في
++    serial-number: الرقم التسلسلي
++    manufacturer: الشركة المصنعة
++    part-number: رقم القطعة
++    quantity-on-hand: الكمية المتاحة
++    quantity: الكمية
++    unit-cost: تكلفة الوحدة
++    code: الرمز
++    interval: الفاصل الزمني
++    next-due: الاستحقاق التالي
++    asset: الأصل
++    performed-by: نُفذ بواسطة
++
++map:
++    visibility-controls:
++        title: عناصر التحكم في الرؤية
++        hide-places: إخفاء جميع الأماكن
++        show-places: عرض جميع الأماكن
++        driver-controls: عناصر تحكم السائق
++        driver-visibility-controls: عناصر تحكم رؤية السائقين
++        show-drivers: عرض جميع السائقين
++        hide-drivers: إخفاء جميع السائقين
++        show-online-drivers: عرض السائقين المتصلين فقط
++        show-offline-drivers: عرض السائقين غير المتصلين فقط
++        vehicle-controls: عناصر تحكم المركبات
++        vehicle-visibility-controls: عناصر تحكم رؤية المركبات
++        hide-vehicles: إخفاء جميع المركبات
++        show-vehicles: عرض جميع المركبات
++        show-online-vehicles: عرض المركبات المتصلة فقط
++        show-offline-vehicles: عرض المركبات غير المتصلة فقط
++    zones-panel:
++        title: مناطق الخدمة
++        create-service: إنشاء منطقة خدمة جديدة
++        show: عرض جميع مناطق الخدمة
++        hide: إخفاء جميع مناطق الخدمة
++        action: الإجراءات
++        focus: تركيز
++        focus-resource: 'تركيز: {resource}'
++        blur: إخفاء منطقة الخدمة
++        blur-resource: 'إخفاء: {resource}'
++        create-zone: إنشاء منطقة داخل
++        create-zone-inside: 'إنشاء منطقة: {serviceAreaName}'
++        edit-resource-boundaries: تعديل حدود {resource}
++        edit-boundaries: 'تعديل الحدود: {resource}'
++    toolbar:
++        create: إنشاء طلب
++        view-order: عرض الطلبات
++        view-service-area: عرض مناطق الخدمة
++        visibility: عناصر التحكم في الرؤية
++        scope: النطاق
++
++activity:
++    form:
++        code: الرمز
++        code-help-text: أدخل معرفًا فريدًا خاصًا بهذا النشاط.
++        completes-order: يكمل الطلب
++        details: التفاصيل
++        details-help-text: قدم وصفًا تفصيليًا للنشاط لفهم المستخدم النهائي.
++        key: المفتاح
++        key-help-text: "أدخل مفتاحًا يستخدم لاتخاذ القرارات البرمجية. يمكن أن يمثل هذا المفتاح نشاطًا واحدًا أو عدة أنشطة بنفس المعرف. ملاحظة: لا يشترط أن يكون هذا المفتاح فريدًا."
++        pod-method-placeholder: اختر طريقة إثبات التسليم
++        require-pod: يتطلب إثبات التسليم
++        require-pod-help-text: يتطلب هذا النشاط إنشاء إثبات قبل أن يتم تطبيقه على الطلب.
++        select-pod-method: طريقة إثبات التسليم
++        status: الحالة
++        status-help-text: حدد الحالة المعروضة للمستخدم النهائي عند تشغيل هذا النشاط.
++        logic-builder:
++            activity-logic: منطق النشاط
++            activity-logic-help-text: حدد شروط منطق مخصصة تحدد متى يصبح النشاط متاحًا في سير العمل.
++            activity-logic-add-logic-help-text: أنشئ مجموعة جديدة من الشروط التي ستحدد متى يجب تنشيط النشاط.
++            activity-logic-select-logic-type-help-text: اختر نوع المنطق الذي سيتبعه هذا الشرط.
++            activity-logic-add-condition-help-text: أضف متطلبًا محددًا يجب استيفاؤه ضمن مجموعة المنطق هذه.
++            field: الحقل
++            value: القيمة
++            add-logic: إضافة منطق
++            types:
++                and: 'منطق AND: صحيح إذا كانت جميع الشروط صحيحة'
++                or: 'منطق OR: صحيح إذا كان شرط واحد على الأقل صحيحًا'
++                not: 'منطق NOT: يعكس قيمة الشرط'
++                if: 'منطق شرطي: ينفذ الإجراء التالي إذا كان الشرط صحيحًا'
++            operators:
++                equal: يتحقق مما إذا كانت القيمتان متساويتين
++                not-equal: يتحقق مما إذا كانت القيمتان غير متساويتين
++                greater-than: يتحقق مما إذا كانت القيمة أكبر من أخرى
++                less-than: يتحقق مما إذا كانت القيمة أقل من أخرى
++                greater-than-or-equal: يتحقق مما إذا كانت القيمة أكبر من أو تساوي أخرى
++                less-than-or-equal: يتحقق مما إذا كانت القيمة أقل من أو تساوي أخرى
++                exists: يتحقق مما إذا كان الحقل أو القيمة موجودة
++                has: يتحقق مما إذا كان الكائن يحتوي على خاصية معينة
++                contains: يتحقق مما إذا كانت السلسلة تحتوي على سلسلة أخرى
++                begins-with: يتحقق مما إذا كانت السلسلة تبدأ بسلسلة محددة
++                ends-with: يتحقق مما إذا كانت السلسلة تنتهي بسلسلة محددة
++                in: يتحقق مما إذا كانت القيمة ضمن مجموعة محددة
++                not-in: يتحقق مما إذا كانت القيمة ليست ضمن مجموعة محددة
++                and: 'منطق AND: صحيح إذا كان كلا المعاملين صحيحين'
++                or: 'منطق OR: صحيح إذا كان أحد المعاملين على الأقل صحيحًا'
++                not: 'منطق NOT: يعكس قيمة الحقيقة'
++        event-selector:
++            activity-events: أحداث النشاط
++            activity-events-select-to-fire: اختر الأحداث التي سيتم تفعيلها عند حدوث هذا النشاط.
++            activity-events-select-events-info: اختر الحدث المحدد الذي تريد تشغيله استجابةً لهذا النشاط.
++            select-event-to-add: اختر الحدث لإضافته...
++            events:
++                order:
++                    dispatched: يتم تشغيله عند إرسال الطلب بنجاح.
++                    failed: يتم تشغيله عند فشل الطلب بسبب خطأ أو استثناء.
++                    canceled: يتم تشغيله عند إلغاء الطلب من قبل مستخدم أو سائق أو عملية نظام.
++                    completed: يتم تشغيله عند اكتمال الطلب من قبل سائق أو عملية نظام.
++
++contact:
++    fields:
++        contact-details: تفاصيل جهة الاتصال
++        upload-new-photo: تحميل صورة جديدة
++
++customer:
++    fields:
++        customer-details: تفاصيل العميل
++        select-address: اختر العنوان
++        new-address: عنوان جديد
++        select-user: اختر المستخدم
++        send-welcome-email: إرسال بريد ترحيبي لبوابة العملاء
++        send-welcome-email-help-text: إنشاء كلمة مرور مؤقتة وإرسال رابط تسجيل دخول لبوابة العملاء عبر البريد الإلكتروني.
++        upload-new-photo: تحميل صورة جديدة
++        user-account: حساب المستخدم
++        user-account-help-text: يجب ربط كل ملف تعريف عميل بحساب مستخدم محدد. هذا الارتباط ضروري لمعالجة المصادقة.
++
++custom-entity:
++    fields:
+         description: الوصف
+         details: التفاصيل
+-        type: النوع
++        entity-image: صورة الكيان
++        height: الارتفاع
++        height-text: نص الارتفاع
+         length: الطول
++        length-text: نص الطول
++        measurements: القياسات
++        name: الاسم
++        type: النوع
++        weight: الوزن
++        weight-text: نص الوزن
+         width: العرض
++        width-text: نص العرض
++
++driver:
++    fields:
++        avatar: الصورة الرمزية
++        driver-details: تفاصيل السائق
++        select-user: اختر المستخدم
++        select-vehicle: اختر المركبة
++        upload-new-photo: تحميل صورة جديدة
++        user-account: حساب المستخدم
++        user-account-help-text: يجب ربط كل ملف تعريف سائق بحساب مستخدم محدد. هذا الارتباط ضروري لمعالجة المصادقة.
++        vendor: المورد
++        select-vendor: اختر المورد
++        driver-license: رخصة السائق
++        license-expiry: انتهاء صلاحية الرخصة
++        no-vehicle-assigned: لم يتم تعيين مركبة
++    actions:
++        unassign-orders: إلغاء تعيين الطلبات
++        unassign-vehicle: إلغاء تعيين المركبة
++        create-issue: إنشاء مشكلة
++        assign-order: تعيين طلب للسائق
++        assign-vehicle: تعيين مركبة للسائق
++        locate-driver: تحديد موقع السائق على الخريطة
++    prompts:
++        assign-order-title: 'تعيين طلب إلى {driverName}'
++        assign-order-success: تم تعيين الطلب إلى {driverName}.
++        select-order-warning: اختر طلبًا لتعيينه.
++        assign-vehicle-title: 'تعيين مركبة إلى {driverName}'
++        assign-vehicle-success: 'تم تعيين المركبة إلى {driverName}.'
++        select-vehicle-warning: اختر مركبة لتعيينها.
++        no-assigned-orders-warning: لم يتم العثور على طلبات معينة لـ {driverName}.
++        select-orders-warning: اختر طلبًا واحدًا على الأقل لإلغاء تعيينه.
++        unassign-orders-title: إلغاء تعيين الطلبات من {driverName}
++        confirm-unassign-orders-title: 'إلغاء تعيين {count} طلب من {driverName}؟'
++        confirm-unassign-orders-body: 'سيؤدي هذا إلى إزالة {driverName} من هذه الطلبات: {orders}.'
++        unassign-orders-success: تم إلغاء تعيين {driverName} من {count} طلب.
++        no-vehicle-assigned-warning: لا توجد مركبة معينة لـ {driverName}.
++        unassign-vehicle-title: 'إلغاء تعيين {vehicleName} من {driverName}؟'
++        unassign-vehicle-body: سيؤدي هذا إلى إزالة {driverName} من {vehicleName}. لا تتغير تعيينات الطلبات.
++        unassign-vehicle-success: تم إلغاء تعيين {vehicleName} من {driverName}.
++        issue-title: تم الإبلاغ عن مشكلة لـ {driverName}
++
++device:
++    fields:
++        title: تفاصيل الجهاز
++        device-name: اسم الجهاز
++        device-name-placeholder: اسم الجهاز
++        device-type: نوع الجهاز
++        device-type-placeholder: اختر نوع الجهاز
++        device-id: معرف الجهاز
++        device-id-placeholder: معرف الجهاز
++        device-provider: مزود الجهاز
++        device-provider-placeholder: مزود الجهاز
++        device-model: طراز الجهاز
++        device-model-placeholder: طراز الجهاز
++        manufacturer: الشركة المصنعة
++        manufacturer-placeholder: الشركة المصنعة
++        serial-number: الرقم التسلسلي
++        serial-number-placeholder: الرقم التسلسلي
++        device-location: موقع الجهاز
++        device-location-placeholder: موقع الجهاز
++        installation-date: تاريخ التثبيت
++        installation-date-placeholder: اختر تاريخ التثبيت
++        last-maintenance-date: تاريخ آخر صيانة
++        last-maintenance-date-placeholder: اختر تاريخ آخر صيانة
++        data-frequency: تردد البيانات
++        data-frequency-placeholder: تردد البيانات
++        status: الحالة
++        status-placeholder: اختر الحالة
++        telematic: معلوماتي
++        telematic-placeholder: اختر الجهاز المعلوماتي
++        warranty: الضمان
++        warranty-placeholder: اختر الضمان
++        notes: ملاحظات
++        notes-placeholder: ملاحظات
++    actions:
++        attach-device: إرفاق جهاز
++        attach-to-vehicle: إرفاق بمركبة
++        detach-from-vehicle: فصل من المركبة
++    prompts:
++        attach-to-vehicle-title: إرفاق جهاز بمركبة
++        attach-device-to-vehicle-title: 'إرفاق {deviceName} بمركبة'
++        select-vehicle-warning: اختر مركبة لإرفاق هذا الجهاز بها.
++        attach-to-vehicle-success: تم إرفاق الجهاز بالمركبة.
++        not-attached-warning: '{deviceName} غير مرفق بمركبة.'
++        detach-from-vehicle-title: 'فصل {deviceName} من المركبة؟'
++        detach-from-vehicle-body: 'سيؤدي هذا إلى فصل {deviceName} من {vehicleName} وإيقاف تحديثات القياس عن بعد حتى يتم إرفاقه مرة أخرى.'
++        detach-from-vehicle-success: تم فصل الجهاز من المركبة.
++        select-device-to-attach-title: 'اختر جهازًا لإرفاقه بـ {resourceName}'
++        confirm-attach-device: تأكيد وإرفاق الجهاز
++        attach-device-success: تم إرفاق الجهاز بنجاح.
++        detach-from-resource-title: 'فصل {deviceName} من {resourceName}؟'
++        detach-from-resource-body: 'سيؤدي هذا إلى فصل {deviceName} من {resourceName} وإيقاف تحديثات القياس عن بعد لهذا {resourceType}.'
++        detach-from-resource-success: 'تم فصل {deviceName} من {resourceName}.'
++        detach-telematic-device-title: 'فصل {deviceName} من المركبة؟'
++        detach-telematic-device-body: 'سيظل {deviceName} متزامنًا من المزود ولكن لن يتم ربطه بمركبة بعد الآن.'
++        no-devices-attached-title: لا توجد أجهزة مرفقة
++        no-devices-attached-body: 'انقر على إرفاق جهاز أعلاه لبدء تلقي بيانات القياس عن بعد لهذا {resourceType}.'
++
++scheduler:
++    success-message: تم جدولة الطلب {orderId} في {orderAt}.
++    info-message: تم إلغاء جدولة الطلب {orderId}.
++    title: المجدول
++    unscheduled-orders: الطلبات غير المجدولة
++    scheduled-orders: الطلبات المجدولة
++    unauthorized-to-schedule: غير مصرح لك بجدولة الطلبات.
++    scheduling-for: جدولة لـ {orderId}
++    add-shift: إضافة وردية
++    create-shift: إنشاء وردية
++    edit-shift: تعديل وردية
++    delete-shift: حذف وردية
++    delete-shift-confirm: هل أنت متأكد أنك تريد حذف هذه الوردية؟ لا يمكن التراجع عن هذا الإجراء.
++    shift-created: تم إنشاء الوردية بنجاح.
++    shift-updated: تم تحديث الوردية بنجاح.
++    shift-title: عنوان الوردية
++    shift-title-placeholder: مثلاً وردية التوصيل الصباحية
++    shift-start: بداية الوردية
++    shift-end: نهاية الوردية
++    shift-notes-placeholder: ملاحظات اختيارية حول هذه الوردية
++    select-start-datetime: اختر تاريخ ووقت البدء
++    select-end-datetime: اختر تاريخ ووقت الانتهاء
++    select-driver: اختر السائق
++    upcoming-shifts: الورديات القادمة
++    no-upcoming-shifts: لا توجد ورديات قادمة مجدولة.
++    hours-of-service: ساعات الخدمة
++    daily-driving-hours: ساعات القيادة اليومية
++    weekly-hours: الساعات الأسبوعية
++    compliance-status: حالة الامتثال
++    set-availability: تعيين التوفر
++    availability-set: تم حفظ التوفر بنجاح.
++    availability-time-off: التوفر والإجازات
++    no-availability-restrictions: لا توجد قيود توفر محددة.
++    available: متاح
++    unavailable: غير متاح
++    unavailable-time-off: غير متاح / إجازة
++    availability-type: نوع التوفر
++    request-time-off: طلب إجازة
++    submit-request: تقديم الطلب
++    time-off-requested: تم تقديم طلب الإجازة.
++    delete-availability: حذف التوفر
++    delete-availability-confirm: هل أنت متأكد أنك تريد إزالة سجل التوفر هذا؟
++    availability-deleted: تمت إزالة سجل التوفر.
++    start-date: تاريخ البدء
++    end-date: تاريخ الانتهاء
++    select-start-date: اختر تاريخ البدء
++    select-end-date: اختر تاريخ الانتهاء
++    reason: السبب
++    reason-placeholder: مثلاً موعد شخصي
++    notes-placeholder: ملاحظات إضافية اختيارية
++    shift: وردية
++    add-shift-hint: انقر على "إضافة وردية" لجدولة وردية جديدة.
++    time-off-exceptions: الإجازات والاستثناءات
++    no-exceptions: لا توجد إجازات أو استثناءات مسجلة.
++    exception-approved: تمت الموافقة على الاستثناء.
++    exception-rejected: تم رفض الاستثناء.
++    exception-deleted: تمت إزالة الاستثناء.
++    delete-exception: حذف الاستثناء
++    delete-exception-confirm: هل أنت متأكد أنك تريد إزالة هذا الاستثناء؟
++    approve: موافقة
++    reject: رفض
++    recurring-schedule-created: تم إنشاء الجدول المتكرر وتفعيل الورديات.
++    recurring-schedule: جدول متكرر
++    is-recurring: متكرر
++    recurrence-pattern: نمط التكرار
++    recurrence-start-date: يبدأ في
++    recurrence-end-date: ينتهي في (اختياري)
++    template-name: اسم القالب
++    template-name-placeholder: مثلاً الأسبوع القياسي
++    schedule-name: اسم الجدول
++    schedule-name-placeholder: مثلاً الأسبوع القياسي
++    one-off-shift: وردية فردية
++    one-off-shift-help: قم بالتفعيل لإضافة وردية واحدة في تاريخ ووقت محددين بدلاً من جدول متكرر.
++    template-color: اللون
++    shift-start-time: وقت بداية الوردية
++    shift-end-time: وقت نهاية الوردية
++    break-start-time: وقت بداية الاستراحة
++    break-end-time: وقت نهاية الاستراحة
++    day-monday: الإثنين
++    day-tuesday: الثلاثاء
++    day-wednesday: الأربعاء
++    day-thursday: الخميس
++    day-friday: الجمعة
++    day-saturday: السبت
++    day-sunday: الأحد
++    frequency-daily: يومي
++    frequency-weekly: أسبوعي
++    frequency-monthly: شهري
++    today: اليوم
++    orders-tab: جدول الطلبات
++    fleet-schedule-tab: جدول الأسطول
++    break-start: بداية الاستراحة
++    break-end: نهاية الاستراحة
++    select-break-start: اختر وقت بداية الاستراحة
++    select-break-end: اختر وقت نهاية الاستراحة
++    select-date: اختر التاريخ
++    working-days: أيام العمل
++    recurrence-start: يبدأ في
++    recurrence-end: ينتهي في
++    recurring-schedule-help: حدد نمط وردية متكرر باستخدام الأيام والأوقات. سيتم إنشاء الورديات تلقائيًا للسائق.
++    shift-deleted: تم حذف الوردية بنجاح.
++    day-mon: اثنين
++    day-tue: ثلاثاء
++    day-wed: أربعاء
++    day-thu: خميس
++    day-fri: جمعة
++    day-sat: سبت
++    day-sun: أحد
++    view-day: يوم
++    view-week: أسبوع
++    undo: تراجع عن آخر إجراء
++    redo: إعادة آخر إجراء
++    search-orders: البحث عن الطلبات...
++    select-all: تحديد الكل
++    all-scheduled: جميع الطلبات المجدولة
++    not-scheduled: غير مجدول
++    expand-sidebar: توسيع الشريط الجانبي
++    collapse-sidebar: طي الشريط الجانبي
++    bulk-assign: تعيين {count} طلب
++    bulk-assign-title: تعيين جماعي لـ {count} طلب
++    bulk-assign-success: 'تم تعيين {count} طلب بنجاح.'
++    bulk-assign-order-count: '{count} طلب مختار للتعيين'
++    bulk-assign-spacing-hint: سيتم جدولة الطلبات بالتسلسل بدءًا من التاريخ والوقت المحددين، مع تباعد حسب المدة المقدرة.
++    assign-to-driver: تعيين إلى سائق
++    assign-orders: تعيين الطلبات
++    orders-to-assign: '{count} طلب للتعيين'
++    scheduled-date: التاريخ المجدول
++    conflict-title: تم اكتشاف تعارض في الجدولة
++    conflict-description: '{orderTracking} يتداخل مع طلب موجود لـ {driverName}.'
++    conflicting-orders: الطلبات المتعارضة
++    conflict-resolution-prompt: كيف ترغب في حل هذا التعارض؟
++    auto-adjust: ضبط الوقت تلقائيًا
++    assign-anyway: التعيين على أي حال
++    clear-selection: مسح التحديد
++
++entity:
++    fields:
++        declare: القيمة المعلنة
++        declare-text: نص القيمة المعلنة
++        description: الوصف
++        description-text: نص الوصف
+         height: الارتفاع
++        height-text: نص الارتفاع
++        id-text: نص المعرف
++        length: الطول
++        length-text: نص الطول
++        measurement-title: عنوان القياس
++        name-text: نص الاسم
++        price: السعر
++        price-text: نص السعر
++        price-title: عنوان السعر
++        sale-price: سعر البيع
++        sale-price-text: نص سعر البيع
++        sku: SKU
++        sku-text: نص SKU
+         weight: الوزن
+-        entity-image: صورة الكيان
+-        measurements: القياسات
+-    order-config-manager:
+-      title: تكوين الطلبات
+-      message: تتيح لك تكوينات الطلبات تحديد التكوينات الديناميكية التي ستخبر Fleetbase بكيفية تنفيذ أنواع مختلفة من الطلبات.
+-      configuration: التكوين
+-      new-order-config: تكوين طلب جديد
+-      select-order-config: اختر تكوين الطلب
+-      create-new-title: إنشاء تكوين طلب جديد
+-      create-warning-message: يتطلب تكوين الطلب اسمًا
+-      create-success-message: تم إنشاء تكوين الطلب الجديد بنجاح.
+-      no-order-config-selected: لم يتم اختيار تكوين طلب.
+-      saved-success-message: تم حفظ تكوين '{orderConfigName}'.
+-      cloned-success-message: تم استنساخ تكوين الطلب بنجاح.
+-      enter-clone-name: أدخل اسم التكوين المستنسخ
+-      no-config-name-warning-message: لم يتم إدخال اسم التكوين.
+-      delete-warning-message: بمجرد حذف تكوين الطلب هذا، لن تتمكن من إنشاء طلبات باستخدامه بعد الآن. هل أنت متأكد؟
+-      uninstall-order-config: إلغاء تثبيت التكوين
+-      uninstall-order-config-success-message: تم إلغاء تثبيت الامتداد {extensionName}.
+-      select-order-config-to-start: اختر أو أنشئ تكوين طلب للبدء.
+-      details:
++        weight-text: نص الوزن
++        width: العرض
++        width-text: نص العرض
++
++fleet:
++    fields:
++        fleet-details: تفاصيل الأسطول
++        fleet-name: اسم الأسطول
++        parent-fleet: الأسطول الرئيسي
++        select-parent-fleet: اختر الأسطول الرئيسي لتعيين الأسطول إليه
++        select-service: اختر منطقة الخدمة لتعيين الأسطول إليها
++        select-status: اختر الحالة
++        select-status-fleet: اختر حالة الأسطول.
++        select-vendor: اختر المورد لتعيين الأسطول إليه
++        select-zone: اختر المنطقة لتعيين الأسطول إليها
++        service-title: تعيين إلى منطقة الخدمة
++        task-mission-title: المهمة/المهمة
++        task-text: قدم وصفًا للمهمة الأساسية لهذا الأسطول إذا كان ذلك ممكنًا.
++        zone-title: تعيين إلى المنطقة
++        active-manpower: القوى العاملة النشطة
++        task: المهمة
++    driver-listing:
++        search-driver: ابحث عن السائقين في الأسطول
++        add-driver: إضافة سائق إلى الأسطول
++        loading-message: جارٍ تحميل سائقي الأسطول...
++    vehicle-listing:
++        search-vehicle: ابحث عن المركبات في الأسطول
++        add-vehicle: إضافة مركبة إلى الأسطول
++        loading-message: جارٍ تحميل مركبات الأسطول...
++    actions:
++        assign-vehicle: تعيين مركبة إلى الأسطول
++        assign-driver: تعيين سائق إلى الأسطول
++    prompts:
++        assign-driver-title: تعيين سائق إلى {fleetName}
++        assign-vehicle-title: تعيين مركبة إلى {fleetName}
++        select-driver-warning: اختر سائقًا لتعيينه.
++        select-vehicle-warning: اختر مركبة لتعيينها.
++        assign-driver-success: تم تعيين السائق إلى {fleetName}.
++        assign-vehicle-success: تم تعيين المركبة إلى {fleetName}.
++
++fuel-report:
++    fields:
++        details: تفاصيل تقرير الوقود
++        reporter: المراسل
++        select-reporter: اختر المراسل
++        fuel-cost: تكلفة الوقود
++        odometer: عداد المسافات
++        select-volume-help-text: اختر الوحدة المترية وحجم الوقود للإبلاغ.
++        fuel-volume: الوقود/ الحجم
++
++issue:
++    fields:
++        title: العنوان
++        add-tags: إضافة علامات
++        assigned-to: معين إلى
++        category: فئة المشكلة
++        issue-report: تقرير المشكلة
++        priority: أولوية المشكلة
++        report: تقرير المشكلة
++        reported-by: تم الإبلاغ بواسطة
++        select-assign: اختر المكلف
++        select-category: اختر فئة المشكلة
++        select-priority: اختر أولوية المشكلة
++        select-reporter: اختر المراسل
++        select-status: اختر حالة المشكلة
++        select-type: اختر نوع المشكلة
++        tags: علامات المشكلة
++        type: نوع المشكلة
++
++order:
++    card:
++      linked-order: طلب مرتبط
++      unknown-order: طلب غير معروف
++      no-type: لا يوجد نوع
++      pickup: استلام
++      dropoff: تسليم
++      return: عودة
++      waypoints: نقاط توقف
++      additional-stop: توقف إضافي
++      additional-stops: توقفات إضافية
++      no-pickup-address: لا يوجد عنوان استلام
++      no-dropoff-address: لا يوجد عنوان تسليم
++      no-route-details: لا توجد تفاصيل مسار متاحة.
++      no-order-linked: لا يوجد طلب مرتبط بهذه المشكلة.
++    fields:
++        ad-hoc: فوري
++        ad-hoc-help-text: تفعيل الفوري سيمكن الطلب من تنبيه السائقين في محيط استلام الطلب بشكل ذكي.
++        add-entity: إضافة كيان
++        add-item-button: إضافة عنصر
++        add-item-order: إضافة عنصر إلى الطلب
++        add-waypoint: إضافة نقطة توقف
++        add-waypoint-help-text: استخدم زر "إضافة نقطة توقف" لإضافة المزيد من التوقفات لهذا الطلب.
++        adhoc-ping: مسافة التنبيه الفوري
++        adhoc-ping-help-text: يحدد هذا الإعداد مسافة التنبيه الفوري لهذا الطلب.
++        adhoc-ping-message: يجب أن تكون المسافة بالأمتار
++        apply-service-rate: تطبيق سعر الخدمة
++        assign-driver: تعيين سائق
++        assign-driver-help-text: تعيين السائق الذي سيتم إرسال هذا الطلب إليه.
++        assign-driver-placeholder: اختر السائق
++        assign-vehicle: تعيين مركبة
++        assign-vehicle-help-text: تعيين المركبة التي سيتم تنفيذ هذا الطلب بها.
++        assign-vehicle-placeholder: اختر المركبة
++        breakdown: تفصيل
++        customer: العميل
++        customer-help-text: تعيين العميل لهذا الطلب اختياريًا.
++        customer-placeholder: اختر العميل
++        dispatch: إرسال
++        dispatch-help-text: تفعيل الإرسال سيؤدي إلى إرسال هذا الطلب فورًا بعد الإنشاء.
++        documents-panel-title: المستندات والملفات
++        dropoff: التسليم
++        edit-address: تعديل العنوان
++        edit-item: تعديل العنصر
++        facilitator: الميسر
++        facilitator-help-text: تعيين ميسر لهذا الطلب اختياريًا.
++        facilitator-placeholder: اختر الميسر
++        info-text: اختر عرض خدمة في الوقت الفعلي لتطبيقه على هذا الطلب.
++        internal-id: المعرف الداخلي
++        internal-id-help-text: استخدم هذا الحقل لتعيين معرف مخصص أو معرف داخلي للطلب اختياريًا.
++        invalid-coordinates: إحداثيات غير صالحة!
++        items-drop: العناصر تسقط عند
++        loading-message: جارٍ تحميل عروض الخدمة...
++        updating-service-quotes-message: جارٍ تحديث عروض الخدمة...
++        notes-placeholder: أدخل ملاحظات الطلب هنا....
++        notes-title: ملاحظات
++        optimize-route: تحسين المسار
++        optimize-route-help-text: سيقوم Fleetbase بتحسين المسار تلقائيًا.
++        order-type: نوع الطلب
++        order-type-help-text: اختيار نوع الطلب سيخبر Fleetbase بتكوينات الطلب التي يجب استخدامها.
++        order-type-placeholder: اختر نوع الطلب
++        payload-entities: الحمولة / الكيانات
++        pickup: الاستلام
++        proof-delivery: إثبات التسليم
++        proof-delivery-help-text: اختر نوع إثبات التسليم المطلوب.
++        proof-delivery-placeholder: اختر طريقة إثبات التسليم
++        refresh-button: تحديث
++        require-proof: طلب إثبات التسليم
++        require-proof-help-text: تفعيل هذا سيطلب من السائق إكمال إثبات التسليم.
++        return: العودة
++        route: المسار
++        route-error: فشل تحسين المسار، تحقق من إدخال المسار وحاول مرة أخرى.
++        route-label: عمليات تسليم متعددة
++        schedule: الجدول
++        schedule-help-text: تاريخ ووقت إرسال الطلب.
++        select-destination: اختر الوجهة
++        select-dropoff: اختر التسليم
++        select-pickup: اختر الاستلام
++        select-return: اختر العودة
++        select-waypoint: اختر نقطة توقف
++        service: الخدمة
++        select-service-rate: اختر سعر الخدمة
++        service-help-text: اختر سعر خدمة محدد لتوليد عروض أسعار الخدمة في الوقت الفعلي.
++        service-quotes-help-text: اختر سعر الخدمة لجلب العروض له.
++        service-type: نوع الخدمة
++        service-type-placeholder: اختر نوع الخدمة
++        sku: SKU
++        activity: النشاط
++        comments-title: التعليقات
++        date-dispatched: تاريخ الإرسال
++        date-scheduled: التاريخ المجدول
++        date-started: تاريخ البدء
++        driver: السائق
++        driver-assigned: السائق المعين
++        no-driver-assigned: لم يتم تعيين سائق
++        get-label: الحصول على الملصق
++        order-notes-updated: تم تحديث ملاحظات الطلب.
++        payload: الحمولة
++        proof-of-delivery: إثبات التسليم
++        purchase-rate-panel-title: سعر الشراء
++        route-panel-title: المسار
++        save-order-note: حفظ ملاحظة الطلب
++        tracking: التتبع
++        tracking-number: رقم التتبع
++        vehicle-assigned: المركبة المعينة
++        view-activity: عرض النشاط
++        no-order-activity: لا يوجد نشاط للطلب
++        waypoint-actions: إجراءات نقطة التوقف
++        documents-files: المستندات والملفات
++        order-metadata: بيانات الطلب الوصفية
++        order-label: ملصق الطلب
++        waypoint-label: ملصق نقطة التوقف
++        current-eta: الوقت المقدر الحالي
++        ect: الوقت المقدر للاكتمال
++        current-destination: الوجهة الحالية
++        no-service-quotes: لا توجد عروض خدمة.
++        input-order-routes: أدخل مسار الطلب لعرض عروض الخدمة.
++        service-quote-info: اختر عرض خدمة في الوقت الفعلي لتطبيقه على هذا الطلب.
++    prompts:
++        update-details-success: تم تحديث تفاصيل {orderId}.
++        route-error: فشل تحسين المسار، تحقق من إدخال المسار وحاول مرة أخرى.
++        route-update-success: تم تحديث تفاصيل مسار {orderId}.
++        unassign-driver-title: هل أنت متأكد أنك تريد إلغاء تعيين السائق ({driverName}) من هذا الطلب؟
++        unassign-driver-body: بمجرد إلغاء تعيين السائق، لن يكون للسائق حق الوصول إلى تفاصيل هذا الطلب.
++        unassign-driver-success: تم إلغاء تعيين السائق من هذا الطلب.
++        no-driver-assigned-error: لا يوجد سائق معين لهذا الطلب.
++        failed-to-load-order-label: فشل تحميل ملصق الطلب.
++        failed-to-load-waypoint-label: فشل تحميل ملصق نقطة التوقف.
++        unable-to-add-entity: غير قادر على إضافة كيان جديد إلى الطلب.
++        assign-driver-success: تم تعيين السائق ({driverName}) للطلب {orderId}.
++        cancel-title: هل أنت متأكد أنك تريد إلغاء هذا الطلب؟
++        cancel-body: بمجرد إلغاء هذا الطلب، سيظل سجل الطلب مرئيًا ولكن لا يمكن إضافة نشاط إلى هذا الطلب.
++        cancel-success: تم إلغاء الطلب {orderId}.
++        dispatch-title: هل أنت متأكد أنك تريد إرسال هذا الطلب؟
++        dispatch-body: بمجرد إرسال هذا الطلب، سيتم إخطار السائق المعين.
++        dispatch-success: تم إرسال الطلب {orderId}.
++        order-bulk-search: أدخل معرفات الطلبات أو أرقام التتبع مفصولة بفواصل لإجراء بحث جماعي
++    actions:
++        create-new-customer: إنشاء عميل جديد
++        create-new-facilitator: إنشاء ميسر جديد
++        create-new-place: إنشاء مكان جديد
++        change-driver: تغيير السائق
++        assign-driver: تعيين سائق
++        update-activity: تحديث النشاط
++        reload-activity: إعادة تحميل النشاط
++        view-activity-as-timeline: عرض كجدول زمني
++        view-activity-as-list: عرض كقائمة
++        cancel-order: إلغاء الطلب
++        dispatch-order: إرسال الطلب
++        dispatch-orders: إرسال الطلبات
++        assign-driver-to-orders: تعيين سائق للطلبات
++        edit-order-details: تعديل تفاصيل الطلب
++        edit-order-route: تعديل مسار الطلب
++        edit-order-metadata: تعديل بيانات الطلب الوصفية
++        update-order-activity: تحديث نشاط الطلب
++        submit-new-activity: تقديم نشاط جديد
++        add-entity: إضافة كيان
++        unassign-driver-name: 'إلغاء تعيين السائق: {driverName}'
++    schedule-card:
++        destination: الوجهة
++        unassign-driver: إلغاء تعيين السائق؟
++        unassign-text: أنت على وشك إلغاء تعيين السائق للطلب {orderId}. انقر متابعة لتأكيد إزالة السائق.
++        unassign-button: متابعة وإلغاء تعيين السائق
++        assign-driver: تعيين سائق جديد؟
++        assign-text: أنت على وشك تعيين سائق جديد ({driverName}) للطلب {orderId}. انقر متابعة لتأكيد السائق.
++        assign-button: متابعة وتعيين السائق
++        date: التاريخ المجدول
++        date-created: تاريخ الإنشاء
++        driver-assigned: السائق
++        vehicle-assigned: المركبة
++        no-driver: لا يوجد سائق
++        no-vehicle: لا توجد مركبة
++        select-driver: اختر السائق
++        select-vehicle: اختر المركبة
++    kanban:
++        status-updated: تم تحديث نشاط الطلب إلى حالة {status}.
++        cannot-update-status: الطلب غير قادر على الانتقال إلى حالة {status}.
++
++order-config-manager:
++    title: تكوين الطلبات
++    message: تتيح لك تكوينات الطلبات تحديد التكوينات الديناميكية التي ستخبر Fleetbase بكيفية تنفيذ أنواع مختلفة من الطلبات.
++    configuration: التكوين
++    new-order-config: تكوين طلب جديد
++    select-order-config: اختر تكوين الطلب
++    create-new-title: إنشاء تكوين طلب جديد
++    create-warning-message: يتطلب تكوين الطلب اسمًا
++    create-success-message: تم إنشاء تكوين الطلب الجديد بنجاح.
++    no-order-config-selected: لم يتم اختيار تكوين طلب.
++    saved-success-message: تم حفظ تكوين {orderConfigName}.
++    cloned-success-message: تم استنساخ تكوين الطلب بنجاح.
++    enter-clone-name: أدخل اسم التكوين المستنسخ
++    no-config-name-warning-message: لم يتم إدخال اسم التكوين.
++    delete-warning-message: بمجرد حذف تكوين الطلب هذا، لن تتمكن من إنشاء طلبات باستخدامه بعد الآن. هل أنت متأكد؟
++    uninstall-order-config: إلغاء تثبيت التكوين
++    uninstall-order-config-success-message: تم إلغاء تثبيت الامتداد {extensionName}.
++    select-order-config-to-start: اختر أو أنشئ تكوين طلب للبدء.
++    tabs:
++        details: التفاصيل
++        custom-fields: الحقول المخصصة
++        activity-flow: تدفق النشاط
++        entities: الكيانات
++    details:
+         details: التفاصيل
+         name: الاسم
+         description: الوصف
+         tags: العلامات
+-        add-tags: أضف العلامات
++        add-tags: إضافة علامات
+         key: المفتاح
+         version: الإصدار
+         namespace: مساحة الاسم
+         controls: الضوابط
+         delete-config: حذف التكوين
+         delete:
+-          delete-title: حذف تكوين الطلب هذا؟
+-          delete-body-message: بمجرد حذف تكوين الطلب هذا، لن يكون قابلاً للاسترداد وستفقد جميع التكوينات.
+-          confirm-delete: حذف
+-      activity-flow:
++            delete-title: حذف تكوين الطلب هذا؟
++            delete-body-message: بمجرد حذف تكوين الطلب هذا، لن يكون قابلاً للاسترداد وستفقد جميع التكوينات.
++            confirm-delete: حذف
++    activity-flow:
+         save-activity-flow: حفظ تدفق النشاط
+         edit-activity-unique-code-warning: يجب أن يكون رمز النشاط فريدًا!
+-      custom-fields:
++    custom-fields:
+         new-field-group: مجموعة حقل جديدة
+         new-custom-field: إنشاء حقل مخصص جديد
+         grid-size: حجم الشبكة
+         delete-custom-field-prompt:
+-          modal-title: حذف هذا الحقل المخصص؟
+-          delete-body-message: بمجرد حذف هذا الحقل المخصص، لن يكون قابلاً للاسترداد وستفقد جميع التكوينات.
+-          confirm-delete: حذف
++            modal-title: حذف هذا الحقل المخصص؟
++            delete-body-message: بمجرد حذف هذا الحقل المخصص، لن يكون قابلاً للاسترداد.
++            confirm-delete: حذف
+         delete-custom-field-group-prompt:
+-          modal-title: حذف مجموعة الحقول هذه؟
+-          delete-body-message: بمجرد حذف مجموعة الحقول هذه، لن تكون قابلة للاسترداد وستفقد جميع الحقول المخصصة بداخلها.
+-          confirm-delete: حذف
+-      entities: 
++            modal-title: حذف مجموعة الحقول هذه؟
++            delete-body-message: بمجرد حذف مجموعة الحقول هذه، لن تكون قابلة للاسترداد.
++            confirm-delete: حذف
++    entities:
+         new-custom-entity: كيان مخصص جديد
+         name: الاسم
+         description: الوصف
+@@ -232,187 +1005,835 @@ fleet-ops:
+         height: الارتفاع
+         weight: الوزن
+         delete-custom-entity-title: حذف هذا الكيان المخصص؟
+-        delete-custom-entity-body: بمجرد حذف هذا الكيان المخصص، لن يكون قابلاً للاسترداد وستفقد جميع التكوينات.
++        delete-custom-entity-body: بمجرد حذف هذا الكيان المخصص، لن يكون قابلاً للاسترداد.
+         confirm-delete: تأكيد
+-      types:
+-        no-order-installed: لم يتم تثبيت تكوينات الطلب!
+-        you-have-no-configs: ليس لديك حاليًا أي تكوينات طلب مثبتة، تحقق من الامتدادات لتثبيت تكوين طلب للبدء.
++    types:
++        no-order-installed: لم يتم تثبيت تكوينات الطلبات!
++        you-have-no-configs: ليس لديك حاليًا أي تكوينات طلب مثبتة.
+         view-extensions: عرض الامتدادات
+-    avatar-picker:
+-      avatar: الصورة الرمزية
+-      select-map-avatar: اختر صورة رمزية للخريطة
+-      select-avatar-rendering: اختر صورة رمزية لاستخدامها في العرض على الخرائط عند استخدام ميزات تتبع الموقع الجغرافي.
+-      select-avatar: اختر الصورة الرمزية
+-    admin:
+-      navigator-app:
+-        title: تطبيق Navigator
+-        name: عنوان URL لربط المثيل
+-        message: استخدم هذا الرابط لربط تطبيق Navigator الرسمي بهذا المثيل {companyName}. فتح هذا الرابط على جهاز محمول سيفتح تطبيق Navigator ويحدث تكوينه وعلامته التجارية.
+-        settings: إعدادات الكيان
+-        select-input: السماح للسائق بتحديث تفاصيل الكيان 
+-        driver-settings: إعدادات السائق
+-        description: تمكين السائق على متن الطائرة
+-        upload-document: طلب من السائق تحميل المستندات
+-        upload-body: إضافة مستندات
+-        document: المستند
+-      visibility-controls:
+-        title: عناصر التحكم في الرؤية
+-        message: تتيح لك عناصر التحكم في الرؤية تعطيل أقسام Fleet-Ops. قم بتبديل خانة الاختيار لتمكين أو تعطيل الأقسام لإخفائها في Fleet-Ops.
+-        checkbox-text: تمكين أو تعطيل الرؤية لهذا القسم في Fleet-Ops.
+-      avatar-management:
+-        upload-avatar: تحميل الصورة الرمزية
+-        view-avatar: عرض الصورة الرمزية
+-        vehicles: المركبات
+-        drivers: السائقين
+-        places: الأماكن
+-    entity-field-editing-settings:
+-      entitiy-field-editing-settings: إعدادات تحرير حقل الكيان
+-      entity-field-editing-settings-help-text: تحدد هذه الإعدادات الحقول التي يمكن للسائق تحريرها عبر تطبيق Navigator
+-      select-order-config: اختر تكوين الطلب
+-      select-order-config-help-text: اختر تكوين الطلب الذي ستنطبق عليه هذه الإعدادات
+-      enable-driver-to-edit-entity-fields: السماح للسائق بتحرير تفاصيل الكيان
+-      enable-driver-to-edit-entity-fields-help-text: تمكين هذا التبديل يمنح السائق الإذن بتعديل حقول الكيان المحددة أدناه.
+-    driver-onboard-settings:
+-      driver-onboard-settings: إعدادات السائق على متن الطائرة
+-      enable-driver-onboard-from-app: تمكين السائق على متن الطائرة من تطبيق Navigator
+-      enable-driver-onboard-from-app-help-text: تمكين هذا الإعداد يسمح للسائقين بالتسجيل بشكل مستقل (إنشاء حساباتهم الخاصة) عبر تطبيق Navigator.
+-      select-onboard-method: اختر طريقة تسجيل السائق
+-      select-onboard-method-help-text: يحدد هذا الإعداد كيفية السماح للسائقين بإنشاء حساباتهم من خلال تطبيق Navigator. اختر 'دعوة' إذا كان يجب على السائقين تلقي دعوة عبر البريد الإلكتروني لإنشاء حساباتهم. اختر 'زر' إذا كنت ترغب في تمكين زر داخل التطبيق يسمح لأي شخص بإنشاء حساب سائق.
+-      require-driver-to-upload-onboard-documents: طلب من السائق تحميل مستندات التسجيل
+-      require-driver-to-upload-onboard-documents-help-text: "يفرض هذا الإعداد المستندات التي يجب على السائق تقديمها قبل إنشاء حسابه."
+-      required-onboard-documents: المستندات المطلوبة للتسجيل
+-      required-onboard-documents-help-text: أدخل جميع المستندات المطلوبة للتسجيل التي يجب على السائق تقديمها أدناه باستخدام زر "إضافة مستند للتسجيل".
+-      enter-document-name: أدخل اسم المستند
+-      add-onboard-document: إضافة مستند للتسجيل
+-    cell:
+-      driver-name:
+-        not-assigned: لم يتم تعيين سائق
+-    fleet-panel:
+-      details:
+-        active-manpower: القوى العاملة النشطة
+-      driver-listing:
+-        search-driver: ابحث عن السائقين في الأسطول
+-        add-driver: إضافة سائق إلى الأسطول
+-        loading-driver: جارٍ تحميل السائقين في الأسطول...
+-      vehicle-listing:
+-        search-vehicle: ابحث عن المركبات في الأسطول
+-        add-vehicle: إضافة مركبة إلى الأسطول
+-        loading-vehicle: جارٍ تحميل المركبات في الأسطول...
+-    layout:
+-      fleet-ops-sidebar:
+-        navigator-app: تطبيق Navigator
+-        resources: الموارد
+-        operations: العمليات
+-        dashboard: لوحة القيادة
+-        service-rates: أسعار الخدمة
+-        scheduler: المجدول
+-        drivers: السائقين
+-        vehicles: المركبات
+-        fleets: الأساطيل
+-        vendors: الموردين
+-        contacts: جهات الاتصال
+-        places: الأماكن
+-        fuel-reports: تقارير الوقود
+-        fuel-transactions: معاملات الوقود
+-        issues: القضايا
+-        title: إنشاء طلب جديد
+-        settings: الإعدادات
+-        order-config: تكوين الطلب
+-        fuel-providers: تكاملات الوقود
+-    live-map-drawer:
+-      driver-listing:
+-        location: الموقع
+-        current-job: الوظيفة الحالية
+-        last-seen: آخر ظهور
+-        view-driver: عرض تفاصيل السائق...
+-        edit-driver: تحرير السائق...
+-        locate-driver: تحديد موقع السائق...
+-        delete-driver: حذف السائق...
+-        warning-message: غير قادر على تحديد موقع السائق.
+-        message: تصفية السائقين بالكلمة المفتاحية...
+-      place-listing:
+-        location: الموقع
+-        place: المكان
+-        view-place: عرض تفاصيل المكان...
+-        edit-place: تحرير المكان...
+-        locate-place: تحديد موقع المكان...
+-        delete-place: حذف المكان...
+-        warning-message: غير قادر على تحديد موقع المكان.
+-        message: تصفية الأماكن بالكلمة المفتاحية...
+-      vehicle-listing:
+-        location: الموقع
+-        last-seen: آخر ظهور
+-        view-vehicle: عرض تفاصيل المركبة...
+-        edit-vehicle: تحرير المركبة...
+-        locate-vehicle: تحديد موقع المركبة...
+-        delete-vehicle: حذف المركبة...
+-        warning-message: غير قادر على تحديد موقع المركبة.
+-        message: تصفية المركبات بالكلمة المفتاحية...
+-    map-container:
+-      visibility-control-panel:
+-        title: عناصر التحكم في الرؤية
+-        hide-places: إخفاء جميع الأماكن...
+-        show-places: عرض جميع الأماكن...
+-        vehicles: المركبات
+-        vehicle-controls: عناصر التحكم في رؤية المركبات...
+-        hide-vehicles: إخفاء جميع المركبات...
+-        show-vehicles: عرض جميع المركبات...
+-        online-vehicles: عرض المركبات المتصلة فقط...
+-        offline-vehicles: عرض المركبات غير المتصلة فقط...
+-      zones-panel:
+-        title: مناطق الخدمة
+-        create-service: إنشاء منطقة خدمة جديدة...
+-        show: عرض جميع مناطق الخدمة
+-        hide: إخفاء جميع مناطق الخدمة
+-        action: الإجراءات...
+-        focus: التركيز
+-        blur: طمس منطقة الخدمة...
+-        create-zone: إنشاء منطقة داخل...
+-      toolbar:
+-        create: إنشاء طلب
+-        view-order: عرض الطلبات
+-        view-service-area: عرض مناطق الخدمة
+-        visibility: عناصر التحكم في الرؤية
+-        scope: النطاق
+-    modals:
+-      new-custom-field-group:
++
++place:
++    fields:
++        details: تفاصيل المكان
++        building: المبنى
++        neighborhood: الحي
++        postal-code: الرمز البريدي
++        security-access-code: رمز الوصول الأمني
++        city: المدينة
++        province: المقاطعة
++        country: البلد
++        state: الولاية
++        street-1: الشارع 1
++        street-2: الشارع 2
++        coordinates: الإحداثيات
++        phone: الهاتف
++    prompts:
++        vendor-assigned-success: تم تعيين المورد {placeName} كموقع مورد جديد.
++    actions:
++        locate-place: تحديد موقع المكان على الخريطة
++
++service-area:
++    fields:
++        details: تفاصيل منطقة الخدمة
++        area-color: لون التعبئة
++        area-color-help-text: تخصيص لون التعبئة لمنطقة الخدمة هذه.
++        border-color: لون الحدود
++        border-color-help-text: تخصيص لون الحدود لمنطقة الخدمة هذه.
++        country: البلد
++        country-help-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة.
++        name: الاسم
++        name-help-text: تعيين اسم عرض لمنطقة الخدمة.
++        type: النوع
++        type-help-text: اختر تعريف النوع لمنطقة الخدمة هذه.
++
++service-rate:
++    fields:
++        details: تفاصيل سعر الخدمة
++        terms: الشروط
++        add-drop-off-button: إضافة نطاق تسليم
++        additional-fee: رسوم إضافية
++        algorithm-help-text: حدد صيغة يتم تقييمها لحساب سعر هذه الخدمة.
++        algorithm-label: الخوارزمية
++        algorithm-placeholder: "(( '{distance}' / 50 ) * .05 ) + (( '{time}' / 60 ) * .01)"
++        base-fee-help-text: تعيين رسوم أساسية تمثل الحد الأدنى لتكلفة هذه الخدمة.
++        base-fee-label: الرسوم الأساسية
++        calculation-method-help-text: الطريقة المستخدمة لحساب رسوم الدفع عند الاستلام.
++        calculation-method-label: طريقة حساب رسوم الدفع عند الاستلام
++        calculation-method-placeholder: اختر طريقة حساب رسوم الدفع عند الاستلام
++        cash-delivery-label: تفعيل رسوم إضافية لطلبات الدفع عند الاستلام؟
++        cash-delivery-title: الدفع عند الاستلام
++        custom-algorithm-info-message: هذا الخيار لتعريف حساب مخصص لرسوم هذه الخدمة باستخدام المتغيرات.
++        custom-algorithm-info-second-message: لاحظ أن المتغيرات يجب أن تكون محاطة بقوس واحد.
++        custom-algorithm-title: خوارزمية مخصصة
++        delivery-flat-fee: رسوم ثابتة للدفع عند الاستلام
++        delivery-flat-fee-help-text: تحديد رسوم ثابتة تضاف خلال ساعات الذروة.
++        deminsions-unit: الأبعاد
++        distance: المسافة
++        distance-continue-message: المسافة بالأمتار من مسار الطلب.
++        distance-message: المسافة
++        distance-unit: وحدة المسافة
++        distance-unit-help-text: يمكن أن تكون وحدة المسافة إما بالكيلومتر أو بالمتر.
++        distance-unit-placeholder: اختر وحدة المسافة.
++        duration-terms-help-text: أضف شروط خدمة إضافية بخصوص المدة.
++        duration-terms-label: شروط المدة
++        duration-terms-placeholder: شروط المدة إذا كانت تنطبق
++        estimated-days: أيام التسليم المقدرة
++        estimated-days-help-text: العدد المقدر للأيام التي ستستغرقها هذه الخدمة.
++        example: مثال
++        example-message: إذا كان طلب الطلبية مسافة 2,200 متر مع وقت وصول مقدر بـ 30 دقيقة.
++        example-second-message: فإن الصيغة التالية ستحسب رسوم خدمة قدرها $2.50، والتي ستضاف إلى الرسوم الأساسية.
++        fee: الرسوم
++        fee-percentage: نسبة رسوم الدفع عند الاستلام
++        fee-percentage-help-text: تحديد رسوم بنسبة مئوية من إجمالي سعر الخدمة.
++        fixed-meter: خيارات العداد الثابت
++        fixed-meter-example-text: "على سبيل المثال: يتم تحديد رسوم ثابتة لكل كيلومتر."
++        fixed-meter-text: هذا الخيار يحدد رسومًا ثابتة لكل كيلومتر.
++        flat-fee-help-text: تحديد رسوم ثابتة تضاف خلال ساعات الذروة.
++        flat-fee-label: رسوم ثابتة لساعات الذروة
++        height-label: الارتفاع
++        height-placeholder: 'الارتفاع بـ {parcelFeeDimension}'
++        length-label: الطول
++        length-placeholder: 'الطول بـ {parcelFeeDimension}'
++        max: الحد الأقصى
++        max-drop: الحد الأقصى للتسليم
++        maximum-distance: المسافة القصوى
++        maximum-distance-help-text: المسافة القصوى القابلة للخدمة.
++        min: الحد الأدنى
++        min-drop: الحد الأدنى للتسليم
++        order-type-placeholder: عنصر نائب لنوع الطلب
++        peak-hours-end-help-text: تحديد وقت انتهاء رسوم ساعات الذروة.
++        peak-hours-end-label: نهاية ساعات الذروة
++        peak-hours-fee-help-text: الطريقة المستخدمة لحساب رسوم ساعات الذروة.
++        peak-hours-fee-label: طريقة حساب رسوم ساعات الذروة
++        peak-hours-fee-placeholder: اختر طريقة حساب رسوم ساعات الذروة
++        peak-hours-label: تفعيل رسوم إضافية للطلبات المقدمة خلال ساعات الذروة المحددة؟
++        peak-hours-percentage-help-text: تحديد رسوم بنسبة مئوية من إجمالي سعر الخدمة لتضاف خلال ساعات الذروة.
++        peak-hours-percentage-label: نسبة رسوم ساعات الذروة
++        peak-hours-start-help-text: تحديد وقت بدء رسوم ساعات الذروة.
++        peak-hours-start-label: بداية ساعات الذروة
++        peak-hours-title: ساعات الذروة
++        per-drop-off-example-text: "على سبيل المثال: 1-5 عمليات تسليم في الطلب ستكلف مبلغ $x."
++        per-drop-off-text: هذا الخيار يحدد رسومًا ثابتة لكل عملية تسليم.
++        per-drop-off-title: خيارات لكل عملية تسليم
++        per-meter: لكل متر
++        per-meter-example-text: "على سبيل المثال: '{fee}' * '{distance}' + '{baseFee}'"
++        per-meter-rate-fee: رسوم ثابتة لكل متر
++        per-meter-rate-fee-help-text: الرسوم الثابتة الواحدة التي سيتم ضربها في المسافة.
++        per-meter-text: هذا الخيار يسمح بحساب الخدمة لكل كيلومتر أو متر.
++        percel-fee-title: رسوم الطرد
++        percentage-placeholder: النسبة المئوية
++        rate-calculation-help-text: الطريقة التي ستستخدمها هذه الخدمة لحساب الأسعار.
++        rate-calculation-label: طريقة حساب السعر
++        rate-calculation-placeholder: اختر طريقة حساب السعر
++        restrict-service-title: تقييد الخدمة
++        select-unit-placeholder: اختر الوحدة
++        select-order-type: اختر نوع الطلب
++        service-area-help-text: تقييد هذه الخدمة لطلبات الطلبات التي تنشأ من منطقة الخدمة.
++        service-area-label: منطقة الخدمة
++        service-area-placeholder: تقييد إلى منطقة الخدمة
++        service-name: اسم الخدمة
++        service-name-help-text: اسم العرض لهذه الخدمة.
++        service-order-help-text: اختر تكوين طلب سيتم تطبيق هذا السعر عليه حصريًا.
++        service-order-label: نوع طلب الخدمة
++        time-continue-message: الوقت المقدر للوصول بالثواني.
++        time-message: الوقت
++        weight-label: الوزن
++        weight-unit: وحدة الوزن
++        width-label: العرض
++        width-placeholder: 'العرض بـ {parcelFeeDimension}'
++        zone-help-text: تقييد هذه الخدمة لطلبات الطلبات التي تنشأ من منطقة محددة.
++        zone-label: المنطقة
++        zone-placeholder: تقييد إلى المنطقة
++        cod-fee-label: تسمية رسوم الدفع عند الاستلام
++
++vehicle:
++    fields:
++        avatar: الصورة الرمزية
++        driver-assigned: السائق المعين
++        make: الصنع
++        model: الطراز
++        plate-number: رقم اللوحة
++        select-driver: اختر السائق
++        upload-new-photo: تحميل صورة جديدة
++        vehicle-make: صنع المركبة
++        vehicle-model: طراز المركبة
++        vehicle-year: سنة المركبة
++        vin-number: رقم VIN
++        year: السنة
++    actions:
++        attach-device: إرفاق جهاز
++        unassign-orders: إلغاء تعيين الطلبات
++        create-issue: إنشاء مشكلة
++        locate-vehicle: تحديد موقع المركبة على الخريطة
++        schedule-maintenance: جدولة الصيانة
++        create-work-order: إنشاء أمر عمل
++        log-maintenance: تسجيل الصيانة
++    prompts:
++        attach-device-title: إرفاق جهاز بـ {vehicleName}
++        select-device-warning: اختر جهازًا لإرفاقه.
++        attach-device-success: تم إرفاق الجهاز بـ {vehicleName}.
++        no-assigned-orders-warning: لم يتم العثور على طلبات معينة لـ {vehicleName}.
++        select-orders-warning: اختر طلبًا واحدًا على الأقل لإلغاء تعيينه.
++        unassign-orders-title: إلغاء تعيين الطلبات من {vehicleName}
++        confirm-unassign-orders-title: 'إلغاء تعيين {count} طلب من {vehicleName}؟'
++        confirm-unassign-orders-body: 'سيؤدي هذا إلى إزالة {vehicleName} من هذه الطلبات: {orders}.'
++        unassign-orders-success: تم إلغاء تعيين {vehicleName} من {count} طلب.
++        issue-title: تم الإبلاغ عن مشكلة لـ {vehicleName}
++
++vendor:
++    fields:
++        setup-vendor: إعداد المورد
++        choose-vendor: اختر مزود المورد المتكامل
++        email-help-text: بريد المورد الإلكتروني.
++        name-help-text: اسم المورد، عادةً اسم العمل.
++        phone-text: رقم هاتف المورد.
++        website: رابط الموقع
++        edit-address: تعديل العنوان
++        new-address: عنوان جديد
++        select-address: اختر العنوان
++        select-vendor-status: اختر حالة المورد
++        select-vendor-type: اختر نوع المورد
++        title: الإعداد
++        vendor-details: تفاصيل المورد
++        website-help-text: موقع المورد الإلكتروني.
++
++integrated-vendor:
++    fields:
++        provider: المزود
++        credentials: بيانات الاعتماد
++        credentials-configure-help-text: قدم بيانات {param} الخاصة بك اختياريًا لتكوين هذا المورد.
++        options: الخيارات
++        choose-vendor: اختر مزود المورد المتكامل
++        select-integrated: اختر مزود مورد متكامل.
++        advanced-options: خيارات متقدمة
++        cancel-credentials: إلغاء إعادة تعيين بيانات الاعتماد
++        sensitive-credentials: يمكن إعادة تعيين بيانات الاعتماد الحساسة فقط.
++        reset-credentials: انقر هنا لإعادة تعيين بيانات الاعتماد
++        sandbox: بيئة تجريبية
++        webhook: عنوان URL للويب هوك
++        webhook-help-text: عادةً ما يتطلب الموردون المتكاملون هذا لتلقي تحديثات النشاط.
++        host: مضيف مخصص
++        host-help-text: قدم مضيفًا مخصصًا لاستخدامه في هذا التكامل اختياريًا.
++        namespace: مساحة اسم مخصصة
++        namespace-help-text: قدم مساحة اسم مخصصة أو إصدار API للتكامل اختياريًا.
++
++zone:
++    fields:
++        details: تفاصيل المنطقة
++        border-color: لون الحدود
++        customize-border: تخصيص الحدود
++        customize-fill-color: تخصيص لون التعبئة
++        description: الوصف
++        name: الاسم
++        name-help-text: أدخل اسمًا لهذه المنطقة.
++        zone-color: لون المنطقة
++
++widget:
++    refresh: تحديث
++    kpi-earnings:
++        title: الأرباح
++    kpi-distance:
++        title: المسافة المقطوعة
++    kpi-aov:
++        title: متوسط قيمة الطلب
++    kpi-active-orders:
++        title: الطلبات النشطة
++    kpi-drivers-online:
++        title: السائقون المتصلون
++    kpi-open-issues:
++        title: المشكلات المفتوحة
++    operations-pulse:
++        title: نبض العمليات
++    revenue-trend:
++        title: اتجاه الإيرادات
++    orders-by-status:
++        title: حجم الطلبات حسب الحالة
++    on-time-delivery:
++        title: التسليم في الوقت المحدد
++    top-drivers:
++        title: أفضل السائقين
++    fuel-efficiency:
++        title: تكلفة الوقود وكفاءته
++    issues-insights:
++        title: رؤى المشكلات
++    maintenance-overview:
++        title: نظرة عامة على الصيانة
++    geofence-violations:
++        title: انتهاكات السياج الجغرافي
++    live-fleet:
++        title: خريطة الأسطول المباشرة
++    get-started:
++        title: ابدأ مع Fleet-Ops
++        subtitle: قم بإعداد الأساسيات وأكمل أول تدفق إرسال.
++        completed: مكتمل
++        preview-title: أول سير عمل للطلب
++    recommended-features:
++        title: ميزات موصى بها لك
++        subtitle: استكشف الأدوات التي تساعد فرق العمليات الجديدة على أن تصبح أكثر إنتاجية.
++        learn-more: تعرف على المزيد
++    fleet-ops-quickstart:
++        message: لنرى ما يمكنك فعله لبدء العمليات...
++        start-task: بدء المهمة
++    key-metrics:
++        title: مقاييس Fleet-Ops
++        earnings: الأرباح
++        fuel-expenses: نفقات الوقود
++        traveled: المسافة المقطوعة
++        total-time: الوقت الإجمالي
++        order-scheduled: الطلبات المجدولة
++        order-completed: الطلبات المكتملة
++        order-progress: الطلبات قيد التنفيذ
++        order-canceled: الطلبات الملغاة
++        driver-online: السائقون المتصلون
++        customers: العملاء
++        open-issue: مشكلة مفتوحة
++        closed-issues: المشكلات المغلقة
++    live-order-map:
++        loading: جارٍ تحميل الطلبات قيد التنفيذ...
++        assigned: السائق المعين
++        no-order: لا توجد طلبات قيد التنفيذ
++        message: عندما تكون الطلبات قيد التنفيذ، ستظهر في هذه الأداة وتعرض النشاط في الوقت الفعلي.
++    recent-orders:
++        title: الطلبات الأخيرة
++        loading: جارٍ تحميل الطلبات الأخيرة...
++        no-orders: لا توجد طلبات لهذا الأسبوع
++        message-part-1: لم يكن هناك أي طلبات هذا الأسبوع، ابدأ الحركة عن طريق
++        message-part-2: إنشاء طلب جديد
++        message-part-3: أو السماح لعملائك بتقديم الطلبات عبر API.
++    transactions:
++        title: المعاملات الأخيرة
++        loading: جارٍ تحميل المعاملات الأخيرة...
++        no-transactions: لا توجد معاملات هذا الأسبوع
++        message: عندما تمر الطلبات بمعدلات الخدمة، تتعقب Fleetbase المعاملات تلقائيًا.
++
++display-panel:
++    no-address: لا يوجد عنوان {type}!
++    no-address-message: لا يوجد عنوان!
++
++driver-card:
++    no-fleets: لا توجد أساطيل
++
++global-search:
++    search: البحث بالكلمة المفتاحية...
++
++integrated-order-details:
++    order-id: معرف الطلب
++    quotation-id: معرف العرض
++    driver-id: معرف السائق
++    link: رابط قابل للمشاركة
++    price-breakdown: تفصيل السعر
++    metadata: البيانات الوصفية
++
++geofence:
++    prompts:
++        use-draw-controls-create-service-area: استخدم أدوات الرسم على اليمين لرسم منطقة خدمة.
++        use-draw-controls-create-zone: استخدم أدوات الرسم على اليمين لرسم منطقة داخل منطقة الخدمة.
++        no-layer-found-for-resource: لم يتم العثور على طبقة لـ {resource} هذا.
++        editing-enabled: التحرير مفعل — اضبط الرؤوس ثم انقر على علامة التحقق للتطبيق.
++        resource-boundaries-updated: تم تحديث حدود {resource} بنجاح.
++        edit-canceled: تم إلغاء التحرير.
++        failed-to-update-resource: فشل تحديث {resource}.
++
++live-map:
++    show-coordinates: عرض الإحداثيات
++    center-map: توسيط الخريطة هنا
++    zoom-in: تكبير
++    zoom-out: تصغير
++    toggle-draw-controls: تبديل أدوات الرسم
++    hide-draw: إخفاء أدوات الرسم
++    enable-draw: تمكين أدوات الرسم
++    create-new-service: إنشاء منطقة خدمة جديدة
++    focus-service: 'تركيز منطقة الخدمة: {serviceName}'
++    view-driver: 'عرض السائق: {driverName}'
++    edit-driver: 'تحرير السائق: {driverName}'
++    delete-driver: 'حذف السائق: {driverName}'
++    view-vehicle-for: 'عرض المركبة لـ: {driverName}'
++    view-vehicle: 'عرض المركبة: {vehicleName}'
++    edit-vehicle: 'تحرير المركبة: {vehicleName}'
++    delete-vehicle: 'حذف المركبة: {vehicleName}'
++    edit-zone: 'تحرير المنطقة: {zoneName}'
++    delete-zone: 'حذف المنطقة: {zoneName}'
++    assign-zone: 'تعيين الأسطول إلى المنطقة: {zoneName}'
++    blur-service: 'إخفاء منطقة الخدمة: {serviceName}'
++    create-zone: 'إنشاء منطقة داخل: {serviceName}'
++    assign-fleet: 'تعيين الأسطول إلى منطقة الخدمة: {serviceName}'
++    edit-service: 'تحرير منطقة الخدمة: {serviceName}'
++    delete-service: 'حذف منطقة الخدمة: {serviceName}'
++    service-area: منطقة الخدمة
++    edit-boundaries: 'تحرير الحدود: {resource}'
++    zone: المنطقة
++
++order-config:
++    create-new-title: إنشاء تكوين طلب جديد
++    warning-message: يتطلب تكوين الطلب اسمًا
++    success-message: تم إنشاء تكوين الطلب الجديد بنجاح.
++    no-order-warning: لم يتم تحديد تكوين الطلب.
++    saved-success: تم حفظ تكوين الطلب {orderName}.
++    enter-name-title: أدخل اسم التكوين المستنسخ
++    no-config-warning: لم يتم إدخال اسم التكوين.
++    cloned-success: تم استنساخ تكوين الطلب بنجاح.
++    body: بمجرد حذف تكوين الطلب هذا، لن تتمكن من إنشاء طلبات باستخدامه بعد الآن.
++    uninstall-title: إلغاء تثبيت التكوين
++    uninstall-success: تم إلغاء تثبيت الامتداد {extensionName}.
++    activity-flow-editor:
++        add-status: إضافة حالة جديدة إلى التدفق
++        no-status: لم يتم إدخال حالة.
++        overwrite: سيؤدي هذا إلى الكتابة فوق حالة موجودة!
++        overwrite-text: هناك حالة {statusName} أخرى موجودة بالفعل في هذا التدفق.
++        overwrite-button: نعم، الكتابة فوق!
++        remove: إزالة الحالة
++        remove-text: هل أنت متأكد أنك ترغب في حذف هذه الحالة؟
++        delete-button: نعم، احذف
++        unable-warning: يجب أن تكون {status} في هذا الترتيب من التسلسل.
++        order-warning: يجب أن تكون الحالة التي تم إنشاؤها دائمًا هي التسلسل الأول لتدفق الطلب.
++        title: تدفق النشاط
++        message: سيسمح لك تكوين تدفق النشاط بتحديد أنواع الأنشطة المختلفة لتتبع الحالة.
++        order-flow: تدفق الطلب
++        waypoint-flow: تدفق نقطة الطريق
++        new-activity: نشاط جديد
++        activity-details: تفاصيل النشاط
++        logic-stack: مكدس المنطق
++        add-logic: إضافة شرط منطقي
++        select-field: اختر الحقل
++        select-operator: اختر المشغل
++        enter-value: أدخل القيمة للمقارنة
++        no-logic: لم يتم تطبيق شروط منطقية
++    details-editor:
++        success: تم التثبيت
++        key-text: مرر هذا المفتاح إلى نوع الطلب الخاص بك لتكوين الطلب باستخدام هذا التكوين.
++        namespace-text: مساحة اسم فريدة لهذا الامتداد.
++        id: معرف الامتداد
++        id-text: معرف فريد لهذا الامتداد.
++        version: إصدار الامتداد
++        version-text: إصدار هذا الامتداد.
++        clone: استنساخ التكوين
++        uninstall: إلغاء تثبيت التكوين
++        delete: حذف التكوين
++    entities-editor:
++        warning-message: لم يتم إدخال اسم حقل البيانات الوصفية.
++        title: الكيانات
++        message: سيسمح لك تكوين الكيانات بتحديد أنواع الكيانات المختلفة.
++        type: نوع الكيان
++        add-meta: إضافة حقل بيانات وصفية
++    fields-editor:
++        text-field: حقل نصي
++        boolean: منطقي
++        boolean-text: يسمح للمستخدم بتبديل خاصية صحيحة أو خاطئة عن طريق خانة اختيار
++        dropdown: تحديد من القائمة المنسدلة
++        dropdown-text: يسمح للمستخدم بتحديد خيار من قائمة منسدلة
++        datetime: محدد التاريخ والوقت
++        datetime-text: يسمح للمستخدم بتحديد تاريخ ووقت
++        port: محدد الميناء
++        port-text: يسمح للمستخدم بتحديد ميناء
++        vessel: محدد السفينة
++        vessel-text: يسمح للمستخدم بتحديد سفينة
++        warning-message: لم يتم إدخال اسم المجموعة.
++        field-title: الحقول الوصفية
++        new-field: حقل مخصص جديد
++        new-custom-field: مجموعة الحقول المخصصة الجديدة
++        field-text: سيسمح لك تكوين الحقول الوصفية بتحديد حقول الإدخال المخصصة.
++        custom-field-group: مجموعة الحقول المخصصة
++        default-field: الحقول الافتراضية
++        custom-field: حقل مخصص
++        type: نوع الحقل
++        select-type: اختر نوع الحقل
++        add-option: إضافة خيار
++    select-message: اختر تكوين الطلب لتعديله.
++    new-config: تكوين جديد
++    loading-configuration: جارٍ تحميل تكوينات الطلب الخاصة بك...
++    select-order: اختر تكوين الطلب
++    save-changes: حفظ التغييرات
++    details: التفاصيل
++    fields: الحقول المخصصة
++    flow: تدفق النشاط
++    entities: الكيانات
++
++order-list-overlay:
++    search: البحث في الطلبات...
++    selected: المختار
++    assign: تعيين إلى السائق...
++    cancel: إلغاء الطلبات...
++    delete: حذف الطلبات...
++    dispatch: إرسال الطلبات...
++    actions: الإجراءات
++    create-order: إنشاء طلب جديد...
++    create-fleet: إنشاء أسطول جديد...
++    active-orders: الطلبات النشطة
++    unassigned-orders: الطلبات غير المعينة
++
++route-list:
++    expand: اضغط للتوسيع
++    collapse: اضغط للطي
++    more-waypoints: المزيد من نقاط الطريق
++
++settings:
++    avatar-management: إدارة الصور الرمزية
++    custom-fields: الحقول المخصصة
++    notifications:
++        fleet-ops-notification-settings: إعدادات إشعارات Fleet-Ops
++        fleet-ops-notifications: إشعارات Fleet-Ops
++        configure-notifications: تكوين الإشعارات
++        select-notifiables: اختر المستلمين
++    routing:
++        fleet-ops-routing-settings: إعدادات التوجيه Fleet-Ops
++        fleet-ops-routing: توجيه Fleet-Ops
++        configure-routing: تكوين التوجيه
++        select-routing-service: اختر خدمة التوجيه
++        routing-service: خدمة التوجيه
++        routing-service-help-text: اختر الخدمة المسؤولة عن حساب ورسم المسارات على الخريطة.
++        select-routing-distance-unit: اختر وحدة مسافة التوجيه
++        routing-distance-unit: وحدة مسافة التوجيه
++        routing-distance-unit-help-text: الوحدة المستخدمة لحساب المسافة والمسارات.
++    map:
++        fleet-ops-map-settings: إعدادات خريطة Fleet-Ops
++        fleet-ops-map: خريطة Fleet-Ops
++        configure-map: تكوين الخريطة
++        map-provider: مزود الخريطة
++        map-provider-help-text: اختر محرك الخريطة المستخدم لعرض خريطة العمليات المباشرة.
++        select-map-provider: اختر مزود الخريطة
++        google-maps-map-type: نوع الخريطة
++        google-maps-map-type-help-text: نمط الخريطة الافتراضي للعرض عند تفعيل خرائط جوجل.
++        select-map-type: اختر نوع الخريطة
++        show-traffic-layer: عرض طبقة حركة المرور
++        show-traffic-layer-help-text: عرض ظروف حركة المرور في الوقت الفعلي.
++        show-transit-layer: عرض طبقة النقل العام
++        show-transit-layer-help-text: عرض مسارات النقل العام على الخريطة.
++        settings-saved: تم حفظ إعدادات الخريطة بنجاح.
++        settings-save-failed: فشل حفظ إعدادات الخريطة. يرجى المحاولة مرة أخرى.
++    navigator-app:
++        navigator-app-settings: إعدادات تطبيق Navigator
++    payments:
++        payments: المدفوعات
++        payment-settings: إعدادات المدفوعات
++        account-not-setup-for-payments: حسابك غير معد لاستقبال المدفوعات بعد.
++        to-accept-payments: لقبول ومعالجة المدفوعات، يجب إكمال عملية التسجيل عبر Stripe.
++        system-stripe-not-setup: هذا النظام غير قادر على قبول المدفوعات حاليًا.
++        loading-settings: جارٍ تحميل إعدادات المدفوعات...
++        onboard:
++            header-title: تسجيل المدفوعات
++            title-completed: تم التسجيل بنجاح!
++            title-incomplete: أكمل عملية التسجيل لقبول المدفوعات.
++            subtitle-completed: تم تسجيلك بنجاح ويمكنك الآن قبول المدفوعات.
++            subtitle-incomplete: يجب إكمال عملية التسجيل لقبول المدفوعات.
++            button-continue: متابعة
++            button-start: ابدأ التسجيل الآن
++            button-in-progress: التسجيل قيد التنفيذ
++    scheduling:
++        scheduling-settings: إعدادات الجدولة
++        materialisation: التجسيد
++        horizon-days: أفق الجدول (أيام)
++        horizon-days-help: عدد الأيام المقبلة لإنشاء عناصر الورديات.
++        default-shift-duration: مدة الوردية الافتراضية (ساعات)
++        default-shift-duration-help: عدد الساعات الافتراضي للوردية.
++        hours-of-service: حدود ساعات الخدمة
++        hos-daily-limit: الحد اليومي للقيادة (ساعات)
++        hos-daily-limit-help: الحد الأقصى لساعات القيادة في اليوم الواحد.
++        hos-weekly-limit: الحد الأسبوعي للقيادة (ساعات)
++        hos-weekly-limit-help: الحد الأقصى لساعات القيادة في 7 أيام.
++        behaviour: السلوك
++        auto-activate-schedule: تفعيل الجدول تلقائيًا
++        auto-activate-schedule-help: الانتقال تلقائيًا من مسودة إلى نشط عند إنشاء أول وردية.
++        notify-drivers: إشعار السائقين بتغييرات الوردية
++        notify-drivers-help: إرسال إشعار للسائقين عند إنشاء أو تحديث أو حذف وردياتهم.
++        schedule-templates: قوالب جداول قابلة لإعادة الاستخدام
++        no-templates: لم يتم إنشاء قوالب قابلة لإعادة الاستخدام بعد.
++        new-template: قالب جديد
++        edit-template: تعديل القالب
++        delete-template: حذف القالب
++        delete-template-confirm: 'هل أنت متأكد من حذف القالب "{name}"؟'
++        template-deleted: تم حذف القالب بنجاح.
++        settings-saved: تم حفظ إعدادات الجدولة.
++
++maintenance-schedule:
++    actions:
++        trigger-now: تشغيل أمر العمل الآن
++        pause: إيقاف الجدول مؤقتًا
++        resume: استئناف الجدول
++
++work-order:
++    actions:
++        view: عرض أمر العمل
++        edit: تعديل أمر العمل
++        delete: حذف أمر العمل
++
++maintenance:
++    actions:
++        view: عرض سجل الصيانة
++        edit: تعديل سجل الصيانة
++        delete: حذف سجل الصيانة
++
++equipment:
++    actions:
++        view: عرض المعدة
++        edit: تعديل المعدة
++        delete: حذف المعدة
++
++part:
++    actions:
++        view: عرض القطعة
++        edit: تعديل القطعة
++        delete: حذف القطعة
++
++orchestrator:
++    settings-title: إعدادات المنسق
++    engine-settings: محرك التخصيص
++    active-engine: محرك التخصيص النشط
++    active-engine-help: اختر محرك التخصيص المستخدم لتعيين الطلبات للسائقين والمركبات.
++    auto-allocate-on-create: تخصيص تلقائي عند إنشاء الطلب
++    auto-allocate-on-create-label: تشغيل التخصيص تلقائيًا عند إنشاء طلب جديد.
++    auto-reallocate-on-complete: إعادة تخصيص تلقائي عند اكتمال التسليم
++    auto-reallocate-on-complete-label: إعادة تشغيل التخصيص عند اكتمال تسليم.
++    constraint-settings: قيود التخصيص
++    max-travel-time: الحد الأقصى لوقت السفر (ثواني)
++    max-travel-time-help: أقصى وقت سفر بالثواني.
++    balance-workload: موازنة عبء العمل
++    balance-workload-label: توزيع الطلبات بالتساوي بين السائقين والمركبات المتاحة.
++    settings-saved: تم حفظ إعدادات المنسق.
++    workbench-title: طاولة عمل المنسق
++    unassigned-orders: الطلبات غير المعينة
++    no-unassigned-orders: لا توجد طلبات غير معينة!
++    run-allocation: تشغيل المنسق
++    running: جارٍ التشغيل…
++    plan-ready: الخطة جاهزة — راجع وأكد.
++    commit-plan: تأكيد الخطة
++    discard-plan: تجاهل
++    committed: 'تم تأكيد التنسيق — {count} طلب تم تعيينه.'
++    committed-badge: تم تأكيد الخطة
++    overridden: تم التجاوز
++    on-shift: في الوردية
++    empty-state-title: لا توجد خطة تنسيق بعد
++    empty-state-body: انقر على "تشغيل المنسق" لإنشاء خطة تعيين محسنة للطلبات غير المعينة.
++    unassigned-warning: تعذر تعيين بعض الطلبات.
++    run-orchestration: تشغيل المنسق
++    options: خيارات
++    mode: الوضع
++    mode-allocate: تخصيص الطلبات
++    mode-optimize: تحسين المسارات
++    engine: المحرك
++    allocation-strategy: استراتيجية التخصيص
++    allocation-strategy-route-aware: المسار + السعة
++    allocation-strategy-capacity-only: السعة فقط
++    vehicle-packing: تعبئة المركبات
++    vehicle-packing-minimize-vehicles: تقليل المركبات
++    vehicle-packing-balanced: متوازن
++    respect-skills: احترام المهارات
++    respect-capacity: احترام السعة
++    return-to-depot: العودة إلى المستودع
++    unassigned-count: 'غير معين:'
++    clear: مسح
++    search-orders: البحث عن الطلبات…
++    filter-all: الكل
++    filter-scheduled: مجدول
++    filter-urgent: عاجل
++    filter-today: اليوم
++    filter-unassigned: غير معين
++    filter-imported: مستورد
++    advanced-filters: فلاتر متقدمة
++    filter-country: البلد
++    filter-type: نوع الطلب
++    filter-status: الحالة
++    filter-date: التاريخ المجدول
++    filter-country-placeholder: جميع البلدان
++    filter-type-placeholder: جميع الأنواع
++    filter-status-placeholder: جميع الحالات
++    filter-date-placeholder: أي تاريخ
++    clear-filters: مسح الفلاتر
++    no-address: لا يوجد عنوان
++    selected: مختار
++    clear-selection: مسح التحديد
++    show-orders: عرض مجموعة الطلبات
++    hide-orders: إخفاء مجموعة الطلبات
++    show-drivers: عرض الموارد
++    hide-drivers: إخفاء الموارد
++    available-drivers: السائقون المتاحون
++    available-vehicles: المركبات المتاحة
++    no-available-drivers: لا يوجد سائقون متاحون حاليًا.
++    no-available-vehicles: لا توجد مركبات متاحة حاليًا.
++    no-search-results: لا توجد نتائج تطابق بحثك.
++    search-drivers: البحث عن السائقين...
++    search-vehicles: البحث عن المركبات...
++    no-position: لا يوجد موقع
++    filter-online: متصل
++    filter-offline: غير متصل
++    filter-on-shift: في العمل
++    filter-on-job: في مهمة
++    filter-active: نشط
++    filter-no-driver: لا يوجد سائق
++    proposed-routes: المسارات المقترحة
++    stops: توقفات
++    route: المسار
++    drivers-selected: سائقين مختارين
++    vehicles-selected: مركبات مختارة
++    drop-orders-here: أسقط الطلبات هنا
++    import-orders: استيراد الطلبات
++    import-step-upload: رفع
++    import-step-map: تعيين الأعمدة
++    import-step-preview: معاينة واستيراد
++    drop-file-here: أسقط ملف CSV أو Excel هنا
++    or: أو
++    browse-file: تصفح الملف
++    accepted-formats: 'المقبول: .csv، .xlsx، .xls'
++    remove-file: إزالة الملف
++    download-template: تحميل قالب الاستيراد
++    download-template-desc: استخدم القالب لضمان استيراد بياناتك بشكل صحيح.
++    download: تحميل
++    next: التالي
++    back: السابق
++    map-columns-title: تعيين الأعمدة
++    map-columns-desc: 'عيّن الأعمدة في'
++    col-target-field: الحقل الهدف
++    col-your-spreadsheet: جدول البيانات الخاص بك
++    mapped: معين
++    mapping-required-hint: 'شارع التسليم 1 مطلوب قبل المتابعة.'
++    select-column: '— تخطي —'
++    data-preview: 'معاينة أول 3 طلبات:'
++    preview-import: معاينة الاستيراد
++    preview-desc: '{count} طلب جاهز للاستيراد'
++    errors: أخطاء
++    all-rows-valid: جميع الصفوف صالحة
++    validation-warning: '{count} طلب بها أخطاء وسيتم تخطيها.'
++    import-confirm: تأكيد الاستيراد
++    importing: 'جارٍ الاستيراد…'
++    col-pickup: استلام
++    col-dropoff: تسليم
++    col-scheduled: مجدول
++    col-weight: الوزن
++    col-customer: العميل
++    col-status: الحالة
++    col-preview-ref: المرجع/المعرف
++    col-preview-type: النوع
++    col-preview-facilitator: الميسر
++    col-preview-vehicle: المركبة
++    col-preview-driver: السائق
++    col-preview-entities: العناصر
++    col-preview-multi-stop: '{count} توقفات'
++    col-preview-pickup-dropoff: استلام وتسليم
++    col-preview-pickup-dropoff-stops: 'استلام وتسليم + {count} توقفات'
++    error: خطأ
++    valid: صالح
++    import-success: 'تم استيراد {count} طلب بنجاح.'
++    no-valid-rows: لا توجد طلبات صالحة للاستيراد.
++    invalid-file-type: 'يرجى رفع ملف .csv أو .xlsx أو .xls.'
++    parse-error: تعذر تحليل الملف. يرجى التحقق من التنسيق.
++    read-error: تعذر قراءة الملف.
++    empty-file: يبدو أن الملف فارغ.
++    missing-dropoff: شارع التسليم 1 مطلوب.
++    stops-count: '{count} توقفات'
++    pickup: استلام
++    dropoff: تسليم
++    scheduled: مجدول
++    customer: العميل
++    driver-assigned: السائق المعين
++    vehicle-assigned: المركبة المعينة
++    no-vehicle-assigned: لا توجد مركبة معينة
++    no-driver-assigned: لا يوجد سائق معين
++    created: تم الإنشاء
++    phases: المراحل
++    phases-description: قم بتكوين تشغيل تنسيق متعدد الخطوات.
++    add-phase: إضافة مرحلة
++    no-phases: لا توجد مراحل مكونة.
++    phase-n: 'المرحلة {n}'
++    phase-label: تسمية المرحلة
++    save-phase: حفظ المرحلة
++    select-phase-to-edit: اختر مرحلة لتعديل إعداداتها.
++    run-phases: 'تشغيل {count} مرحلة'
++    include-order-statuses: تضمين حالات الطلب
++    constraints: القيود
++    auto-commit: تأكيد تلقائي بعد المرحلة
++    mode-assign-vehicles: تعيين المركبات
++    mode-assign-drivers: تعيين السائقين
++    mode-optimize-routes: تحسين المسارات
++    status-created: تم الإنشاء
++    status-dispatched: تم الإرسال
++    status-started: بدأ
++    card-fields: حقول البطاقة
++    card-fields-description: تكوين الحقول المعروضة على بطاقات الطلبات.
++    card-fields-saved: تم حفظ حقول بطاقة الطلب.
++    save-card-fields: حفظ حقول البطاقة
++    standard-fields: الحقول القياسية
++    standard-fields-description: تظهر هذه الحقول على كل بطاقة طلب.
++    config-fields-description: 'حقول مخصصة لطلبات {name}.'
++    meta-fields: الحقول الوصفية
++    meta-fields-description: مفاتيح بيانات وصفية حرة.
++    no-custom-fields: لا توجد حقول مخصصة محددة لتكوين الطلب هذا.
++    field-tracking: رقم التتبع
++    field-status: الحالة
++    field-scheduled-at: مجدول في
++    field-customer: العميل
++    field-type: النوع
++    field-notes: ملاحظات
++    field-priority: الأولوية
++    field-dropoff: عنوان التسليم
++    field-pickup: عنوان الاستلام
++    filter-available: متاح
++    vehicle: المركبة
++    expand-all: توسيع الكل
++    tab-routes: المسارات
++    tab-timeline: الجدول الزمني
++    collapse-all: طي الكل
++    collapse-route: طي المسار
++    expand-route: توسيع المسار
++    no-plan: قم بتشغيل المنسق لرؤية الخطة المقترحة.
++    unassigned-description: تعذر تعيين هذه الطلبات.
++    unassigned: غير معين
++    vehicles: المركبات
++    drivers: السائقين
++    orders: الطلبات
++    cancel: إلغاء
++    no-vehicles: لم يتم العثور على مركبات.
++    no-drivers: لم يتم العثور على سائقين.
++    no-orders: لم يتم العثور على طلبات.
++    expand-panel: توسيع اللوحة
++    collapse-panel: طي اللوحة
++    run-failed-title: لم يتم إرجاع أي تعيينات
++    try-again: حاول مرة أخرى
++    change-resources: تغيير الموارد
++    no-assignments-returned: تعذر على المنسق تعيين أي طلبات.
++    stop-type-pickup: استلام
++    stop-type-dropoff: تسليم
++    pod-required: إثبات التسليم مطلوب
++    no-pod: لا يوجد إثبات تسليم
++
++modals:
++    new-custom-field-group:
+         modal-title: إنشاء مجموعة حقل مخصصة جديدة
+         group-name: اسم المجموعة
+-      assign-driver:
++    assign-driver:
++        select-driver: اختر السائق
+         select-assign: اختر السائق لتعيينه
+-      clone-config-form:
++    clone-config-form:
+         name: اسم التكوين
+         description: وصف التكوين
+-      driver-assign-order:
++    driver-assign-order:
+         order: اختر الطلب
+         assign-order: اختر الطلب لتعيينه
+-      driver-assign-vehicle:
++    driver-assign-vehicle:
+         vehicle: اختر المركبة
+         assign-vehicle: اختر المركبة لتعيينها
+-      driver-assign-vendor:
++    driver-assign-vendor:
+         vendor: اختر المورد
+-      driver-details:
++    driver-details:
+         job: الوظيفة الحالية
+         view: عرض على الخريطة
+-      driver-form:
++    driver-form:
+         select-vendor: اختر المورد
+         select-vehicle: اختر المركبة
+-      edit-meta-form:
++    edit-meta-form:
+         add: إضافة حقل ميتا
+-      entity-form:
++    entity-form:
+         name-text: اسم العنصر أو الكيان.
+-        id-text: استخدم هذا الحقل لتعيين معرف مخصص أو معرف داخلي للكيان اختياريًا.
++        id-text: استخدم هذا الحقل لتعيين معرف مخصص.
+         sku: SKU
+-        sku-text: رقم وحدة حفظ المخزون إذا كان ذلك ممكنًا.
++        sku-text: رقم وحدة حفظ المخزون.
+         description: الوصف
+-        description-text: نص إضافي لوصف الكيان.
++        description-text: نص وصف إضافي للكيان.
+         price-title: التسعير والقيمة
+         price: السعر
+         price-text: سعر الكيان.
+         sale-price: سعر البيع
+-        sale-price-text: سعر البيع أو السعر المخفض للكيان.
++        sale-price-text: سعر البيع أو السعر المخفض.
+         declare: القيمة المعلنة
+-        declare-text: القيمة المعلنة للكيان، مفيدة إذا كانت قابلة للتأمين.
++        declare-text: القيمة المعلنة للكيان.
+         measurement-title: القياسات والوزن
+         length: الطول
+         length-text: طول الكيان.
+@@ -422,47 +1843,49 @@ fleet-ops:
+         height-text: ارتفاع الكيان.
+         weight: الوزن
+         weight-text: وزن الكيان.
+-      entity-meta-field-prompt:
++    entity-meta-field-prompt:
+         name: مفتاح حقل الميتا
+-      fleet-form:
++    fleet-form:
+         title: اسم الأسطول
+         assign: تعيين إلى منطقة الخدمة
+         assign-text: اختر منطقة الخدمة لتعيين الأسطول إليها
+         zone: تعيين إلى المنطقة
+         zone-text: اختر المنطقة لتعيين الأسطول إليها
+-        task: المهمة/ المهمة
+-        task-text: قدم وصفًا لمهمة الأسطول الرئيسية إذا كان ذلك ممكنًا.
++        task: المهمة/المهمة
++        task-text: قدم وصفًا للمهمة الأساسية لهذا الأسطول.
+         select-task: اختر المهمة
+         status-text: اختر حالة الأسطول.
+         select-status: اختر الحالة
+-      fuel-report-details:
+-        fuel: الوقود/ الحجم
+-      fuel-report-form:
++    fuel-report-details:
++        fuel: الوقود/الحجم
++    fuel-report-form:
++        select-driver: اختر السائق
+         select-vehicle: اختر المركبة
+         volume: الحجم
+         volume-text: اختر الوحدة المترية وحجم الوقود للإبلاغ عنه.
+-      group-details:
++    group-details:
+         name: اسم المجموعة
+         member: الأعضاء
+         address: العنوان
+-      group-form:
++    group-form:
+         title: اسم المجموعة
+         users-add: اختر المستخدمين لإضافتهم إلى المجموعة
+         search: ابحث واختر المستخدمين لإضافتهم إلى هذه المجموعة.
+         select-user: اختر المستخدم لإضافته إلى المجموعة
+         no-users: لم تتم إضافة مستخدمين إلى المجموعة
+-      install-prompt:
+-        message: أنت تحاول تثبيت الامتداد {extensionName}. هل أنت متأكد أنك ترغب في متابعة هذا التثبيت؟
+-        sub-message: تتطلب بعض الامتدادات الوصول إلى مواردك.
+-      issue-details:
+-        assigned: مُعين إلى
++    install-prompt:
++        message: أنت تحاول تثبيت الامتداد {extensionName}. هل أنت متأكد أنك ترغب في المتابعة؟
++        sub-message: بعض الامتدادات تتطلب الوصول إلى مواردك.
++    issue-details:
++        assigned: معين إلى
+         type: نوع المشكلة
+         category: فئة المشكلة
+-      issue-form:
+-        reported: مُبلغ بواسطة
+-        select-reporter: اختر المُبلغ
+-        assigned: مُعين إلى
+-        select-assignee: اختر المُعين
++    issue-form:
++        reported: تم الإبلاغ بواسطة
++        select-reporter: اختر المراسل
++        assigned: معين إلى
++        select-assignee: اختر المكلف
++        select-driver: اختر السائق
+         select-vehicle: اختر المركبة
+         select-type: اختر النوع
+         select-category: اختر الفئة
+@@ -472,15 +1895,15 @@ fleet-ops:
+         category-text: اختر فئة المشكلة
+         report: تقرير المشكلة
+         tags: علامات المشكلة
+-        add-tags: أضف علامات
++        add-tags: إضافة علامات
+         select-status: اختر حالة المشكلة
+-      map-layer-form:
++    map-layer-form:
+         layer-type: نوع الطبقة
+         layer-type-text: اختر نوع الطبقة التي ترغب في إنشائها.
+         select-layer-type: اختر نوع الطبقة...
+         service-area: منطقة الخدمة
+         service-area-text: اختر منطقة الخدمة لنسب هذه المنطقة إليها.
+-        select-service-area: اختر منطقة الخدمة لتعيين الأسطول إليها
++        select-service-area: اختر منطقة الخدمة
+         set-name: قم بتعيين اسم عرض لـ {options}.
+         service-type: نوع منطقة الخدمة
+         service-type-text: اختر تعريف النوع لهذه المنطقة.
+@@ -488,109 +1911,111 @@ fleet-ops:
+         customize-border: تخصيص لون الحدود لـ {options}.
+         customize-fill-color: تخصيص لون التعبئة لـ {options}.
+         service-area-country: بلد منطقة الخدمة
+-        service-area-country-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة أو تستند إليه.
+-      new-order-config:
++        service-area-country-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة.
++    new-order-config:
+         name: اسم التكوين
+         description: وصف التكوين
+         tags: علامات التكوين
+-        add-tags: أضف علامات
+-      order-assign-driver:
++        add-tags: إضافة علامات
++    order-assign-driver:
++        select-driver: اختر السائق
+         select-assign: اختر السائق لتعيينه
+-      order-config-new-status:
++    order-config-new-status:
+         new-status: حالة جديدة
+         status-text: أدخل حالة نشاط جديدة لإضافتها إلى التدفق
+-      order-event:
++    order-event:
+         schedule: جدولة
+         unschedule: إلغاء الجدولة
+-      order-form:
+-        id-text: استخدم هذا الحقل لتعيين معرف مخصص أو معرف داخلي للطلب اختياريًا.
+-        schedule-text: التاريخ والوقت الذي سيتم فيه إرسال الطلب. إذا لم يتم تعيين سائق في وقت الإرسال، فسيفشل الإرسال. إذا كان الطلب فوريًا، فسيتم إرسال الطلب إلى السائقين في محيط الالتقاط.
++    order-form:
++        id-text: استخدم هذا الحقل لتعيين معرف مخصص للطلب اختياريًا.
++        schedule-text: تاريخ ووقت إرسال الطلب.
+         customer: العميل
+-        customer-text: اختياريًا، قم بتعيين العميل لهذا الطلب. إذا كان عميلًا جديدًا، استخدم زر "عميل جديد" أعلاه.
++        customer-text: تعيين العميل لهذا الطلب اختياريًا.
+         select-customer: اختر العميل
+         facilitator: الميسر
+-        facilitator-text: اختياريًا، قم بتعيين ميسر لهذا الطلب، يمكن أن يكون الميسر مقاولًا فرعيًا أو خدمة من طرف ثالث ستسهل نقل هذا الطلب.
++        facilitator-text: تعيين ميسر لهذا الطلب اختياريًا.
+         select-facilitator: اختر الميسر
+         assign-driver: تعيين السائق
+-        assign-driver-text: قم بتعيين السائق الذي سيتم إرسال الطلب إليه.
++        assign-driver-text: تعيين السائق الذي سيتم إرسال الطلب إليه.
++        select-driver: اختر السائق
+         assign-vehicle: تعيين المركبة
+-        assign-vehicle-text: قم بتعيين المركبة التي سيتم تنفيذ الطلب بها.
++        assign-vehicle-text: تعيين المركبة التي سيتم تنفيذ الطلب بها.
+         select-vehicle: اختر المركبة
+-      order-import:
++    order-import:
+         loading-message: جارٍ معالجة الاستيراد...
+-        drop-upload: إسقاط للتحميل
++        drop-upload: أسقط للتحميل
+         invalid: غير صالح
+         ready-upload: جاهز للتحميل.
+         upload-spreadsheets: تحميل جداول البيانات
+         drag-drop: اسحب وأفلت ملفات جداول البيانات على هذه المنطقة
+         button-text: أو اختر جداول البيانات للتحميل
+         spreadsheets: جداول البيانات
+-        upload-queue: "قائمة انتظار التحميل"
+-        order-label:
+-          loading: جارٍ تحميل التسمية...
+-      order-new-activity:
+-        select-message: اختر حالة نشاط لتحديث نشاط تتبع الطلب، أو أدخل نشاطًا مخصصًا.
++        upload-queue: قائمة انتظار التحميل
++    order-label:
++        loading: جارٍ تحميل الملصق...
++    order-new-activity:
++        select-message: اختر حالة نشاط لتحديث نشاط تتبع الطلب.
+         order-currently-message: هذا الطلب حاليًا {options}، سيتم استبدال النشاط الإضافي بهذه الحالة.
+         not-recommend-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
+         activity-options: خيارات النشاط
+         activity: النشاط
+-        dispatch: سيؤدي هذا إلى إرسال الطلب.
++        dispatch: هذا سيؤدي إلى إرسال الطلب.
+         status: حالة النشاط المخصصة
+         details: تفاصيل النشاط المخصصة
+         code: رمز النشاط المخصص
+         fleetbase-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
+-      order-route-form:
++    order-route-form:
+         toggle: تبديل عمليات التسليم المتعددة
+         optimize: تحسين المسار
+-        optimize-text: ستقوم Fleetbase تلقائيًا بتحسين المسار.
++        optimize-text: سيقوم Fleetbase بتحسين المسار تلقائيًا.
+         add: إضافة نقطة توقف
+-        add-text: استخدم زر `إضافة نقطة توقف` لإضافة المزيد من التوقفات لهذا الطلب. سيقوم محرك التوجيه Fleetbase تلقائيًا بتحسين المسار مع إضافة أو إزالة كل توقف.
+-        select-waypoint: اختر نقطة توقف 
+-        pickup: الالتقاط
+-        edit-address: تحرير العنوان
+-        select-pickup: اختر الالتقاط
++        add-text: استخدم زر "إضافة نقطة توقف" لإضافة المزيد من التوقفات.
++        select-waypoint: اختر نقطة توقف
++        pickup: الاستلام
++        edit-address: تعديل العنوان
++        select-pickup: اختر الاستلام
+         invalid: إحداثيات غير صالحة!
+         dropoff: التسليم
+         select-dropoff: اختر التسليم
+         return: العودة
+         select-return: اختر العودة
+-      place-assign-vendor:
++    place-assign-vendor:
+         select-vendor: اختر المورد
+-      place-details:
++    place-details:
+         view: عرض على الخريطة
+-      policy-form:
++    policy-form:
+         name: اسم السياسة
+-        name-text: أدخل اسمًا لسياساتك
++        name-text: أدخل اسمًا لسياستك
+         description: وصف السياسة
+-        description-text: أدخل وصفًا لسياساتك
++        description-text: أدخل وصفًا لسياستك
+         permissions: اختر الأذونات
+-      role-form:
++    role-form:
+         name: اسم الدور
+         name-text: أدخل اسمًا لهذا الدور
+         permissions: اختر الأذونات
+-      select-payment-method:
++    select-payment-method:
+         card-ending: البطاقة التي تنتهي بـ {method}
+-      service-area-form:
++    service-area-form:
+         name: اسم منطقة الخدمة
+-        name-text: قم بتعيين اسم عرض لمنطقة الخدمة.
++        name-text: تعيين اسم عرض لمنطقة الخدمة.
+         type: نوع منطقة الخدمة
+-        type-text: اختر تعريف النوع لهذه المنطقة.
++        type-text: اختر تعريف النوع لمنطقة الخدمة هذه.
+         select-type: اختر نوع منطقة الخدمة...
+         border-color: لون حدود منطقة الخدمة
+-        customize-border-color: تخصيص لون الحدود لهذه المنطقة.
++        customize-border-color: تخصيص لون الحدود لمنطقة الخدمة هذه.
+         area-color: لون منطقة الخدمة
+-        customize-area-color: تخصيص لون التعبئة لهذه المنطقة.
++        customize-area-color: تخصيص لون التعبئة لمنطقة الخدمة هذه.
+         country: بلد منطقة الخدمة
+-        country-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة أو تستند إليه.
+-      set-password:
+-        message: مرحبًا بك في Fleetbase! قبل أن تبدأ، قم بتعيين كلمة مرور جديدة للمتابعة أدناه.
++        country-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة.
++    set-password:
++        message: مرحبًا بك في Fleetbase! قبل أن تبدأ، قم بتعيين كلمة مرور جديدة للمتابعة.
+         new-password: كلمة مرور جديدة
+         confirm-password: تأكيد كلمة المرور
+         help-text: أدخل كلمة مرور لا تقل عن 8 أحرف للمتابعة.
+-      uninstall-prompt:
+-        message: أنت تحاول إلغاء تثبيت الامتداد "{options}". هل أنت متأكد أنك ترغب في متابعة هذا الإلغاء؟
++    uninstall-prompt:
++        message: أنت تحاول إلغاء تثبيت الامتداد "{options}". هل أنت متأكد؟
+         sub-message: سيتم فقدان جميع التكوينات والإعدادات المخصصة.
+-      vehicle-details:
++    vehicle-details:
+         make: الصنع
+         model: الطراز
+         year: السنة
+@@ -600,7 +2025,7 @@ fleet-ops:
+         no-vehicle-assigned: لم يتم تعيين مركبة
+         avatar: الصورة الرمزية
+         model-information: معلومات الطراز
+-        acceleration: من 0 إلى 100 كيلومتر في الساعة
++        acceleration: 0 إلى 100 كم/ساعة
+         body: الهيكل
+         doors: الأبواب
+         length: الطول (مم)
+@@ -617,24 +2042,25 @@ fleet-ops:
+         cylinder: الأسطوانات
+         position: الموضع
+         power-ps: القوة (حصان)
+-        power-rpm: القوة (دورة في الدقيقة)
++        power-rpm: القوة (دورة/دقيقة)
+         stroke: الشوط (مم)
+         torque-nm: العزم (نيوتن متر)
+-        torque-rpm: العزم (دورة في الدقيقة)
++        torque-rpm: العزم (دورة/دقيقة)
+         valves: الصمامات لكل أسطوانة
+         fuel-information: معلومات الوقود
+         fuel: الوقود
+         fuel-cap: سعة الوقود (لتر)
+-        liters-city: لترات لكل كيلومتر في المدينة
+-        liters-highway: لترات لكل كيلومتر على الطريق السريع
+-        liters-mixed: لترات لكل كيلومتر مختلط
+-      vehicle-form:
++        liters-city: لتر/كم المدينة
++        liters-highway: لتر/كم الطريق السريع
++        liters-mixed: لتر/كم مختلط
++    vehicle-form:
+         map-avatar: اختر الصورة الرمزية للخريطة
+-        map-avatar-text: اختر صورة رمزية لاستخدامها في العرض على الخرائط عند استخدام ميزات تتبع الموقع الجغرافي.
++        map-avatar-text: اختر صورة رمزية لاستخدامها في العرض على الخرائط.
+         select-avatar: اختر الصورة الرمزية
+         make: صنع المركبة
+         model: طراز المركبة
+         year: سنة المركبة
++        select-driver: اختر السائق
+         body: نوع هيكل المركبة
+         doors: عدد الأبواب
+         type: نوع قيادة المركبة
+@@ -651,986 +2077,198 @@ fleet-ops:
+         cylinder: أسطوانات المحرك
+         position: موضع المحرك
+         power-ps: قوة المحرك (حصان)
+-        power-rpm: قوة المحرك (دورة في الدقيقة)
++        power-rpm: قوة المحرك (دورة/دقيقة)
+         stroke: طول الشوط (مم)
+         torque-nm: عزم المحرك (نيوتن متر)
+-        torque-rpm: عزم المحرك (دورة في الدقيقة)
++        torque-rpm: عزم المحرك (دورة/دقيقة)
+         fuel-type: نوع الوقود
+         fuel-cap: سعة خزان الوقود (لتر)
+-      vendor-details:
+-        sandbox: البيئة التجريبية
++    vendor-details:
++        sandbox: بيئة تجريبية
+         host: المضيف
+         namespace: مساحة الاسم
+-      vendor-form:
+-        choose-vendor: اختر المورد المتكامل
++    vendor-form:
++        choose-vendor: اختر موردًا متكاملًا
+         create-vendor: إنشاء مورد مخصص
+         credentials: بيانات الاعتماد
+         options: الخيارات
+         hide-advanced: إخفاء المتقدم
+         show-advanced: عرض المتقدم
+         custom-host: مضيف مخصص
+-        host-text: اختياريًا، قدم مضيفًا مخصصًا يجب استخدامه لهذا التكامل.
++        host-text: قدم مضيفًا مخصصًا لاستخدامه في هذا التكامل اختياريًا.
+         custom-namespace: مساحة اسم مخصصة
+-        namespace-text: اختياريًا، قدم مساحة اسم مخصصة أو إصدار API يجب استخدامه للتكامل.
++        namespace-text: قدم مساحة اسم مخصصة أو إصدار API للتكامل اختياريًا.
+         webhook: عنوان URL للويب هوك
+-        webhook-text: عادةً ما يتطلب الموردون المتكاملون هذا حتى تتمكن Fleetbase من تلقي تحديثات النشاط على الطلب. لا تغيره إلا إذا كنت تعرف ما تفعله! قد يؤدي تغييره إلى كسر تحديثات الطلبات الخاصة بك!
++        webhook-text: عادةً ما يتطلب الموردون المتكاملون هذا لتلقي تحديثات النشاط.
+         cancel-credentials: إلغاء إعادة تعيين بيانات الاعتماد
+-        reset-message: يمكن إعادة تعيين بيانات الاعتماد الحساسة فقط، لتحديث بيانات الاعتماد يجب إعادة إدخالها.
+-        optionally: اختياريًا، قدم بيانات الاعتماد الخاصة بك 
++        reset-message: يمكن إعادة تعيين بيانات الاعتماد الحساسة فقط.
++        optionally: قدم بياناتك الخاصة اختياريًا
+         configure-vendor: لتكوين هذا المورد.
+         select: اختر
+-        sandbox: البيئة التجريبية
++        sandbox: بيئة تجريبية
+         name-text: اسم المورد، عادةً اسم العمل.
+-        email-text: بريد المورد الإلكتروني، يمكن استخدامه لإرسال رسائل البريد الإلكتروني إلى المورد.
+-        phone-text: رقم هاتف المورد، يمكن استخدامه لإرسال رسائل SMS أو رسائل إلى المورد.
+-        website-text: موقع المورد الإلكتروني، اختياريًا أضف موقع المورد للرجوع إليه.
++        email-text: بريد المورد الإلكتروني.
++        phone-text: رقم هاتف المورد.
++        website-text: موقع المورد الإلكتروني.
+         select-address: اختر العنوان
+-      zone-form:
++    zone-form:
+         name: اسم المنطقة
+-        name-text: قم بتعيين اسم عرض للمنطقة.
++        name-text: تعيين اسم عرض للمنطقة.
+         border-color: لون حدود المنطقة
+         customize-border: تخصيص لون الحدود لهذه المنطقة.
+         zone-color: لون المنطقة
+         customize-fill-color: تخصيص لون التعبئة لهذه المنطقة.
+-        optionally: اختياريًا، قدم وصفًا للمنطقة.
++        optionally: قدم وصفًا للمنطقة اختياريًا.
+         description-zone: وصف المنطقة
+-    order:
+-      header:
+-        dispatched-order: تم الإرسال في {order}
+-        dispatched: تم الإرسال
+-        dispatched-at: تم الإرسال في
+-        edit: تحرير التفاصيل
+-        update: تحديث النشاط
+-        assign: تعيين السائق
+-        get-order: الحصول على تسمية الطلب
+-        split-order: تقسيم الطلب
+-        reschedule: إعادة جدولة الطلب
+-        cancel-order: إلغاء الطلب
+-      place-card:
+-        show-less: عرض تفاصيل أقل
+-        show-more: عرض المزيد من التفاصيل
+-      schedule-card:
+-        destination: الوجهة
+-        unassign-driver: إلغاء تعيين السائق؟
+-        unassign-text: أنت على وشك إلغاء تعيين السائق للطلب {orderId}. انقر على متابعة لتأكيد إزالة السائق.
+-        unassign-button: متابعة وإلغاء تعيين السائق
+-        assign-driver: تعيين سائق جديد؟
+-        assign-text: أنت على وشك تعيين سائق جديد ({driverName}) للطلب {orderId}. انقر على متابعة لتأكيد السائق.
+-        assign-button: متابعة وتعيين السائق
+-        date: التاريخ المجدول
+-        driver-assigned: السائق
+-        vehicle-assigned: المركبة
+-        no-driver: لا يوجد سائق
+-        no-vehicle: لا توجد مركبة
+-        select-vehicle: اختر المركبة
+-    widget:
+-      fleet-ops-quickstart:
+-        message: لنرى ما يمكنك فعله لبدء العمليات...
+-        start-task: بدء المهمة
+-      get-started:
+-        title: Get Started with Fleet-Ops
+-        subtitle: Set up the essentials and complete your first dispatch flow.
+-        completed: completed
+-        preview-title: First order workflow
+-      recommended-features:
+-        title: Recommended features for you
+-        subtitle: Explore tools that help new operations teams get productive faster.
+-        learn-more: Learn more
+-      key-metrics:
+-        title: مقاييس Fleet-Ops
+-        earnings: الأرباح
+-        fuel-expenses: نفقات الوقود
+-        traveled: المسافة المقطوعة
+-        total-time: الوقت الإجمالي
+-        order-scheduled: الطلبات المجدولة
+-        order-completed: الطلبات المكتملة
+-        order-progress: الطلبات قيد التنفيذ
+-        order-canceled: الطلبات الملغاة
+-        driver-online: السائقون المتصلون
+-        customers: العملاء
+-        open-issue: مشكلة مفتوحة
+-        closed-issues: المشاكل المغلقة
+-      live-order-map:
+-        loading: جارٍ تحميل الطلبات قيد التنفيذ...
+-        assigned: السائق المعين
+-        no-order: لا توجد طلبات قيد التنفيذ
+-        message: عندما تكون الطلبات قيد التنفيذ، ستظهر في هذه الأداة وتعرض النشاط في الوقت الفعلي.
+-      recent-orders:
+-        title: الطلبات الأخيرة
+-        loading: جارٍ تحميل الطلبات الأخيرة...
+-        no-orders: لا توجد طلبات لهذا الأسبوع
+-        message-part-1: لم يكن هناك أي طلبات هذا الأسبوع، ابدأ الحركة عن طريق
+-        message-part-2: إنشاء طلب جديد
+-        message-part-3: أو السماح لعملائك بتقديم الطلبات عبر API.
+-      transactions:
+-        title: المعاملات الأخيرة
+-        loading: جارٍ تحميل المعاملات الأخيرة...
+-        no-transactions: لا توجد معاملات هذا الأسبوع
+-        message: عندما تمر الطلبات بمعدلات الخدمة، تتعقب Fleetbase المعاملات تلقائيًا.
+-    contact-form-panel:
+-      success-message: تم حفظ الاتصال {contactName} بنجاح.
+-      view-contact-button: عرض تفاصيل الاتصال
+-      save-contact: حفظ الاتصال
+-      create-contact: إنشاء اتصال
+-      cancel-edit-button: إلغاء تحرير الاتصال
+-      cancel-new-button: إلغاء الاتصال الجديد
+-      new-contact: اتصال جديد
+-    contact-panel:
+-      details:
+-        web-url: عنوان URL للموقع الإلكتروني
+-      edit-button: تحرير الاتصال
+-      cancel-edit-button: إلغاء تحرير الاتصال
+-      cancel-new-button: إلغاء الاتصال الجديد
+-    display-panel:
+-      no-address: لا يوجد عنوان {type}!
+-      no-address-message: لا يوجد عنوان!
+-    driver-card:
+-      no-fleets: لا توجد أساطيل
+-    driver-form-panel:
+-      driver-details: تفاصيل السائق
+-      user-account: حساب المستخدم
+-      user-account-help-text: يجب ربط كل ملف تعريف سائق بحساب مستخدم محدد. هذا الارتباط ضروري لمعالجة المصادقة، مما يضمن أن كل سائق يمكنه الوصول إلى ملفه الشخصي وإدارته بأمان.
+-      success-message: تم حفظ السائق ({driverName}) بنجاح.
+-      driver-detail: عرض تفاصيل السائق
+-      save-driver: حفظ السائق
+-      create-driver: إنشاء سائق
+-      cancel-edit-driver: إلغاء تحرير السائق
+-      cancel-new-driver: إلغاء السائق الجديد
+-      upload-new-photo: تحميل صورة جديدة
+-      new-driver: سائق جديد
+-      vendor: المورد
+-      select-vehicle: اختر المركبة
+-      driver-status: اختر حالة السائق
+-      order-history: تاريخ الطلبات
+-    driver-panel:
+-      user-account: حساب المستخدم
+-      driver-details: تفاصيل السائق
+-      locate-button-text: تحديد موقع السائق
+-      edit-button-text: تحرير السائق
+-      close-button-text: إغلاق تفاصيل السائق
+-      no-vehicle-message: لم يتم تعيين مركبة
+-      assign-vehicle-button: تعيين مركبة للسائق
+-    fleet-driver-listing:
+-      search-driver: ابحث عن السائقين في الأسطول
+-      add-driver: أضف سائقًا إلى الأسطول
+-      loading-message: جارٍ تحميل السائقين في الأسطول...
+-    fleet-form-panel:
+-      success-message: تم حفظ الأسطول ({fleetName}) بنجاح.
+-      title: أسطول جديد
+-      save-fleet: حفظ الأسطول
+-      create-fleet: إنشاء أسطول
+-      view-details: عرض تفاصيل الأسطول
+-      cancel-edit-fleet: إلغاء تحرير الأسطول
+-      cancel-new-fleet: إلغاء الأسطول الجديد
+-      fleet-name: اسم الأسطول
+-      parent-fleet: الأسطول الرئيسي
+-      select-parent-fleet: اختر الأسطول الرئيسي لتعيين الأسطول إليه
+-      select-vendor: اختر المورد لتعيين الأسطول إليه
+-      service-title: تعيين إلى منطقة الخدمة
+-      select-service: اختر منطقة الخدمة لتعيين الأسطول إليها
+-      zone-title: تعيين إلى منطقة
+-      select-zone: اختر المنطقة لتعيين الأسطول إليها
+-      select-status-fleet: اختر حالة الأسطول.
+-      select-status: اختر الحالة
+-      task-mission-title: المهمة/المهمة
+-      task-text: قدم وصفًا للمهمة الأساسية لهذا الأسطول إذا كان ذلك ممكنًا.
+-    fleet-vehicle-listing:
+-      search-vehicle: ابحث عن المركبة في الأسطول
+-      add-vehicle: أضف مركبة إلى الأسطول
+-      loading-message: جارٍ تحميل مركبات الأسطول...
+-    fuel-report-form-panel:
+-      success-message: تم حفظ تقرير الوقود بنجاح.
+-      fuel-report: تقرير وقود جديد
+-      save-fuel-report: حفظ تقرير الوقود
+-      create-fuel-report: إنشاء تقرير وقود
+-      view-details: عرض تفاصيل تقرير الوقود
+-      cancel-edit-fuel-report: إلغاء تحرير تقرير الوقود
+-      cancel-new-fuel-report: إلغاء تقرير الوقود الجديد
+-      select-reporter: اختر المراسل
+-      select-vehicle: اختر المركبة
+-      select-fuel-report: اختر حالة تقرير الوقود
+-      odometer: عداد المسافات
+-      cost: التكلفة
+-      volume: الحجم
+-      select-volume-text: اختر الوحدة المترية وحجم الوقود للإبلاغ.
+-    fuel-report-panel:
+-      title: تفاصيل تقرير الوقود
+-      edit-button: تحرير تقرير الوقود
+-      cancel-edit-fuel-report: إلغاء تحرير تقرير الوقود
+-      cancel-new-fuel-report: إلغاء تقرير الوقود الجديد
+-      details: 
+-        fuel: الوقود/ الحجم
+-    global-search:
+-      search: البحث بالكلمة الرئيسية...
+-    integrated-order-details:
+-      order-id: معرف الطلب
+-      quotation-id: معرف العرض
+-      driver-id: معرف السائق
+-      link: رابط قابل للمشاركة
+-      price-breakdown: تفصيل السعر
+-      metadata: البيانات الوصفية
+-    issue-form-panel:
+-      success-message: تم حفظ المشكلة ({publicId}) بنجاح.
+-      issue: مشكلة جديدة
+-      save-issue: حفظ المشكلة
+-      create-issue: إنشاء مشكلة
+-      view-details: عرض تفاصيل المشكلة
+-      cancel-edit-issue: إلغاء تحرير المشكلة
+-      cancel-new-issue: إلغاء المشكلة الجديدة
+-      reported-by: تم الإبلاغ بواسطة
+-      assigned: تم التعيين إلى
+-      select-assign: اختر المعين
+-      select-reporter: اختر المراسل
+-      select-vehicle: اختر المركبة
+-      type: نوع المشكلة
+-      select-type: اختر نوع المشكلة
+-      category: فئة المشكلة
+-      select-category: اختر فئة المشكلة
+-      report: تقرير المشكلة
+-      tags: علامات المشكلة
+-      add-tags: أضف علامات
+-      priority: أولوية المشكلة
+-      select-priority: اختر أولوية المشكلة
+-      select-status: اختر حالة المشكلة
+-    issue-panel:
+-      details:
+-        assigned: تم التعيين إلى
+-        type: نوع المشكلة
+-        category: فئة المشكلة
+-        priority: أولوية المشكلة
+-        report: التقرير
+-      title: تفاصيل المشكلة
+-      edit-issue: تحرير المشكلة
+-      cancel-edit-issue: إلغاء تحرير المشكلة
+-      cancel-new-issue: إلغاء المشكلة الجديدة
+-    live-map:
+-      onText: إخفاء أدوات الرسم...
+-      offText: تمكين أدوات الرسم...
+-      show-coordinates: عرض الإحداثيات...
+-      center-map: مركز الخريطة هنا...
+-      zoom-in: تكبير...
+-      zoom-out: تصغير...
+-      hide-draw: إخفاء أدوات الرسم...
+-      enable-draw: تمكين أدوات الرسم...
+-      create-new-service: إنشاء منطقة خدمة جديدة...
+-      focus-service: 'تركيز منطقة الخدمة: {serviceName}'
+-      view-driver: 'عرض السائق: {driverName}'
+-      edit-driver: 'تحرير السائق: {driverName}'
+-      delete-driver: 'حذف السائق: {driverName}'
+-      view-vehicle-for: 'عرض المركبة لـ: {driverName}'
+-      view-vehicle: 'عرض المركبة: {vehicleName}'
+-      edit-vehicle: 'تحرير المركبة: {vehicleName}'
+-      delete-vehicle: 'حذف المركبة: {vehicleName}'
+-      edit-zone: 'تحرير المنطقة: {zoneName}'
+-      delete-zone: 'حذف المنطقة: {zoneName}'
+-      assign-zone: 'تعيين الأسطول إلى المنطقة: {zoneName}'
+-      blur-service: 'طمس منطقة الخدمة: {serviceName}'
+-      create-zone: 'إنشاء منطقة داخل: {serviceName}'
+-      assign-fleet: 'تعيين الأسطول إلى منطقة الخدمة: {serviceName}'
+-      edit-service: 'تحرير منطقة الخدمة: {serviceName}'
+-      delete-service: 'حذف منطقة الخدمة: {serviceName}'
+-      service-area: منطقة الخدمة
+-      zone: المنطقة
+-    order-config:
+-      create-new-title: إنشاء تكوين طلب جديد
+-      warning-message: يتطلب تكوين الطلب اسمًا
+-      success-message: تم إنشاء تكوين الطلب الجديد بنجاح.
+-      no-order-warning: لم يتم تحديد تكوين الطلب.
+-      saved-success: تم حفظ تكوين الطلب {orderName}.
+-      enter-name-title: أدخل اسم التكوين المستنسخ
+-      no-config-warning: لم يتم إدخال اسم التكوين.
+-      cloned-success: تم استنساخ تكوين الطلب بنجاح.
+-      body: بمجرد حذف تكوين الطلب هذا، لن تتمكن من إنشاء طلبات باستخدامه بعد الآن. هل أنت متأكد؟
+-      uninstall-title: إلغاء تثبيت التكوين
+-      uninstall-success: تم إلغاء تثبيت الامتداد {extensionName}.
+-      activity-flow-editor:
+-        add-status: إضافة حالة جديدة إلى التدفق
+-        no-status: لم يتم إدخال حالة.
+-        overwrite: سيؤدي هذا إلى الكتابة فوق حالة موجودة!
+-        overwrite-text: هناك حالة {statusName} أخرى موجودة بالفعل في هذا التدفق، إذا تابعت، سيتم الكتابة فوق هذه الحالة. هل ترغب في الكتابة فوق حالة {statusName} السابقة؟
+-        overwrite-button: نعم، الكتابة فوق!
+-        remove: إزالة الحالة
+-        remove-text: هل أنت متأكد أنك ترغب في حذف هذه الحالة؟ سيتم حذف جميع الأنشطة والمنطق المرتبطة بالحالة.
+-        delete-button: نعم، احذف
+-        unable-warning: يجب أن تكون {status} في هذا الترتيب من التسلسل، غير قادر على التحول.
+-        order-warning: يجب أن تكون الحالة التي تم إنشاؤها دائمًا هي التسلسل الأول لتدفق الطلب.
+-        title: تدفق النشاط
+-        message: سيسمح لك تكوين تدفق النشاط بتحديد أنواع الأنشطة المختلفة لتتبع الحالة التي تنطبق على هذا النوع من الطلبات. يمكن أيضًا تكوين منطق تدفق النشاط.
+-        order-flow: تدفق الطلب
+-        waypoint-flow: تدفق نقطة الطريق
+-        new-activity: نشاط جديد
+-        activity-details: تفاصيل النشاط
+-        logic-stack: مكدس المنطق
+-        add-logic: إضافة شرط منطقي
+-        select-field: اختر الحقل
+-        select-operator: اختر المشغل
+-        enter-value: أدخل القيمة للمقارنة
+-        no-logic: لم يتم تطبيق شروط منطقية
+-      details-editor:
+-        success: تم التثبيت
+-        key-text: مرر هذا المفتاح إلى نوع الطلب الخاص بك لتكوين الطلب باستخدام هذا التكوين.
+-        namespace-text: مساحة اسم فريدة لهذا الامتداد.
+-        id: معرف الامتداد
+-        id-text: معرف فريد لهذا الامتداد.
+-        version: إصدار الامتداد
+-        version-text: إصدار هذا الامتداد.
+-        clone: استنساخ التكوين
+-        uninstall: إلغاء تثبيت التكوين
+-        delete: حذف التكوين
+-      entities-editor:
+-        warning-message: لم يتم إدخال اسم حقل البيانات الوصفية.
+-        title: الكيانات
+-        message: سيسمح لك تكوين الكيانات بتحديد أنواع الكيانات المختلفة التي يجب أن تكون قابلة للتحديد لهذا النوع من الطلبات. يجب استخدام هذه الكيانات كقوالب لتسريع إنشاء الطلبات اليدوية.
+-        type: نوع الكيان
+-        add-meta: إضافة حقل بيانات وصفية
+-      fields-editor:
+-        text-field: حقل نصي
+-        boolean: منطقي
+-        boolean-text: يسمح للمستخدم بتبديل خاصية صحيحة أو خاطئة عن طريق خانة اختيار
+-        dropdown: تحديد من القائمة المنسدلة
+-        dropdown-text: يسمح للمستخدم بتحديد خيار من قائمة منسدلة من الخيارات
+-        datetime: محدد التاريخ والوقت
+-        datetime-text: يسمح للمستخدم بتحديد تاريخ ووقت
+-        port: محدد الميناء
+-        port-text: يسمح للمستخدم بتحديد ميناء
+-        vessel: محدد السفينة
+-        vessel-text: يسمح للمستخدم بتحديد سفينة
+-        warning-message: لم يتم إدخال اسم المجموعة.
+-        field-title: الحقول الوصفية
+-        new-field: حقل مخصص جديد
+-        new-custom-field: مجموعة الحقول المخصصة الجديدة
+-        field-text: سيسمح لك تكوين الحقول الوصفية بتحديد حقول الإدخال المخصصة التي سيتم تطبيقها على الطلبات.
+-        custom-field-group: مجموعة الحقول المخصصة
+-        default-field: الحقول الافتراضية
+-        custom-field: حقل مخصص
+-        type: نوع الحقل
+-        select-type: اختر نوع الحقل
+-        add-option: إضافة خيار
+-      select-message: اختر تكوين الطلب لتعديله، أو انقر على "تكوين جديد" لإنشاء تكوين طلب جديد.
+-      new-config: تكوين جديد
+-      loading-configuration: جارٍ تحميل تكوينات الطلب الخاصة بك...
+-      select-order: اختر تكوين الطلب
+-      save-changes: حفظ التغييرات
+-      details: التفاصيل
+-      fields: الحقول المخصصة
+-      flow: تدفق النشاط
+-      entities: الكيانات
+-    order-list-overlay:
+-      search: البحث في الطلبات...
+-      selected: المختار
+-      assign: تعيين إلى السائق...
+-      cancel: إلغاء الطلبات...
+-      delete: حذف الطلبات...
+-      actions: الإجراءات
+-      create-order: إنشاء طلب جديد...
+-      create-fleet: إنشاء أسطول جديد...
+-      active-order: الطلبات النشطة
+-      unassigned-order: الطلبات غير المعينة  
+-    place-form-panel:
+-      success-message: تم حفظ المكان ({placeAddress}) بنجاح.
+-      place: مكان جديد
+-      save-place: حفظ المكان
+-      create-place: إنشاء مكان
+-      view-details: عرض تفاصيل المكان
+-      cancel-edit-place: إلغاء تحرير المكان
+-      cancel-new-place: إلغاء المكان الجديد
+-      street-1: الشارع 1
+-      street-2: الشارع 2
+-      neighborhood: الحي
+-      building: المبنى
+-      security-code: رمز الوصول الأمني
+-      postal-code: الرمز البريدي
+-      state: الولاية
+-    place-panel:
+-      edit-place: تحرير المكان
+-      cancel-edit-place: إلغاء تحرير المكان
+-      cancel-new-place: إلغاء المكان الجديد
+-    route-list:
+-      expand: اضغط للتوسيع
+-      collapse: اضغط للطي
+-      more-waypoints: المزيد من نقاط الطريق
+-    settings-window:
+-      success-message: تم حفظ الإعدادات بنجاح.
+-      title: إعدادات Fleet-Ops
+-      save: حفظ التغييرات
+-      name: مسافة التنبيه الافتراضية للطلبات الفورية
+-      name-text: يحدد هذا الإعداد المسافة الافتراضية بالأمتار التي يجب أن تنبه الطلبات الفورية السائقين ضمن محيط نقطة استلام الطلب.
+-      message: يجب أن تكون المسافة بالأمتار
+-    vehicle-form-panel:
+-      success-message: تم حفظ المركبة ({vehicleName}) بنجاح.
+-      view-details: عرض تفاصيل المركبة
+-      save-vehicle: حفظ المركبة
+-      create-vehicle: إنشاء مركبة      
+-      cancel-edit-vehicle: إلغاء تحرير المركبة
+-      cancel-new-vehicle: إلغاء المركبة الجديدة
+-      upload-photo: تحميل صورة جديدة
+-      new-vehicle: مركبة جديدة
+-      not-assigned: لم يتم تعيين سائق
+-      plate-number: رقم اللوحة
+-      vin-number: رقم VIN
+-      make: الصنع
+-      vehicle-make: صنع المركبة
+-      model: الطراز
+-      vehicle-model: طراز المركبة
+-      year: السنة
+-      vehicle-year: سنة المركبة
+-      driver-assigned: السائق المعين
+-      vehicle-assigned: المركبة المعينة
+-      select-vehicle: اختر المركبة
+-      avatar: الصورة الرمزية
+-      select-map-avatar: اختر الصورة الرمزية للخريطة
+-      select-avatar-rendering: اختر صورة رمزية لاستخدامها في العرض على الخرائط عند استخدام ميزات تتبع الموقع الجغرافي.
+-      select-avatar: اختر الصورة الرمزية
+-    vehicle-panel:
+-      edit: تحرير المركبة
+-      close: إغلاق تفاصيل المركبة
+-      not-assigned: لم يتم تعيين سائق
+-      assign-driver: تعيين سائق للمركبة
+-    vendor-form-panel:
+-      success-message: تم حفظ المورد ({vendorName}) بنجاح.
+-      create-form:
+-        integrated-vendor: اختر موردًا متكاملًا
+-        custom-vendor: إنشاء مورد مخصص
+-        title: الإعداد
+-        select-vendor-type: اختر نوع المورد
+-        choose-vendor: اختر مزود المورد المتكامل
+-        provider: المزود
+-        credentials: بيانات الاعتماد
+-        advanced-options: الخيارات المتقدمة
+-        hide-advanced-options: إخفاء الخيارات المتقدمة
+-        show-advanced-options: عرض الخيارات المتقدمة
+-        host: المضيف المخصص
+-        host-text: قدم مضيفًا مخصصًا لاستخدامه في هذا التكامل اختياريًا.
+-        namespace: مساحة الاسم المخصصة
+-        namespace-text: قدم مساحة اسم مخصصة أو إصدار API لاستخدامه في التكامل اختياريًا.
+-        webhook: عنوان URL للويب هوك
+-        webhook-text: عادةً ما يتطلب الموردون المتكاملون هذا حتى تتمكن Fleetbase من تلقي تحديثات النشاط على الطلب. لا تقم بتغييره إلا إذا كنت تعرف ما تفعله! قد يؤدي تغييره إلى كسر تحديثات الطلبات الخاصة بك!
+-        select-integrated: اختر مزود المورد المتكامل.
+-        vendor-details: تفاصيل المورد
+-        select-vendor-status: اختر حالة المورد
+-        select-address: اختر العنوان
+-        edit: تحرير
+-        new-address: عنوان جديد
+-        optionally: قدم عنوانك الخاص اختياريًا
+-        configure-vendor: لتكوين هذا المورد.
+-        select: اختر
+-        name-text: اسم المورد، عادةً اسم العمل.
+-        email-text: بريد المورد الإلكتروني، يمكن استخدامه لإرسال رسائل بريد إلكتروني إلى المورد.
+-        phone-text: >-
+-          رقم هاتف المورد، يمكن استخدامه لإرسال رسائل SMS أو رسائل إلى المورد.
+-        website-text: موقع المورد الإلكتروني، أضف موقع المورد الإلكتروني للرجوع إليه اختياريًا.
+-      edit-form:
+-        cancel-credentials: إلغاء إعادة تعيين بيانات الاعتماد
+-        sensitive-credentials: يمكن إعادة تعيين بيانات الاعتماد الحساسة فقط، لتحديث بيانات الاعتماد يجب إعادة إدخالها.
+-        reset-credentials: انقر هنا لإعادة تعيين بيانات الاعتماد
+-        select-address: اختر العنوان
+-      view-details: عرض تفاصيل البائع
+-      save-vendor: حفظ البائع
+-      create-vendor: إنشاء بائع
+-      cancel-edit-vendor: إلغاء تعديل البائع
+-      cancel-new-vendor: إلغاء بائع جديد
+-      upload-photo: تحميل صورة جديدة
+-      new-vendor: بائع جديد
+-    vendor-panel:
+-      edit: تعديل البائع
+-      close: إغلاق تفاصيل البائع
+-      new-vendor: بائع جديد
+-  management:
+-    contacts:
+-      index:
+-        delete-button: حذف جهات الاتصال
+-        updated: تم التحديث في
+-        created: تم الإنشاء في
+-        view-contact: عرض تفاصيل جهة الاتصال
+-        edit-contact: تعديل جهة الاتصال
+-        delete-contact: حذف جهة الاتصال
+-        edit:
+-          title: المتابعة بدون حفظ؟
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذه الجهة. انقر على المتابعة للمتابعة.
+-          button: المتابعة بدون حفظ
+-        title: جهات الاتصال
+-        delete-contacts: حذف جهات الاتصال
+-    drivers:
+-      index:
+-        assign-driver: تعيين سائق
+-        view-details: عرض تفاصيل السائق...
+-        edit-details: تعديل تفاصيل السائق...
+-        assign-order-driver: تعيين طلب للسائق...
+-        assign-vehicle-driver: تعيين مركبة للسائق...
+-        locate-driver-map: تحديد موقع السائق على الخريطة...
+-        delete-driver: حذف السائق...
+-        delete-button: حذف السائقين
+-        order-driver: تعيين طلب لهذا السائق
+-        assign-order: تعيين طلب
+-        no-order-warning: لم يتم تحديد طلب!
+-        assign-success: '{driverName} تم تعيينه للطلب.'
+-        title-vehicle: تعيين مركبة لهذا السائق
+-        confirm-button: تأكيد وإنشاء
+-        assign-vehicle: '{driverName} تم تعيينه للمركبة.'
+-        locate-driver: الموقع الحالي لـ {driverName}
+-        edit:
+-          title: المتابعة بدون حفظ؟
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذا السائق. انقر على المتابعة للمتابعة.
+-          button: المتابعة بدون حفظ
+-        title: السائقين
+-        delete-drivers: حذف السائقين
+-        search-placeholder: بحث عن السائقين
+-      new:
+-        warning-message: لا توجد ملفات في قائمة الانتظار للتحميل!
+-        import-success: تم الاستيراد بنجاح.
+ 
+-    fleets:
+-      index:
+-        view-fleet: عرض تفاصيل الأسطول...
+-        edit-fleet: تعديل تفاصيل الأسطول...
+-        assign-driver: تعيين سائق للأسطول...
+-        delete-fleet: حذف الأسطول...
+-        delete-button: حذف الأساطيل
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذا الأسطول. انقر على المتابعة للمتابعة.
+-        title: الأساطيل
+-        delete-fleets: حذف الأساطيل
+-    fuel-reports:
+-      index:
+-        view: عرض التفاصيل
+-        edit-fuel: تعديل تقرير الوقود
+-        delete: حذف تقرير الوقود
+-        delete-button: حذف تقارير الوقود
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذا التقرير. انقر على المتابعة للمتابعة.
+-        title: تقارير الوقود
+-        delete-fuel-reports: حذف تقارير الوقود
+-    issues:
+-      index:
+-        view: عرض التفاصيل
+-        edit-issues: تعديل القضايا
+-        delete: حذف القضايا
+-        delete-button: حذف القضايا
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذه القضية. انقر على المتابعة للمتابعة.
+-        title: القضايا
+-        delete-issues: حذف القضايا
+-    places:
+-      index:
+-        view-details: عرض تفاصيل المكان
+-        edit-place: تعديل المكان
+-        view-place: عرض المكان على الخريطة
+-        delete: حذف المكان
+-        title: تعيين هذا المكان لبائع
+-        confirm-button: تأكيد وإنشاء
+-        delete-button: حذف الأماكن
+-        success-message: '{placeName} تم تحديث التفاصيل.'
+-        locate-title: موقع {placeName}
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذا المكان. انقر على المتابعة للمتابعة.
+-        places-title: الأماكن
+-        delete-places: حذف الأماكن
+-    vehicles:
+-      index:
+-        view-vehicle: عرض تفاصيل المركبة...
+-        edit-vehicle: تعديل تفاصيل المركبة...
+-        delete-vehicle: حذف المركبة...
+-        delete-button: حذف المركبات
+-        locate-action-title: تحديد موقع المركبات
+-        locate-title: الموقع الحالي لـ {vehicleName}
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذه المركبة. انقر على المتابعة للمتابعة.
+-        title: المركبات
+-        delete-vehicles: حذف المركبات
+-    vendors:
+-      index:
+-        delete-button: حذف البائعين
+-        view-vendor: عرض تفاصيل البائع
+-        edit-vendor: تعديل البائع
+-        delete-vendor: حذف البائع
+-        edit:
+-          body: سيتم فقدان التغييرات غير المحفوظة على هذا البائع. انقر على المتابعة للمتابعة.
+-        title: البائعين
+-        delete-vendors: حذف البائعين
+-  operations:
+-    order-config:
+-      route-loading-message: جارٍ تحميل مُنشئ تكوين الطلب
+-    orders:
+-      index:
+-        payload: الحمولة
+-        customer: العميل
+-        facilitator: الميسر
+-        pickup: الاستلام
+-        dropoff: التسليم
+-        scheduled-at: مجدول في
+-        items: العناصر
+-        transaction: إجمالي المعاملة
+-        tracking: رقم التتبع
+-        driver-assigned: السائق
+-        vehicle-assigned: المركبة
+-        created-by: أنشأ بواسطة
+-        updated-by: تم التحديث بواسطة
+-        view-order: عرض الطلب
+-        cancel-order: إلغاء الطلب
+-        delete-order: حذف الطلب
+-        dispatch-order: إرسال الطلب
+-        cancel-title: هل أنت متأكد أنك تريد إلغاء هذا الطلب؟
+-        cancel-body: بمجرد إلغاء هذا الطلب، سيظل سجل الطلب مرئيًا ولكن لا يمكن إضافة نشاط إلى هذا الطلب.
+-        cancel-success: تم إلغاء الطلب {orderId}.
+-        dispatch-title: هل أنت متأكد أنك تريد إرسال هذا الطلب؟
+-        dispatch-body: بمجرد إرسال هذا الطلب، سيتم إخطار السائق المعين.
+-        dispatch-success: تم إرسال الطلب {orderId}.
+-        map: الخريطة
+-        table: الجدول
+-        cancel-orders: إلغاء الطلبات
+-        delete-orders: حذف الطلبات
+-        new:
+-          create-new-customer: إنشاء عميل جديد
+-          create-new-facilitator: إنشاء ميسر جديد
+-          create-new-place: إنشاء مكان جديد
+-          add-order: إضافة كيان إلى الطلب
+-          edit-order: تعديل بيانات الطلب
+-          add-field: إضافة حقل مخصص
+-          order-type: نوع الطلب
+-          order-type-help-text: اختيار نوع الطلب سيخبر فليتباس بتكوينات الطلب التي يجب استخدامها.
+-          order-type-placeholder: اختر نوع الطلب
+-          internal-id: المعرف الداخلي
+-          internal-id-help-text: استخدم هذا الحقل لتعيين معرف مخصص أو معرف داخلي للطلب اختياريًا.
+-          schedule: الجدول الزمني
+-          schedule-help-text: تاريخ ووقت إرسال الطلب. إذا لم يتم تعيين سائق في وقت الإرسال، سيفشل الإرسال. إذا كان الطلب فوريًا، سيتم إرسال الطلب إلى السائقين في محيط الاستلام.
+-          customer: العميل
+-          customer-help-text: تعيين العميل لهذا الطلب اختياريًا. إذا كان عميلاً جديدًا، استخدم زر "عميل جديد" أعلاه.
+-          customer-placeholder: اختر العميل
+-          facilitator: الميسر
+-          facilitator-help-text: تعيين ميسر لهذا الطلب اختياريًا، يمكن أن يكون الميسر مقاولًا فرعيًا أو خدمة من طرف ثالث ستسهل نقل هذا الطلب.
+-          facilitator-placeholder: اختر الميسر
+-          service-type: نوع الخدمة
+-          service-type-placeholder: اختر نوع الخدمة
+-          service-type-help-text: اختر نوع الخدمة التي ترغب في استخدامها
+-          assign-driver: تعيين سائق
+-          assign-driver-help-text: تعيين السائق الذي سيتم إرسال هذا الطلب إليه.
+-          assign-driver-placeholder: اختر السائق
+-          assign-vehicle: تعيين مركبة
+-          assign-vehicle-help-text: تعيين المركبة التي سيتم تنفيذ هذا الطلب بها.
+-          assign-vehicle-placeholder: اختر المركبة
+-          proof-delivery: إثبات التسليم
+-          proof-delivery-help-text: اختر نوع إثبات التسليم المطلوب. يمكن أن يكون إما مسح رمز QR أو طريقة التوقيع.
+-          proof-delivery-placeholder: اختر طريقة إثبات التسليم
+-          adhoc-ping: مسافة التنبيه الفوري
+-          adhoc-ping-help-text: يحدد هذا الإعداد مسافة التنبيه الفوري لهذا الطلب، إذا لم يتم تعيينه، سيتم الرجوع إلى الإعداد الافتراضي.
+-          adhoc-ping-message: يجب أن تكون المسافة بالأمتار
+-          ad-hoc: فوري
+-          ad-hoc-help-text: تفعيل الفوري سيمكن الطلب من تنبيه السائقين في محيط استلام الطلب بشكل ذكي، مما يسمح لأول سائق متاح بقبول الطلب. هذا بديل لتعيين السائق يدويًا للطلبات الفورية.
+-          dispatch: إرسال فورًا
+-          dispatch-help-text: تفعيل الإرسال سيؤدي إلى إرسال هذا الطلب فورًا بعد الإنشاء.
+-          require-proof: طلب إثبات التسليم
+-          require-proof-help-text: تفعيل هذا سيطلب من السائق إكمال إثبات التسليم.
+-          additional-details: تفاصيل إضافية
+-          metadata: البيانات الوصفية
+-          route: المسار
+-          route-label: عمليات تسليم متعددة
+-          optimize-route: تحسين المسار
+-          optimize-route-help-text: سيقوم فليتباس بتحسين المسار تلقائيًا.
+-          add-waypoint: إضافة نقطة توقف
+-          add-waypoint-help-text: استخدم زر `إضافة نقطة توقف` لإضافة المزيد من التوقفات لهذا الطلب. سيقوم محرك التوجيه في فليتباس بتحسين المسار تلقائيًا مع إضافة أو إزالة كل توقف.
+-          select-waypoint-placeholder: اختر نقطة توقف
+-          infoblock-text: غير قادر على دعم هذا الموقع.
+-          invalid-coordinates: إحداثيات غير صالحة!
+-          pickup: الاستلام
+-          select-pickup: اختر الاستلام
+-          dropoff: التسليم
+-          select-dropoff: اختر التسليم
+-          return: العودة
+-          edit-address: تعديل العنوان
+-          select-return: اختر العودة
+-          payload-entities: الحمولة / الكيانات
+-          add-item-order: إضافة عنصر إلى الطلب
+-          items-drop: العناصر تسقط عند
+-          add-item-button: إضافة عنصر
+-          add-entity: إضافة كيان
+-          sku: SKU
+-          select-destination: اختر الوجهة
+-          edit-item: تعديل العنصر
+-          apply-service-rate: تطبيق معدل الخدمة
+-          service-help-text: اختر معدل خدمة محدد لتوليد عروض أسعار الخدمة في الوقت الفعلي لتطبيقها على هذا الطلب.
+-          service-quotes: عروض الخدمة
+-          service-quotes-help-text: اختر معدل الخدمة الذي ترغب في الحصول على عروض أسعار له.
+-          select-service-rate: اختر معدل الخدمة
+-          refresh-button: تحديث
+-          loading-message: جارٍ تحميل عروض الخدمة...
+-          info-text: اختر عرض خدمة في الوقت الفعلي لتطبيقه على هذا الطلب. بمجرد تطبيق عرض على الطلب، سيصبح معدلًا تم شراؤه. سيتم تتبع المعاملات داخل دفتر الأستاذ في فليتباس.
+-          breakdown: تفصيل
+-          no-service-info-text: لا توجد عروض خدمة.
+-          input-order-info-text: أدخل مسار الطلب لعرض عروض الخدمة.
+-          notes-title: ملاحظات
+-          success-message: تم إنشاء الطلب الجديد {orderId}
+-          warning-message: لا توجد ملفات في قائمة الانتظار للتحميل!
+-          import-success: تم الاستيراد بنجاح.
+-          service-warning: فشل في جلب عروض الخدمة لهذا الطلب.
+-          no-route-warning: لا يوجد مسار للمعاينة.
+-          route-error: فشل تحسين المسار، تحقق من إدخال المسار وحاول مرة أخرى.
+-          custom-field-title: إضافة حقل مخصص إلى الطلب
+-          label-warning: يجب أن يحتوي الحقل المخصص على تسمية
+-          value-warning: يجب أن يحتوي الحقل المخصص على قيمة
+-          edit-field-title: تعديل الحقل المخصص
+-          edit-metadata: تعديل البيانات الوصفية
+-          input-field-required: >-
+-            {inputFieldName} مطلوب.
+-        view:
+-          purchase-rate-panel-title: معدل الشراء
+-          documents-panel-title: المستندات والملفات
+-          route-panel-title: المسار
+-          currency: العملة
+-          comments-title: التعليقات
+-          notes-title: الملاحظات
+-          dispatch: إرسال
+-          order-actions: إجراءات الطلب
+-          edit-details: تعديل التفاصيل
+-          update-activity: تحديث النشاط
+-          unassign-driver: إلغاء تعيين السائق
+-          assign-driver: تعيين السائق
+-          get-order-label: الحصول على ملصق الطلب
+-          listen-socket-channel: الاستماع إلى قناة المقبس
+-          view-metadata: عرض البيانات الوصفية
+-          cancel-order: إلغاء الطلب
+-          delete-order: حذف الطلب
+-          activity: النشاط
+-          unable-load-order-activity: غير قادر على تحميل نشاط الطلب
+-          ad-hoc: فوري
+-          customer: العميل
+-          facilitator: الميسر
+-          driver-assigned: السائق المعين
+-          vehicle-assigned: المركبة المعينة
+-          change-driver: تغيير السائق
+-          tracking-number: رقم التتبع
+-          date-scheduled: التاريخ المجدول
+-          date-dispatched: تاريخ الإرسال
+-          date-started: تاريخ البدء
+-          order-details-title: تفاصيل الطلب
+-          additional-details-title: تفاصيل إضافية
+-          route: المسار
+-          pickup: الاستلام
+-          dropoff: التسليم
+-          return: العودة
+-          order-summary: ملخص الطلب
+-          subtotal: المجموع الفرعي
+-          delivery-fee: رسوم التوصيل
+-          tip: البقشيش
+-          delivery-tip: بقشيش التوصيل
+-          total: الإجمالي
+-          payload: الحمولة
+-          items-drop: العناصر تسقط عند
+-          tracking: التتبع
+-          waypoint-actions: إجراءات نقطة التوقف
+-          get-label: الحصول على الملصق
+-          view-activity: عرض النشاط
+-          add-item-button: إضافة عنصر
+-          edit-item-button: تعديل العنصر
+-          edit-order-title: تعديل تفاصيل الطلب
+-          update-success: تم تحديث تفاصيل {orderId}.
+-          order-metadata: بيانات الطلب الوصفية
+-          unassign-title: هل أنت متأكد أنك تريد إلغاء تعيين السائق ({driverName}) من هذا الطلب؟
+-          unassign-body: بمجرد إلغاء تعيين السائق، لن يكون للسائق حق الوصول إلى تفاصيل هذا الطلب.
+-          unassign-success: تم إلغاء تعيين السائق من هذا الطلب.
+-          edit-route-title: تعديل مسار الطلب
+-          route-error: فشل تحسين المسار، تحقق من إدخال المسار وحاول مرة أخرى.
+-          route-update-success: تم تحديث تفاصيل مسار {orderId}.
+-          add-activity-title: إضافة نشاط جديد إلى الطلب
+-          invalid-warning: إدخال حالة مخصصة غير صالح.
+-          change-order: تغيير سائق الطلب
+-          assign-order: تعيين سائق للطلب
+-          assign-success: تم تحديث السائق المعين للطلب {orderId}.
+-          order-title: ملصق الطلب
+-          waypoint-title: ملصق نقطة التوقف
+-          proof-of-delivery: إثبات التسليم
+-          save-order-note: حفظ ملاحظة الطلب
+-          order-notes-updated: تم تحديث ملاحظات الطلب.
+-        config:
+-          title: تكوين الطلبات
+-          message: تتيح لك تكوينات الطلبات تحديد التكوينات الديناميكية التي ستخبر فليتباس بكيفية تنفيذ أنواع الطلبات المختلفة.
+-          configuration: التكوين
+-          types:
+-            no-order-installed: لا توجد تكوينات طلبات مثبتة!
+-            you-have-no-configs: ليس لديك حاليًا أي تكوينات طلبات مثبتة، تحقق من الإضافات لتثبيت تكوين طلب للبدء.
+-            view-extensions: عرض الإضافات
+-    scheduler:
+-      index:
+-        success-message: تم جدولة الطلب {orderId} في {orderAt}.
+-        info-message: تم إلغاء جدولة الطلب {orderId}.
+-        title: المجدول
+-        unscheduled-orders: الطلبات غير المجدولة
+-        scheduled-orders: الطلبات المجدولة
+-        unauthorized-to-schedule: غير مصرح لك بجدولة الطلبات.
+-    service-rates:
+-      index:
+-        edit-service: تعديل معدل الخدمة
+-        delete-service: حذف معدل الخدمة
+-        accept-button: حذف الخدمة
+-        edit:
+-          success-message: تم تحديث معدل الخدمة {serviceName}
+-        title: معدلات الخدمة
+-        reload-data: إعادة تحميل البيانات
+-        delete-service-rates: حذف معدلات الخدمة
+-        new:
+-          success-message: تم إنشاء معدل الخدمة الجديد {serviceName}
+-          new-service-rate-title: معدل خدمة جديد
+-          save-service-button: حفظ معدل الخدمة
+-          create-service-button: إنشاء معدل خدمة
+-          service-name: اسم الخدمة
+-          service-name-help-text: اسم العرض لهذه الخدمة.
+-          service-order-label: نوع طلب الخدمة
+-          service-order-help-text: اختر تكوين طلب سيتم تطبيق هذا المعدل عليه حصريًا. يضمن ذلك أن الطلبات التي تم إنشاؤها باستخدام تكوين الطلب المحدد فقط يمكنها استخدام هذا المعدل المحدد.
+-          service-order-placeholder: اختر نوع الطلب لتقييد الخدمة
+-          base-fee-label: الرسوم الأساسية
+-          base-fee-help-text: تعيين رسوم أساسية تمثل الحد الأدنى لتكلفة هذه الخدمة.
+-          rate-calculation-label: طريقة حساب المعدل
+-          rate-calculation-help-text: الطريقة التي ستستخدمها هذه الخدمة لحساب المعدلات عند الاستعلام.
+-          rate-calculation-placeholder: اختر طريقة حساب المعدل
+-          estimated-days: أيام التسليم المقدرة
+-          estimated-days-help-text: العدد المقدر للأيام التي ستستغرقها هذه الخدمة. لاستخدام خدمة في نفس اليوم استخدم `0`.
+-          duration-terms-label: شروط المدة
+-          duration-terms-help-text: أضف شروط خدمة إضافية بخصوص المدة لهذا المعدل.
+-          duration-terms-placeholder: شروط المدة إذا كانت تنطبق
+-          fixed-meter: خيارات العداد الثابت
+-          fixed-meter-text: هذا الخيار يحدد رسوم ثابتة لكل كيلومتر.
+-          fixed-meter-example-text: >-
+-            على سبيل المثال: يتم تحديد رسوم ثابتة لكل كيلومتر. إذا كانت المسافة المقطوعة بواسطة الطلب هي 3,300 متر، سيتم إضافة الرسوم الثابتة للكيلومتر الثالث إلى مجموع الرسوم الأساسية.
+-          maximum-distance: المسافة القصوى
+-          maximum-distance-help-text: المسافة القصوى القابلة للخدمة.
+-          distance: المسافة
+-          fee: الرسوم
+-          per-drop-off-title: خيارات لكل عملية تسليم
+-          per-drop-off-text: هذا الخيار يحدد رسوم ثابتة لكل عملية تسليم.
+-          per-drop-off-example-text: >-
+-            على سبيل المثال: 1-5 عمليات تسليم في الطلب ستكلف مبلغ $x، 5-10 عمليات تسليم لكل طلب ستكلف مبلغ $x. سيتم إضافة هذا إلى مجموع الرسوم الأساسية.
+-          add-drop-off-button: إضافة نطاق تسليم
+-          min-drop: الحد الأدنى للتسليم
+-          max-drop: الحد الأقصى للتسليم
+-          min: الحد الأدنى
+-          max: الحد الأقصى
+-          per-meter: لكل متر
+-          per-meter-text: هذا الخيار يسمح بحساب الخدمة لكل كيلومتر أو متر، مما يعني أنك تحدد رسوم ثابتة يتم ضربها بعد ذلك في المسافة التي يمكن أن تكون إما متر أو كيلومتر.
+-          per-meter-example-text: >-
+-            على سبيل المثال: '{fee}' * '{distance}' + '{baseFee}'
+-          per-meter-rate-fee: رسوم ثابتة لكل متر
+-          per-meter-rate-fee-help-text: الرسوم الثابتة الواحدة التي سيتم ضربها في المسافة.
+-          distance-unit: وحدة المسافة
+-          distance-unit-help-text: يمكن أن تكون وحدة المسافة إما بالكيلومتر أو بالمتر.
+-          distance-unit-placeholder: اختر وحدة المسافة.
+-          custom-algorithm-title: خوارزمية مخصصة
+-          custom-algorithm-info-message: هذا الخيار لتعريف حساب مخصص لرسوم هذه الخدمة باستخدام المتغيرات.
+-          custom-algorithm-info-second-message: لاحظ أن المتغيرات يجب أن تكون محاطة بقوس واحد.
+-          distance-message: المسافة
+-          distance-continue-message: >-
+-            المسافة بالأمتار من مسار الطلب.
+-          time-message: الوقت
+-          time-continue-message: >-
+-             الوقت المقدر للوصول بالثواني.
+-          example: مثال
+-          example-message: إذا كان طلب الطلبية مسافة 2,200 متر مع وقت وصول مقدر بـ 30 دقيقة.
+-          example-second-message: فإن الصيغة التالية ستحسب رسوم خدمة قدرها $2.50، والتي ستضاف إلى الرسوم الأساسية.
+-          algorithm-label: الخوارزمية
+-          algorithm-help-text: تعريف صيغة ليتم تقييمها لحساب معدل هذه الخدمة.
+-          algorithm-placeholder: >-
+-            (( '{distance}' / 50 ) * .05 ) + (( '{time}' / 60 ) * .01)
+-          percel-fee-title: رسوم الطرد
+-          length-label: الطول
+-          length-placeholder: الطول في {parcelFeeDimension}
+-          width-label: العرض
+-          width-placeholder: العرض في {parcelFeeDimension}
+-          height-label: الارتفاع
+-          height-placeholder: الارتفاع في {parcelFeeDimension}
+-          weight-label: الوزن
+-          weight-placeholder: الوزن في {parcelFeeWeight}
+-          deminsions-unit: وحدة الأبعاد
+-          select-unit-placeholder: اختر الوحدة
+-          weight-unit: وحدة الوزن
+-          additional-fee: رسوم إضافية
+-          cash-delivery-title: الدفع عند الاستلام
+-          cash-delivery-label: تفعيل رسوم إضافية للطلبات `الدفع عند الاستلام`؟
+-          calculation-method-label: طريقة حساب رسوم الدفع عند الاستلام
+-          calculation-method-help-text: الطريقة المستخدمة لحساب رسوم الدفع عند الاستلام.
+-          calculation-method-placeholder: اختر طريقة حساب رسوم الدفع عند الاستلام
+-          delivery-flat-fee: رسوم ثابتة للدفع عند الاستلام
+-          delivery-flat-fee-help-text: تحديد رسوم ثابتة تضاف خلال ساعات الذروة.
+-          fee-percentage: نسبة رسوم الدفع عند الاستلام
+-          fee-percentage-help-text: تحديد رسوم بنسبة مئوية من إجمالي معدل الخدمة لتضاف كرسوم الدفع عند الاستلام.
+-          percentage-placeholder: النسبة المئوية
+-          peak-hours-title: ساعات الذروة
+-          peak-hours-label: تفعيل رسوم إضافية للطلبات المقدمة خلال ساعات الذروة المحددة للخدمة؟
+-          peak-hours-start-label: بداية ساعات الذروة
+-          peak-hours-start-help-text: تحديد وقت بدء رسوم ساعات الذروة.
+-          peak-hours-end-label: نهاية ساعات الذروة
+-          peak-hours-end-help-text: تحديد وقت انتهاء رسوم ساعات الذروة.
+-          peak-hours-fee-label: طريقة حساب رسوم ساعات الذروة
+-          peak-hours-fee-help-text: الطريقة المستخدمة لحساب رسوم ساعات الذروة.
+-          peak-hours-fee-placeholder: اختر طريقة حساب رسوم ساعات الذروة
+-          flat-fee-label: رسوم ثابتة لساعات الذروة
+-          flat-fee-help-text: تحديد رسوم ثابتة تضاف خلال ساعات الذروة.
+-          peak-hours-percentage-label: نسبة رسوم ساعات الذروة
+-          peak-hours-percentage-help-text: تحديد رسوم بنسبة مئوية من إجمالي معدل الخدمة لتضاف خلال ساعات الذروة.
+-          restrict-service-title: تقييد الخدمة
+-          service-area-label: منطقة الخدمة
+-          service-area-help-text: تقييد هذه الخدمة لطلبات الطلبات التي تنشأ من منطقة الخدمة.
+-          service-area-placeholder: تقييد إلى منطقة الخدمة
+-          zone-label: المنطقة
+-          zone-help-text: تقييد هذه الخدمة لطلبات الطلبات التي تنشأ من منطقة محددة.
+-          zone-placeholder: تقييد إلى المنطقة
+-  settings:
++custom-field-form-panel:
++    meta-col-span: 'ميتا: مدى العمود'
++    col-span-size: حجم مدى العمود
++    custom-field-title-concat: 'حقل مخصص: '
++    new-custom-field: حقل مخصص جديد
++    close-new-custom-field: إلغاء تغييرات الحقل المخصص
++    save-custom-field: حفظ التغييرات
++    create-custom-field: إنشاء حقل جديد
++    field-name: اسم الحقل
++    field-label: تسمية الحقل
++    field-type: نوع الحقل
++    select-field-type: اختر نوع الحقل...
++    field-description: وصف الحقل
++    field-help-text: نص مساعدة الحقل
++    field-default-value: القيمة الافتراضية للحقل
++    field-is-required: الحقل مطلوب
++    field-is-editable: الحقل قابل للتحرير
++    field-options: خيارات الحقل
++    field-validation-rules: قواعد التحقق من الحقل
++    field-model-type: نوع نموذج الحقل
++    field-select-model-type: اختر نوع النموذج
++    add-new-option: إضافة خيار جديد
++
++activity-form-panel:
++    title-concat: 'نشاط: '
++    new-activity-title: إنشاء نشاط جديد
++    key: المفتاح
++    code: الرمز
++    status: الحالة
++    details: التفاصيل
++    proof-of-delivery: إثبات التسليم
++    require-pod: يتطلب إثبات التسليم
++    require-pod-help-text: يتطلب هذا النشاط إنشاء إثبات قبل أن يتم تطبيقه على الطلب.
++    select-pod-method: طريقة إثبات التسليم
++    pod-method-placeholder: اختر طريقة إثبات التسليم
++    completes-order: يكمل الطلب
++    complete: إكمال
++    key-help: أدخل مفتاحًا يستخدم لاتخاذ القرارات البرمجية.
++    code-help: أدخل معرفًا فريدًا خاصًا بهذا النشاط.
++    status-help: حدد الحالة المعروضة للمستخدم النهائي عند تشغيل هذا النشاط.
++    details-help: قدم وصفًا تفصيليًا للنشاط لفهم المستخدم النهائي.
++
++custom-entity-issue-form-panel:
++    new-custom-entity: كيان مخصص جديد
++    name: الاسم
++    description: الوصف
++    details: التفاصيل
++    type: النوع
++    length: الطول
++    width: العرض
++    height: الارتفاع
++    weight: الوزن
++    entity-image: صورة الكيان
++    measurements: القياسات
++
++activity-logic-builder:
++    activity-logic: منطق النشاط
++    activity-logic-help-text: حدد شروط منطق مخصصة تحدد متى يصبح النشاط متاحًا.
++    activity-logic-add-logic-help-text: أنشئ مجموعة جديدة من الشروط.
++    activity-logic-select-logic-type-help-text: اختر نوع المنطق الذي سيتبعه هذا الشرط.
++    activity-logic-add-condition-help-text: أضف متطلبًا محددًا.
++    field: الحقل
++    value: القيمة
++    add-logic: إضافة منطق
++
++activity-event-selector:
++    activity-events: أحداث النشاط
++    activity-events-select-to-fire: اختر الأحداث التي سيتم تفعيلها.
++    activity-events-select-events-info: اختر الحدث المحدد الذي تريد تشغيله.
++    select-event-to-add: اختر الحدث لإضافته...
++
++avatar-picker:
++    avatar: الصورة الرمزية
++    select-map-avatar: اختر صورة رمزية للخريطة
++    select-avatar-rendering: اختر صورة رمزية لاستخدامها في العرض على الخرائط.
++    select-avatar: اختر الصورة الرمزية
++    select-for-preview: اختر للمعاينة
++
++admin:
+     navigator-app:
+-      navigator-app-settings: إعدادات تطبيق الملاحة
++        title: تطبيق Navigator
++        name: عنوان URL لربط المثيل
++        message: استخدم هذا الرابط لربط تطبيق Navigator الرسمي بهذا المثيل {companyName}.
++        settings: إعدادات الكيان
++        select-input: السماح للسائق بتحديث تفاصيل الكيان
++        driver-settings: إعدادات السائق
++        description: تمكين السائق على متن الطائرة
++        upload-document: طلب من السائق تحميل المستندات
++        upload-body: إضافة مستندات
++        document: المستند
++    avatar-management:
++        upload-avatar: تحميل الصورة الرمزية
++        view-avatar: عرض الصورة الرمزية
++        vehicles: المركبات
++        drivers: السائقين
++        places: الأماكن
+ 
+-scheduler:
+-  add-shift: Add Shift
+-  create-shift: Create Shift
+-  edit-shift: Edit Shift
+-  delete-shift: Delete Shift
+-  delete-shift-confirm: Are you sure you want to delete this shift? This action cannot be undone.
+-  shift-created: Shift created successfully.
+-  shift-updated: Shift updated successfully.
+-  shift-title: Shift Title
+-  shift-title-placeholder: e.g. Morning Delivery Run
+-  shift-start: Shift Start
+-  shift-end: Shift End
+-  shift-notes-placeholder: Optional notes about this shift
+-  select-start-datetime: Select start date & time
+-  select-end-datetime: Select end date & time
+-  select-driver: Select Driver
+-  upcoming-shifts: Upcoming Shifts
+-  no-upcoming-shifts: No upcoming shifts scheduled.
+-  hours-of-service: Hours of Service
+-  daily-driving-hours: Daily Driving Hours
+-  weekly-hours: Weekly Hours
+-  compliance-status: Compliance Status
+-  set-availability: Set Availability
+-  availability-set: Availability saved successfully.
+-  availability-time-off: Availability & Time Off
+-  no-availability-restrictions: No availability restrictions set.
+-  available: Available
+-  unavailable: Unavailable
+-  unavailable-time-off: Unavailable / Time Off
+-  availability-type: Availability Type
+-  request-time-off: Request Time Off
+-  submit-request: Submit Request
+-  time-off-requested: Time off request submitted.
+-  delete-availability: Delete Availability
+-  delete-availability-confirm: Are you sure you want to remove this availability record?
+-  availability-deleted: Availability record removed.
+-  start-date: Start Date
+-  end-date: End Date
+-  select-start-date: Select start date
+-  select-end-date: Select end date
+-  reason: Reason
+-  reason-placeholder: e.g. Personal appointment
+-  notes-placeholder: Optional additional notes
++entity-field-editing-settings:
++    entitiy-field-editing-settings: إعدادات تحرير حقل الكيان
++    entity-field-editing-settings-help-text: تحدد هذه الإعدادات الحقول التي يمكن للسائق تحريرها عبر تطبيق Navigator.
++    select-order-config: اختر تكوين الطلب
++    select-order-config-help-text: اختر تكوين الطلب الذي ستنطبق عليه هذه الإعدادات.
++    enable-driver-to-edit-entity-fields: السماح للسائق بتحرير تفاصيل الكيان
++    enable-driver-to-edit-entity-fields-help-text: تمكين هذا يمنح السائق الإذن بتعديل حقول الكيان.
+ 
+-order:
+-    card:
+-      linked-order: Linked Order
+-      unknown-order: Unknown order
+-      no-type: No type
+-      pickup: Pickup
+-      dropoff: Dropoff
+-      return: Return
+-      waypoints: Waypoints
+-      additional-stop: additional stop
+-      additional-stops: additional stops
+-      no-pickup-address: No pickup address
+-      no-dropoff-address: No dropoff address
+-      no-route-details: No route details available.
+-      no-order-linked: No order is linked to this issue.
++driver-onboard-settings:
++    driver-onboard-settings: إعدادات السائق على متن الطائرة
++    enable-driver-onboard-from-app: تمكين السائق على متن الطائرة من تطبيق Navigator
++    enable-driver-onboard-from-app-help-text: تمكين هذا يسمح للسائقين بالتسجيل بشكل مستقل.
++    select-onboard-method: اختر طريقة تسجيل السائق
++    select-onboard-method-help-text: يحدد هذا كيفية السماح للسائقين بإنشاء حساباتهم.
++    require-driver-to-upload-onboard-documents: طلب من السائق تحميل مستندات التسجيل
++    require-driver-to-upload-onboard-documents-help-text: يفرض هذا المستندات التي يجب على السائق تقديمها.
++    required-onboard-documents: المستندات المطلوبة للتسجيل
++    required-onboard-documents-help-text: أدخل جميع المستندات المطلوبة.
++    enter-document-name: أدخل اسم المستند
++    add-onboard-document: إضافة مستند للتسجيل
++
++cell:
++    driver-name:
++        not-assigned: لم يتم تعيين سائق
++
++live-map-drawer:
++    driver-listing:
++        location: الموقع
++        current-job: الوظيفة الحالية
++        last-seen: آخر ظهور
++        view-driver: عرض تفاصيل السائق...
++        edit-driver: تحرير السائق...
++        locate-driver: تحديد موقع السائق...
++        delete-driver: حذف السائق...
++        warning-message: غير قادر على تحديد موقع السائق.
++        message: تصفية السائقين بالكلمة المفتاحية...
++    place-listing:
++        location: الموقع
++        place: المكان
++        view-place: عرض تفاصيل المكان...
++        edit-place: تحرير المكان...
++        locate-place: تحديد موقع المكان...
++        delete-place: حذف المكان...
++        warning-message: غير قادر على تحديد موقع المكان.
++        message: تصفية الأماكن بالكلمة المفتاحية...
++    vehicle-listing:
++        location: الموقع
++        last-seen: آخر ظهور
++        view-vehicle: عرض تفاصيل المركبة...
++        edit-vehicle: تحرير المركبة...
++        locate-vehicle: تحديد موقع المركبة...
++        delete-vehicle: حذف المركبة...
++        warning-message: غير قادر على تحديد موقع المركبة.
++        message: تصفية المركبات بالكلمة المفتاحية...
+diff --git a/translations/en-us.yaml b/translations/en-us.yaml
+index bd27d73a35bfc1eade94c7d00acc81746cc84df0..24f1e7891a7e233687452eb0793d804f77996f8f 100644
+--- a/translations/en-us.yaml
++++ b/translations/en-us.yaml
+@@ -1,4 +1,28 @@
+ fleet-ops:
++    operations-monitor:
++        live-operations: Live Operations
++        drivers-online: "{count} drivers online"
++        vehicles-online: "{count} vehicles online"
++        filter-placeholder: Filter resources...
++        online: Online
++        offline: Offline
++        driver: Driver
++        vehicle: Vehicle
++        tab-fleets: Fleets
++        tab-drivers: Drivers
++        tab-vehicles: Vehicles
++        no-match-title: No resources match this search
++        no-match-desc: Try another driver, vehicle, fleet, public ID, status, or assignment.
++        clear-filter: Clear filter
++        no-drivers-title: No drivers yet
++        no-drivers-desc: Create drivers so dispatchers can assign orders and track active work on the live map.
++        create-driver: Create driver
++        no-vehicles-title: No vehicles yet
++        no-vehicles-desc: Add vehicles to power live map visibility, driver assignments, and fleet tracking.
++        create-vehicle: Create vehicle
++        no-fleets-title: No fleets yet
++        no-fleets-desc: Create fleets to organize drivers and vehicles into operational groups.
++        create-fleet: Create fleet
+     extension-name: Fleet-Ops
+ 
+ common:

@@ -1,0 +1,265 @@
+diff --git a/addon/components/widget/api-traffic.hbs b/addon/components/widget/api-traffic.hbs
+index c73c1cacf1a5e8e07d37aba2bcf89b4d6ff9b770..3a15a714dbc7bdb40c7c845fb879ccf59fa296e1 100644
+--- a/addon/components/widget/api-traffic.hbs
++++ b/addon/components/widget/api-traffic.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersChart @endpoint="api-traffic" @title={{t "developers.component.widget.dashboard.api-traffic.title"}} @subtitle={{t "developers.component.widget.dashboard.api-traffic.subtitle"}} />
++<Widget::DevelopersChart @endpoint="api-traffic" @titleKey="developers.component.widget.dashboard.api-traffic.title" @subtitleKey="developers.component.widget.dashboard.api-traffic.subtitle" />
+diff --git a/addon/components/widget/developers-chart.hbs b/addon/components/widget/developers-chart.hbs
+index 4194167db57c8556c9eb4b6fcc7383ca58de63f6..bb2e694a62504a6f9bacfc525afb1e90d4266f2c 100644
+--- a/addon/components/widget/developers-chart.hbs
++++ b/addon/components/widget/developers-chart.hbs
+@@ -1,8 +1,8 @@
+ <div class="developers-dashboard-widget developers-chart-widget flex h-full flex-col rounded-md border bg-white shadow-sm dark:bg-gray-800" ...attributes>
+     <div class="developers-widget-header">
+         <div class="min-w-0">
+-            <div class="developers-widget-title">{{@title}}</div>
+-            <div class="developers-widget-subtitle">{{@subtitle}}</div>
++            <div class="developers-widget-title">{{this.resolvedTitle}}</div>
++            <div class="developers-widget-subtitle">{{this.resolvedSubtitle}}</div>
+         </div>
+         <button type="button" class="developers-widget-icon-button" {{on "click" this.refresh}} title={{t "developers.common.reload"}}>
+             <FaIcon @icon="rotate" class={{if this.load.isRunning "animate-spin"}} />
+diff --git a/addon/components/widget/developers-chart.js b/addon/components/widget/developers-chart.js
+index 1f0891b12c9f31529a809b91161167e833b7d73f..5210257d7c849c898c6ade0582eab0eae52d7a76 100644
+--- a/addon/components/widget/developers-chart.js
++++ b/addon/components/widget/developers-chart.js
+@@ -13,6 +13,7 @@ const COLORS = [
+ 
+ export default class WidgetDevelopersChartComponent extends Component {
+     @service fetch;
++    @service intl;
+ 
+     @tracked data = null;
+     @tracked error = null;
+@@ -22,6 +23,14 @@ export default class WidgetDevelopersChartComponent extends Component {
+         this.load.perform();
+     }
+ 
++    get resolvedTitle() {
++        return this.args.titleKey ? this.intl.t(this.args.titleKey) : this.args.title;
++    }
++
++    get resolvedSubtitle() {
++        return this.args.subtitleKey ? this.intl.t(this.args.subtitleKey) : this.args.subtitle;
++    }
++
+     get labels() {
+         return this.data?.labels ?? [];
+     }
+@@ -67,7 +76,7 @@ export default class WidgetDevelopersChartComponent extends Component {
+             this.data = yield this.fetch.get(`metrics/dev/${this.args.endpoint}`, { period: this.args.period ?? '30d' });
+             this.error = null;
+         } catch (error) {
+-            this.error = error?.message ?? 'Unable to load chart';
++            this.error = error?.message ?? this.intl.t('developers.component.widget.dashboard.load-error');
+         }
+     }
+ 
+diff --git a/addon/components/widget/developers-kpi-tile.hbs b/addon/components/widget/developers-kpi-tile.hbs
+index b77d8fd716ee9a37d068fd0ef30b02846c849fea..51308cb33bf22ef12d0d445db76390eaa3b4abe3 100644
+--- a/addon/components/widget/developers-kpi-tile.hbs
++++ b/addon/components/widget/developers-kpi-tile.hbs
+@@ -17,7 +17,7 @@
+         </div>
+ 
+         <div class="mt-3 flex items-center justify-between gap-2 text-[11px]">
+-            <span class="text-gray-500 dark:text-gray-400 truncate">{{or @footnote (t "developers.component.widget.dashboard.period")}}</span>
++            <span class="text-gray-500 dark:text-gray-400 truncate">{{this.periodLabel}}</span>
+             <Badge @status={{this.deltaStatus}} @text={{this.deltaText}} @hideIcon={{true}} @disableHumanize={{true}} @wrapperClass="developers-kpi-delta text-[10px] px-2 py-0.5 font-bold" />
+         </div>
+     </div>
+diff --git a/addon/components/widget/developers-kpi-tile.js b/addon/components/widget/developers-kpi-tile.js
+index 1e6628b46f8edbb05c1ed97826f51ada773d8452..dbd88ccf4db5523376f8600c82be61c21f4a109e 100644
+--- a/addon/components/widget/developers-kpi-tile.js
++++ b/addon/components/widget/developers-kpi-tile.js
+@@ -6,6 +6,7 @@ import { task } from 'ember-concurrency';
+ 
+ export default class WidgetDevelopersKpiTileComponent extends Component {
+     @service fetch;
++    @service intl;
+ 
+     @tracked data = null;
+     @tracked error = null;
+@@ -20,7 +21,14 @@ export default class WidgetDevelopersKpiTileComponent extends Component {
+     }
+ 
+     get title() {
+-        return this.args.title ?? this.metric.label ?? 'Metric';
++        if (this.args.titleKey) {
++            return this.intl.t(this.args.titleKey);
++        }
++        return this.args.title ?? this.metric.label ?? this.intl.t('developers.component.widget.dashboard.default-title');
++    }
++
++    get periodLabel() {
++        return this.args.footnote ?? this.intl.t('developers.component.widget.dashboard.period');
+     }
+ 
+     get value() {
+@@ -41,7 +49,7 @@ export default class WidgetDevelopersKpiTileComponent extends Component {
+         const delta = this.metric.delta_percent;
+ 
+         if (typeof delta !== 'number') {
+-            return 'Current';
++            return this.intl.t('developers.component.widget.dashboard.current');
+         }
+ 
+         return `${delta > 0 ? '+' : ''}${delta}%`;
+@@ -69,7 +77,7 @@ export default class WidgetDevelopersKpiTileComponent extends Component {
+             this.data = yield this.fetch.get('metrics/dev/kpis', { period: this.args.period ?? '30d' });
+             this.error = null;
+         } catch (error) {
+-            this.error = error?.message ?? 'Unable to load metric';
++            this.error = error?.message ?? this.intl.t('developers.component.widget.dashboard.load-error');
+         }
+     }
+ 
+diff --git a/addon/components/widget/kpi-active-api-keys.hbs b/addon/components/widget/kpi-active-api-keys.hbs
+index 43aa579e7d7bc76116f4d043e46aaa6aa3edcd04..88ad87393dc2e009fd9236b735ec5d7fa1456b80 100644
+--- a/addon/components/widget/kpi-active-api-keys.hbs
++++ b/addon/components/widget/kpi-active-api-keys.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="active_api_keys" @title={{t "developers.component.widget.dashboard.kpi.active-api-keys"}} @icon="key" @accent="indigo" />
++<Widget::DevelopersKpiTile @metric="active_api_keys" @titleKey="developers.component.widget.dashboard.kpi.active-api-keys" @icon="key" @accent="indigo" />
+diff --git a/addon/components/widget/kpi-active-webhooks.hbs b/addon/components/widget/kpi-active-webhooks.hbs
+index 72b67c080b3170faefb503a3108e3b09d2a60f90..f77661a9c97e3915a940cbb758c2dd5661729dbc 100644
+--- a/addon/components/widget/kpi-active-webhooks.hbs
++++ b/addon/components/widget/kpi-active-webhooks.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="active_webhooks" @title={{t "developers.component.widget.dashboard.kpi.active-webhooks"}} @icon="plug-circle-check" @accent="cyan" />
++<Widget::DevelopersKpiTile @metric="active_webhooks" @titleKey="developers.component.widget.dashboard.kpi.active-webhooks" @icon="plug-circle-check" @accent="cyan" />
+diff --git a/addon/components/widget/kpi-api-error-rate.hbs b/addon/components/widget/kpi-api-error-rate.hbs
+index eb08c2b7998ac043051007bab322421a0b5774d9..cc443a2cb817d65b30e1c0535413ad8fb2595e87 100644
+--- a/addon/components/widget/kpi-api-error-rate.hbs
++++ b/addon/components/widget/kpi-api-error-rate.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="api_error_rate" @title={{t "developers.component.widget.dashboard.kpi.api-error-rate"}} @icon="triangle-exclamation" @accent="rose" />
++<Widget::DevelopersKpiTile @metric="api_error_rate" @titleKey="developers.component.widget.dashboard.kpi.api-error-rate" @icon="triangle-exclamation" @accent="rose" />
+diff --git a/addon/components/widget/kpi-api-latency.hbs b/addon/components/widget/kpi-api-latency.hbs
+index e64160ef2582a52102d569c0ebd3cf94ff2c46d0..70efca28216be5a5d5433323aa2c272a17a616a7 100644
+--- a/addon/components/widget/kpi-api-latency.hbs
++++ b/addon/components/widget/kpi-api-latency.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="avg_api_latency" @title={{t "developers.component.widget.dashboard.kpi.api-latency"}} @icon="gauge-high" @accent="amber" />
++<Widget::DevelopersKpiTile @metric="avg_api_latency" @titleKey="developers.component.widget.dashboard.kpi.api-latency" @icon="gauge-high" @accent="amber" />
+diff --git a/addon/components/widget/kpi-api-requests.hbs b/addon/components/widget/kpi-api-requests.hbs
+index ba1c2b287cd778132abf343602dc0cb80b58f823..19232edbc168130af0848d819659e8e628eadf4b 100644
+--- a/addon/components/widget/kpi-api-requests.hbs
++++ b/addon/components/widget/kpi-api-requests.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="api_requests" @title={{t "developers.component.widget.dashboard.kpi.api-requests"}} @icon="code" @accent="blue" />
++<Widget::DevelopersKpiTile @metric="api_requests" @titleKey="developers.component.widget.dashboard.kpi.api-requests" @icon="code" @accent="blue" />
+diff --git a/addon/components/widget/kpi-events-emitted.hbs b/addon/components/widget/kpi-events-emitted.hbs
+index 875244c8ff5d4fe1373c9a716ea4dfd888013c5c..6023e91a9153219f5757d4dfab334f397944aa66 100644
+--- a/addon/components/widget/kpi-events-emitted.hbs
++++ b/addon/components/widget/kpi-events-emitted.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="events_emitted" @title={{t "developers.component.widget.dashboard.kpi.events-emitted"}} @icon="bolt" @accent="indigo" />
++<Widget::DevelopersKpiTile @metric="events_emitted" @titleKey="developers.component.widget.dashboard.kpi.events-emitted" @icon="bolt" @accent="indigo" />
+diff --git a/addon/components/widget/kpi-webhook-failures.hbs b/addon/components/widget/kpi-webhook-failures.hbs
+index 816a4b2056211bfcdbb7bcf5ade62a8d09cb2519..db3adec78fa03a0a6630d9967fb32e722d843489 100644
+--- a/addon/components/widget/kpi-webhook-failures.hbs
++++ b/addon/components/widget/kpi-webhook-failures.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="webhook_failures" @title={{t "developers.component.widget.dashboard.kpi.webhook-failures"}} @icon="webhook" @accent="rose" />
++<Widget::DevelopersKpiTile @metric="webhook_failures" @titleKey="developers.component.widget.dashboard.kpi.webhook-failures" @icon="webhook" @accent="rose" />
+diff --git a/addon/components/widget/kpi-webhook-success.hbs b/addon/components/widget/kpi-webhook-success.hbs
+index ec8c4275a4037b5d54a79f7049f0c6454299503c..3d1e95f9ba3835ca4552faff59c35665d78728c0 100644
+--- a/addon/components/widget/kpi-webhook-success.hbs
++++ b/addon/components/widget/kpi-webhook-success.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersKpiTile @metric="webhook_success_rate" @title={{t "developers.component.widget.dashboard.kpi.webhook-success"}} @icon="webhook" @accent="emerald" />
++<Widget::DevelopersKpiTile @metric="webhook_success_rate" @titleKey="developers.component.widget.dashboard.kpi.webhook-success" @icon="webhook" @accent="emerald" />
+diff --git a/addon/components/widget/webhook-delivery.hbs b/addon/components/widget/webhook-delivery.hbs
+index 31c604a5ffa5107824e95ccb8534e651f2275bb9..679282bcfb38a0d005b8c5d5293d0c39cd2110d3 100644
+--- a/addon/components/widget/webhook-delivery.hbs
++++ b/addon/components/widget/webhook-delivery.hbs
+@@ -1 +1 @@
+-<Widget::DevelopersChart @endpoint="webhook-delivery" @title={{t "developers.component.widget.dashboard.webhook-delivery.title"}} @subtitle={{t "developers.component.widget.dashboard.webhook-delivery.subtitle"}} />
++<Widget::DevelopersChart @endpoint="webhook-delivery" @titleKey="developers.component.widget.dashboard.webhook-delivery.title" @subtitleKey="developers.component.widget.dashboard.webhook-delivery.subtitle" />
+diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
+index 2f15983dca7b389ebe834716c3e29517a17a3553..f28f1e3998a1768f038e170a1e4da6cc9d85235b 100644
+--- a/translations/ar-ae.yaml
++++ b/translations/ar-ae.yaml
+@@ -149,38 +149,41 @@ developers:
+         date-created: تاريخ الإنشاء
+     widget:
+       dashboard:
+-        name: Developers Dashboard
+-        period: 30d
+-        empty: No data available
++        name: لوحة تحكم المطورين
++        period: 30 يوماً
++        empty: لا توجد بيانات متاحة
++        current: الحالي
++        default-title: مقياس
++        load-error: تعذّر تحميل المقياس
+         kpi:
+-          api-requests: API Requests
+-          api-error-rate: API Error Rate
+-          api-latency: Avg API Latency
+-          webhook-success: Webhook Success
+-          active-api-keys: Active API Keys
+-          active-webhooks: Active Webhooks
+-          webhook-failures: Webhook Failures
+-          events-emitted: Events Emitted
++          api-requests: طلبات API
++          api-error-rate: معدل أخطاء API
++          api-latency: متوسط زمن استجابة API
++          webhook-success: نجاح الويب هوك
++          active-api-keys: مفاتيح API النشطة
++          active-webhooks: الويب هوكات النشطة
++          webhook-failures: فشل الويب هوك
++          events-emitted: الأحداث المنبعثة
+         api-traffic:
+-          title: API Traffic
+-          subtitle: Request volume, successes, and errors
++          title: حركة API
++          subtitle: حجم الطلبات والنجاح والأخطاء
+         webhook-delivery:
+-          title: Webhook Delivery Health
+-          subtitle: Delivery volume, retries, and failures
++          title: صحة تسليم الويب هوك
++          subtitle: حجم التسليم وإعادة المحاولة والفشل
+         endpoint-health:
+-          title: Endpoint Health
+-          subtitle: Recent webhook endpoint reliability
++          title: صحة نقاط النهاية
++          subtitle: موثوقية نقاط نهاية الويب هوك الأخيرة
+         event-stream:
+-          title: Event Stream
+-          subtitle: Top event types and sources
+-          types: Event types
+-          sources: Sources
++          title: تدفق الأحداث
++          subtitle: أهم أنواع الأحداث ومصادرها
++          types: أنواع الأحداث
++          sources: المصادر
+         developer-activity:
+-          title: Developer Activity
+-          subtitle: Recent logs, webhooks, and events
++          title: نشاط المطورين
++          subtitle: السجلات والويب هوكات والأحداث الأخيرة
+         quick-resources:
+-          title: Quick Resources
+-          subtitle: Jump into developer tools
++          title: موارد سريعة
++          subtitle: الانتقال إلى أدوات المطورين
+       api-metrics:
+         title: المراقبة
+         api-requests: طلبات API
+diff --git a/translations/en-us.yaml b/translations/en-us.yaml
+index 505aed40b9aab25b52ec6ecc56c72a9a07a9eb66..5fcbe7fcada7b71d2e772817657c4e366a8ab656 100644
+--- a/translations/en-us.yaml
++++ b/translations/en-us.yaml
+@@ -142,6 +142,9 @@ developers:
+         name: Developers Dashboard
+         period: 30d
+         empty: No data available
++        current: Current
++        default-title: Metric
++        load-error: Unable to load metric
+         kpi:
+           api-requests: API Requests
+           api-error-rate: API Error Rate

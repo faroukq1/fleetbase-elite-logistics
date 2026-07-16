@@ -1,12 +1,12 @@
 <ContentPanel @title="Mail" @open={{true}} @wrapperClass="bordered-classic">
-    <InputGroup @name="Mailer" @helpText="Select the default mailer for Elite Logistics to use.">
-        <Select @options={{this.mailers}} @value={{this.mailer}} @onSelect={{this.setMailer}} @placeholder="Select mailer" class="w-full" />
+    <InputGroup @name="Mailer" @helpText={{t "config.select-the-default-mailer-for-elite-logistics-to-use"}}>
+        <Select @options={{this.mailers}} @value={{this.mailer}} @onSelect={{this.setMailer}} @placeholder={{t "config.select-mailer"}} class="w-full" />
     </InputGroup>
     {{#if (eq this.mailer "smtp")}}
         <InputGroup @name="SMTP Host" @value={{this.smtpHost}} disabled={{this.loadConfigValues.isRunning}} />
         <InputGroup @name="SMTP Port" @type="number" @value={{this.smtpPort}} disabled={{this.loadConfigValues.isRunning}} />
         <InputGroup>
-            <Toggle @isToggled={{eq this.smtpEncryption "tls"}} @onToggle={{this.enableSmtpEncryption}} @label="SMTP Encryption" @helpText="Enabled TLS Encryption" />
+            <Toggle @isToggled={{eq this.smtpEncryption "tls"}} @onToggle={{this.enableSmtpEncryption}} @label={{t "config.smtp-encryption"}} @helpText={{t "config.enabled-tls-encryption"}} />
         </InputGroup>
         <InputGroup @name="SMTP Username" @value={{this.smtpUsername}} disabled={{this.loadConfigValues.isRunning}} />
         <InputGroup @name="SMTP Password" @value={{this.smtpPassword}} disabled={{this.loadConfigValues.isRunning}} />
@@ -18,7 +18,7 @@
         <InputGroup @name="Client Secret" @value={{this.microsoftGraphClient_secret}} disabled={{this.loadConfigValues.isRunning}} />
         <InputGroup @name="Tenant ID" @value={{this.microsoftGraphTenant_id}} disabled={{this.loadConfigValues.isRunning}} />
         <InputGroup>
-            <Toggle @isToggled={{this.microsoftGraphSave_to_sent_items}} @onToggle={{fn (mut this.microsoftGraphSave_to_sent_items)}} @label="Save to sent items"  />
+            <Toggle @isToggled={{this.microsoftGraphSave_to_sent_items}} @onToggle={{fn (mut this.microsoftGraphSave_to_sent_items)}} @label={{t "config.save-to-sent-items"}}  />
         </InputGroup>
     {{/if}}
     {{#if (eq this.mailer "mailgun")}}
@@ -36,13 +36,13 @@
         <InputGroup @name="Resend API Key" @value={{this.resendKey}} disabled={{this.loadConfigValues.isRunning}} />
     {{/if}}
     <InputGroup
-        @name="From Address"
-        @helpText="Input the email address for Elite Logistics to send emails from."
+        @name={{t "config.from-address"}}
+        @helpText={{t "config.input-the-email-address-for-elite-logistics-to-send-emails-f"}}
         @value={{this.fromAddress}}
-        @placeholder="From Address"
+        @placeholder={{t "config.from-address"}}
         disabled={{this.isLoading}}
     />
-    <InputGroup @name="From Name" @helpText="Input the name for Elite Logistics to send emails from." @value={{this.fromName}} @placeholder="From Name" disabled={{this.isLoading}} />
+    <InputGroup @name={{t "config.from-name"}} @helpText={{t "config.input-the-name-for-elite-logistics-to-send-emails-from"}} @value={{this.fromName}} @placeholder={{t "config.from-name"}} disabled={{this.isLoading}} />
     {{#if this.testResponse}}
         <div
             class="flex flex-row items-center rounded-lg border

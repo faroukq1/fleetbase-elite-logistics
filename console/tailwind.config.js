@@ -26,16 +26,68 @@ module.exports = {
                 DEFAULT: 'transparent',
             },
             colors: {
+                // ── Elite Logistics palette (named tokens) ──────────────────
+                // Primary green #5DD62C / dark green #337418.
+                // Neutral surfaces #F8F8F8 (light) / #202020 (dark) / #0F0F0F (darkest).
+                brand: {
+                    50: '#e8fbdd',
+                    100: '#c6f4b0',
+                    200: '#a1ec80',
+                    300: '#7ee352',
+                    400: '#6bde3f',
+                    500: '#5dd62c', // primary
+                    600: '#47a821',
+                    700: '#337418', // dark / hover / active
+                    800: '#26550f',
+                    900: '#173408',
+                    DEFAULT: '#5dd62c',
+                    dark: '#337418',
+                },
+                // Neutral surface tokens (semantic aliases for the palette).
+                surface: {
+                    light: '#f8f8f8', // light-mode page background
+                    dark: '#202020', // dark-mode card / surface
+                    darkest: '#0f0f0f', // darkest bg / primary text
+                },
+                // Neutral gray ramp anchored to the palette. Light shades stay
+                // neutral (light mode unchanged); dark shades snap to the brand
+                // neutrals so all `dark:bg-gray-800/900` surfaces hit #202020 /
+                // #0F0F0F, and `text-gray-800/900` hit the palette text colors.
+                gray: {
+                    50: '#f8f8f8', // light page bg (palette light)
+                    100: '#f2f2f2',
+                    200: '#e5e5e5', // light borders
+                    300: '#d4d4d4',
+                    400: '#a3a3a3', // secondary text
+                    500: '#737373', // secondary text
+                    600: '#525252',
+                    700: '#2b2b2b', // dark input / hover / border
+                    800: '#202020', // dark surface / secondary text (palette)
+                    900: '#0f0f0f', // dark page / primary text (palette)
+                    950: '#0a0a0a', // darkest
+                },
+                // Elite Logistics brand green (primary). #5DD62C brand, #337418 dark.
                 sky: {
-                    100: '#e6f0fb',
-                    200: '#bad5f5',
-                    300: '#8dbbef',
-                    400: '#61a0e8',
-                    500: '#3485e2',
-                    600: '#1c6cc7',
-                    700: '#16539a',
-                    800: '#103b6d',
-                    900: '#092341',
+                    100: '#e8fbdd',
+                    200: '#c6f4b0',
+                    300: '#a1ec80',
+                    400: '#7ee352',
+                    500: '#5dd62c',
+                    600: '#47a821',
+                    700: '#337418',
+                    800: '#26550f',
+                    900: '#173408',
+                },
+                blue: {
+                    100: '#e8fbdd',
+                    200: '#c6f4b0',
+                    300: '#a1ec80',
+                    400: '#7ee352',
+                    500: '#5dd62c',
+                    600: '#47a821',
+                    700: '#337418',
+                    800: '#26550f',
+                    900: '#173408',
                 },
                 nightsky: {
                     100: '#0d2f57',

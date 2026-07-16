@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html>
+<!-- dir is required: postcss-rtlcss scopes every direction-sensitive rule under [dir="ltr"] /
+     [dir="rtl"], so an unset dir leaves those declarations unmatched. services/language.js
+     rewrites lang/dir when the locale changes. -->
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />

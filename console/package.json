@@ -135,6 +135,7 @@
         "postcss-import": "14.1.0",
         "postcss-mixins": "^9.0.4",
         "postcss-preset-env": "^7.8.3",
+        "postcss-rtlcss": "^6.0.0",
         "postcss-simple-vars": "^7.0.1",
         "prettier": "^3.3.3",
         "qunit": "^2.22.0",

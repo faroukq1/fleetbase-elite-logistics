@@ -3,3 +3,510 @@
 @import 'tailwindcss/utilities';
 @import 'inter-ui/inter.css';
 @import 'console.css';
+
+/* ── Elite Logistics auth page ─────────────────────────────────────────── */
+.elite-auth {
+    display: flex;
+    min-height: 100vh;
+    background: #0f0f0f;
+    color: #f8f8f8;
+}
+.elite-auth-brand {
+    display: none;
+}
+@media (min-width: 1024px) {
+    .elite-auth-brand {
+        display: flex;
+        flex: 1 1 55%;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(120% 120% at 100% 50%, #5dd62c 0%, #337418 28%, #0b0b0b 62%, #000 100%);
+    }
+}
+.elite-auth-brand-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+.elite-auth-brand-logo {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.elite-auth-brand-tagline {
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    color: #f8f8f8;
+    opacity: 0.9;
+}
+.elite-auth-main {
+    flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+}
+.elite-auth-card {
+    width: 100%;
+    max-width: 24rem;
+    background: #141414;
+    border: 1px solid rgba(93, 214, 44, 0.35);
+    border-radius: 1rem;
+    padding: 2.25rem 2rem;
+    box-shadow: 0 0 40px rgba(93, 214, 44, 0.12);
+}
+.elite-login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+.elite-login-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    text-align: center;
+    color: #f8f8f8;
+}
+.elite-login-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    margin: 0.35rem 0 1.75rem;
+}
+.elite-field {
+    margin-bottom: 1rem;
+}
+.elite-field > label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #f8f8f8;
+    margin-bottom: 0.4rem;
+}
+.elite-field input {
+    width: 100%;
+    background: #f8f8f8 !important;
+    color: #111 !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 0.8rem !important;
+}
+.elite-field input:focus {
+    outline: none !important;
+    border-color: #5dd62c !important;
+    box-shadow: 0 0 0 3px rgba(93, 214, 44, 0.25) !important;
+}
+.elite-login-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.75rem 0 1.35rem;
+    font-size: 0.85rem;
+}
+.elite-remember {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f8f8f8;
+    cursor: pointer;
+}
+.elite-forgot,
+.elite-contact {
+    color: #5dd62c;
+    font-weight: 700;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+.elite-forgot:hover,
+.elite-contact:hover {
+    color: #7ee352;
+}
+.elite-signin .btn,
+.elite-signin button {
+    width: 100%;
+    background: #5dd62c !important;
+    border-color: #5dd62c !important;
+    color: #0f0f0f !important;
+    font-weight: 700 !important;
+}
+.elite-signin .btn:hover,
+.elite-signin button:hover {
+    background: #47a821 !important;
+    border-color: #47a821 !important;
+}
+.elite-login-footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #9ca3af;
+    margin-top: 1.25rem;
+}
+.elite-login-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.25rem;
+    background: rgba(180, 130, 20, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    color: #fde68a;
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+}
+.elite-auth-attribution {
+    margin-top: 1.5rem;
+    opacity: 0.7;
+}
+
+/* Wider auth card for the onboarding / contact-administrator flow */
+.elite-auth-card--wide {
+    max-width: 32rem;
+}
+.onboard-route-wrapper.elite-auth .elite-auth-card {
+    color: #f8f8f8;
+}
+
+/* ── Onboard / create-account form (inside the wide auth card) ──────────── */
+.elite-onboard-welcome {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: rgba(93, 214, 44, 0.1);
+    border: 1px solid rgba(93, 214, 44, 0.35);
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.9rem;
+    margin: 0.5rem 0 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: #d1fae5;
+}
+.elite-onboard-welcome-icon {
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+    color: #5dd62c;
+}
+.elite-onboard-form .input-group {
+    margin-bottom: 1rem;
+}
+.elite-onboard-form label {
+    color: #f8f8f8 !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+.elite-onboard-form .form-input,
+.elite-onboard-form input {
+    width: 100%;
+    background: #f8f8f8 !important;
+    color: #111 !important;
+    border: 1px solid transparent !important;
+    border-radius: 0.5rem !important;
+    padding: 0.6rem 0.8rem !important;
+}
+.elite-onboard-form .form-input:focus,
+.elite-onboard-form input:focus {
+    outline: none !important;
+    border-color: #5dd62c !important;
+    box-shadow: 0 0 0 3px rgba(93, 214, 44, 0.25) !important;
+}
+.elite-onboard-submit {
+    margin-top: 0.5rem;
+}
+
+/* ── Sidebar: brand dark + green accents in dark mode only ──────────────── */
+/* Light mode keeps the standard light sidebar. */
+body[data-theme='dark'] .next-sidebar {
+    background-color: #0f0f0f !important;
+}
+body[data-theme='dark'] .next-sidebar::after {
+    background-color: rgba(93, 214, 44, 0.35) !important;
+}
+body[data-theme='dark'] .next-sidebar .next-sidebar-footer {
+    border-color: rgba(93, 214, 44, 0.2) !important;
+}
+body[data-theme='dark'] .next-sidebar a,
+body[data-theme='dark'] .next-sidebar button,
+body[data-theme='dark'] .next-sidebar span,
+body[data-theme='dark'] .next-sidebar label,
+body[data-theme='dark'] .next-sidebar .next-nav-item {
+    color: #e5e5e5;
+}
+body[data-theme='dark'] .next-sidebar a:hover,
+body[data-theme='dark'] .next-sidebar .next-nav-item:hover {
+    color: #5dd62c;
+}
+
+/* ── ELITE SKIN: client-reference card style ───────────────────────────────
+   Reference: pure-black pages, cards = deep navy gradient with a thin neon
+   green glowing border; light mode = clean white cards with a green border
+   (no pastel multi-color KPI tints). Selectors cover ember-ui dashboard cards
+   plus every engine's `*-kpi-tile` / `*-dashboard-widget` / `*-chart-widget`.
+   `!important` because engine CSS load order is not guaranteed.             */
+
+/* NOTE: the theme service stamps `data-theme` on <body> (not <html>), so all
+   theme-scoped rules below MUST anchor to body[data-theme] or they misfire. */
+
+/* -- Dark mode: navy gradient + green glow ------------------------------- */
+body[data-theme='dark'] .dashboard-widget-card,
+body[data-theme='dark'] .fleet-ops-kpi-tile,
+body[data-theme='dark'] .fleet-ops-pulse-tile,
+body[data-theme='dark'] .fleet-ops-widget,
+body[data-theme='dark'] .fleet-ops-control-hub-kpi,
+body[data-theme='dark'] [class*='-kpi-tile'],
+body[data-theme='dark'] [class*='-dashboard-widget'],
+body[data-theme='dark'] [class*='-chart-widget'] {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+/* page behind the cards: pure black */
+body[data-theme='dark'] .next-content,
+body[data-theme='dark'] .next-view-section,
+body[data-theme='dark'] main.next-view {
+    background-color: #0f0f0f !important;
+}
+
+/* -- Light mode: white card + green border, pastel tints removed ---------- */
+body:not([data-theme='dark']) .dashboard-widget-card,
+body:not([data-theme='dark']) .fleet-ops-kpi-tile,
+body:not([data-theme='dark']) .fleet-ops-pulse-tile,
+body:not([data-theme='dark']) .fleet-ops-widget,
+body:not([data-theme='dark']) .fleet-ops-control-hub-kpi,
+body:not([data-theme='dark']) [class*='-kpi-tile'],
+body:not([data-theme='dark']) [class*='-dashboard-widget'],
+body:not([data-theme='dark']) [class*='-chart-widget'] {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid rgba(93, 214, 44, 0.4) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 12px rgba(93, 214, 44, 0.1) !important;
+}
+/* kill the pastel accent gradients (rose/amber/blue/indigo tints) both modes */
+[class*='-kpi-accent-'],
+[class*='pulse-accent-'] {
+    background-image: none !important;
+}
+
+/* ── Header tray dropdowns: fixed positioning ──────────────────────────────
+   ember-ui's calculate-tray-position emits viewport coordinates for the
+   org/user, language, and notification menus. They must render position:fixed
+   — with the default `absolute`, page-space coords disagree with the viewport
+   whenever the document has horizontal overflow (common in RTL) and the menus
+   drift to the screen edge. ember-basic-dropdown only inlines the position
+   property on the first open, so enforce it here for every open. Mobile keeps
+   its own full-width treatment. */
+.next-header-menu-item-dd-content:not(.is-mobile),
+.locale-selector-tray-content:not(.is-mobile),
+.notification-tray-panel-container:not(.is-mobile) {
+    /*rtl:ignore*/
+    position: fixed !important;
+}
+
+/* ── ELITE SKIN: panels, tables + engine surfaces (all pages) ──────────────
+   Extends the reference card style beyond dashboards so every page matches:
+   content panels (settings/forms), index tables (IAM, Fleet-Ops, …), the
+   storefront products workspace, and the ledger accounting row-cards. Same
+   recipe: dark = navy gradient + neon green border on black; light = white
+   + green border. `!important` because engine CSS load order is unknown.  */
+
+/* -- Dark mode: content panels (settings page & friends) ------------------ */
+body[data-theme='dark'] .next-content-panel,
+body[data-theme='dark'] .content-panel {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .next-content-panel > .next-content-panel-header,
+body[data-theme='dark'] .content-panel > .content-panel-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .next-content-panel > .next-content-panel-body,
+body[data-theme='dark'] .next-content-panel .next-content-panel-body-inner,
+body[data-theme='dark'] .content-panel > .content-panel-body {
+    background-color: transparent !important;
+}
+/* collapsed panel: keep the header rounded, no stray divider */
+body[data-theme='dark'] .next-content-panel > .next-content-panel-header.next-content-panel-is-closed {
+    border-bottom: none !important;
+}
+
+/* -- Dark mode: index tables (IAM users/drivers, Fleet-Ops, …) ------------ */
+body[data-theme='dark'] .next-table-wrapper,
+body[data-theme='dark'] .table-wrapper {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table,
+body[data-theme='dark'] .table-wrapper table,
+body[data-theme='dark'] .next-table-wrapper table tbody,
+body[data-theme='dark'] .table-wrapper table tbody {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table thead tr th,
+body[data-theme='dark'] .table-wrapper table thead tr th {
+    background-color: rgba(9, 30, 66, 0.6) !important;
+    border-color: rgba(93, 214, 44, 0.2) !important;
+    color: #9fb3c8 !important;
+}
+body[data-theme='dark'] .next-table-wrapper table tbody tr td,
+body[data-theme='dark'] .table-wrapper table tbody tr td {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.1) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table tbody tr:hover td,
+body[data-theme='dark'] .table-wrapper table tbody tr:hover td {
+    background-color: rgba(93, 214, 44, 0.06) !important;
+}
+/* table empty state ("No records found" dashed box) */
+body[data-theme='dark'] .next-table-empty-state {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.3) !important;
+}
+/* floating "Showing x to y" pagination pill */
+body[data-theme='dark'] .floating-pagination {
+    background-color: #04081a !important;
+    border-color: rgba(93, 214, 44, 0.45) !important;
+    box-shadow: 0 0 14px rgba(93, 214, 44, 0.12) !important;
+}
+body:not([data-theme='dark']) .floating-pagination {
+    border-color: rgba(93, 214, 44, 0.4) !important;
+    box-shadow: 0 0 10px rgba(93, 214, 44, 0.1) !important;
+}
+
+/* -- Dark mode: storefront products workspace ----------------------------- */
+body[data-theme='dark'] .storefront-product-sidebar {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .storefront-product-sidebar__header {
+    background-color: transparent !important;
+    border-bottom-color: rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .storefront-product-category {
+    background-color: rgba(9, 30, 66, 0.45) !important;
+    border: 1px solid rgba(93, 214, 44, 0.2) !important;
+}
+body[data-theme='dark'] .storefront-product-category:hover,
+body[data-theme='dark'] .storefront-product-category.active,
+body[data-theme='dark'] .storefront-product-category.is-active {
+    border-color: rgba(93, 214, 44, 0.55) !important;
+    box-shadow: 0 0 12px rgba(93, 214, 44, 0.12) !important;
+}
+body[data-theme='dark'] .storefront-product-sidebar__empty,
+body[data-theme='dark'] .storefront-product-empty {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.3) !important;
+}
+body[data-theme='dark'] .storefront-product-workspace,
+body[data-theme='dark'] .storefront-products-viewport {
+    background-color: transparent !important;
+}
+
+/* -- Dark mode: ledger accounting row-cards (general ledger, journal) ------ */
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border-color: rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 14px rgba(93, 214, 44, 0.12) !important;
+}
+/* their gray header/footer/expanded surfaces → navy tint, green hover */
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:bg-gray-800,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:bg-gray-900 {
+    background-color: transparent !important;
+}
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:hover\:bg-gray-700:hover,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:hover\:bg-gray-800\/50:hover {
+    background-color: rgba(93, 214, 44, 0.06) !important;
+}
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-600,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-700,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-800 {
+    border-color: rgba(93, 214, 44, 0.15) !important;
+}
+
+/* -- Light mode: same surfaces, white card + green border ------------------ */
+body:not([data-theme='dark']) .next-content-panel,
+body:not([data-theme='dark']) .content-panel,
+body:not([data-theme='dark']) .next-table-wrapper,
+body:not([data-theme='dark']) .table-wrapper,
+body:not([data-theme='dark']) .storefront-product-sidebar,
+body:not([data-theme='dark']) .next-view-section-body div.border.rounded-lg {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid rgba(93, 214, 44, 0.4) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 12px rgba(93, 214, 44, 0.1) !important;
+}
+body:not([data-theme='dark']) .next-content-panel > .next-content-panel-header,
+body:not([data-theme='dark']) .content-panel > .content-panel-header {
+    border-bottom: 1px solid rgba(93, 214, 44, 0.2) !important;
+}
+body:not([data-theme='dark']) .next-content-panel > .next-content-panel-header.next-content-panel-is-closed {
+    border-bottom: none !important;
+}
+body:not([data-theme='dark']) .next-table-wrapper table thead tr th,
+body:not([data-theme='dark']) .table-wrapper table thead tr th {
+    background-color: rgba(93, 214, 44, 0.07) !important;
+    border-color: rgba(93, 214, 44, 0.2) !important;
+}
+
+/* ── Smooth light/dark theme toggle ────────────────────────────────────── */
+/* Transition surfaces/borders/text when [data-theme] flips on <html>. Scoped
+   to common containers to avoid janking every element on the page. */
+body,
+.next-content-panel,
+.next-view-section,
+nav,
+aside,
+table,
+th,
+td,
+.card,
+.panel,
+input,
+select,
+textarea,
+button,
+[class*='bg-gray-'],
+[class*='bg-white'],
+[class*='border-gray-'] {
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+/* Respect reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+    body,
+    .next-content-panel,
+    .next-view-section,
+    nav,
+    aside,
+    table,
+    th,
+    td,
+    .card,
+    .panel,
+    input,
+    select,
+    textarea,
+    button,
+    [class*='bg-gray-'],
+    [class*='bg-white'],
+    [class*='border-gray-'] {
+        transition: none;
+    }
+}

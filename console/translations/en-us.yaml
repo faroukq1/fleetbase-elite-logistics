@@ -599,6 +599,12 @@ auth:
 
   login:
     title: Sign in to your account
+    log-in: Log in
+    welcome-back: "Welcome back! Please enter your details."
+    remember-30-days: Remember for 30 days
+    no-account: "Don't have an account?"
+    contact-admin: Contact Administrator
+    logistics-tagline: Logistics
     no-identity-notification: Did you forget to enter your email?
     no-password-notification: Did you forget to enter your password?
     unverified-notification: Your account needs to be verified to proceed.
@@ -808,3 +814,186 @@ layout:
         view-profile: View profile
         keyboard-shortcuts: Show keyboard shortcuts
         changelog: Changelog
+user-menu:
+  home: Home
+  organization-settings: Organization settings
+  create-or-join: Create or join organizations
+  explore-extensions: Explore extensions
+  admin: Admin
+  logout: Logout
+  discord: Join Discord Community
+  support: Help & Support
+  documentation: Documentation
+  view-profile: View Profile
+  keyboard-shortcuts: Show keyboard shortcuts
+  changelog: Changelog
+  developers: Developers
+  dark-mode: Dark Mode
+registry-bridge:
+  sidebar:
+    installed: Installed
+    purchased: Purchased
+    explore: Explore
+    explore-all: Explore All
+    developers: Developers
+    extensions: Extensions
+    analytics: Analytics
+    payments: Payments
+    credentials: Credentials
+
+config:
+  apn-device-token: "APN Device Token"
+  apn-private-key: "APN Private Key"
+  apn-production: "APN Production"
+  body-template-json: "Body Template JSON"
+  choose-an-authentication-method: "Choose an authentication method"
+  configure-provider: "Configure Provider"
+  default-provider: "Default Provider"
+  enable-two-factor-authentication: "Enable Two-Factor Authentication"
+  enabled-tls-encryption: "Enabled TLS Encryption"
+  fcm-device-token: "FCM Device Token"
+  from-address: "From Address"
+  from-name: "From Name"
+  headers-json: "Headers JSON"
+  input-the-email-address-for-elite-logistics-to-send-emails-f: "Input the email address for Elite Logistics to send emails from."
+  input-the-name-for-elite-logistics-to-send-emails-from: "Input the name for Elite Logistics to send emails from."
+  method: "Method"
+  push-notification-message: "Push Notification Message"
+  push-notification-title: "Push Notification Title"
+  query-params-json: "Query Params JSON"
+  recommended: "Recommended"
+  save-to-sent-items: "Save to sent items"
+  select-filesystem-driver: "Select filesystem driver"
+  select-mailer: "Select mailer"
+  select-queue-driver: "Select queue driver"
+  select-the-default-filesystem-driver-for-elite-logistics-to-: "Select the default filesystem driver for Elite Logistics to use."
+  select-the-default-mailer-for-elite-logistics-to-use: "Select the default mailer for Elite Logistics to use."
+  select-the-default-queue-driver-for-elite-logistics-to-use: "Select the default queue driver for Elite Logistics to use."
+  send-test-sms-here: "Send Test SMS Here"
+  sms-providers: "SMS Providers"
+  smtp-encryption: "SMTP Encryption"
+  test-message: "Test Message"
+  test-push-notification: "Test Push Notification"
+  upload-p8-key-file: "Upload P8 Key File"
+  upload-service-account-json: "Upload Service Account JSON"
+  use-tls: "Use TLS"
+header-nav:
+  fleet-ops: Fleet-Ops
+  storefront: Storefront
+  iam: IAM
+  ledger: Ledger
+  developers: Developers
+  extensions: Extensions
+
+pagination:
+  previous: Previous
+  next: Next
+  showing: Showing
+  to: to
+  of: of
+  results: results
+
+smart-nav:
+  more-extensions: More extensions
+  customise-navigation: Customise navigation
+  customizer:
+    title: Customise Navigation
+    close: Close
+    pinned-to-bar: Pinned to bar
+    all-extensions: All extensions
+    drag-to-reorder: Drag to reorder
+    remove-from-bar: Remove from bar
+    no-pinned: No extensions pinned yet.
+    add-from-right: Add extensions from the list on the right.
+    click-to-pin: Click to pin to bar
+    click-to-unpin: Click to unpin
+    reset-to-default: Reset to default
+    cancel: Cancel
+    apply: Apply
+  dropdown:
+    title: Extensions
+    close: Close
+    search-placeholder: Search extensions...
+    clear-search: Clear search
+    no-results: No extensions match
+    from: from
+    pin-to-bar: Pin to navigation bar
+
+nav-card-title:
+  orders: "Orders"
+  places: "Places"
+  drivers: "Drivers"
+  vehicles: "Vehicles"
+  fleets: "Fleets"
+  service-rates: "Service Rates"
+  devices: "Devices"
+  reports: "Reports"
+  orchestrator: "Orchestrator"
+  users: "Users"
+  customers: "Customers"
+  groups: "Groups"
+  roles: "Roles"
+  policies: "Policies"
+  invoices: "Invoices"
+  wallets: "Wallets"
+  transactions: "Transactions"
+  payment-gateways: "Payment Gateways"
+  chart-of-accounts: "Chart of Accounts"
+  journal-entries: "Journal Entries"
+  general-ledger: "General Ledger"
+  api-keys: "API Keys"
+  webhooks: "Webhooks"
+  sockets: "Sockets"
+  events: "Events"
+  logs: "Logs"
+  explore: "Explore"
+  installed: "Installed"
+  purchased: "Purchased"
+  products: "Products"
+  networks: "Networks"
+  catalogs: "Catalogs"
+  promotions: "Promotions"
+
+nav-card-desc:
+  dispatch-fleet-management-driver-tracking-and-logistics-operations: "Dispatch, fleet management, driver tracking, and logistics operations."
+  online-store-management-products-orders-customers-and-promotions: "Online store management: products, orders, customers, and promotions."
+  api-keys-webhooks-socket-channels-event-logs-and-developer-tooling: "API keys, webhooks, socket channels, event logs, and developer tooling."
+  identity-and-access-management-users-roles-policies-and-permissions: "Identity and access management: users, roles, policies, and permissions."
+  invoicing-payments-accounting-and-real-time-financial-reporting: "Invoicing, payments, accounting, and real-time financial reporting."
+  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "Discover, install, and publish extensions to the Fleetbase extension registry."
+  create-and-manage-api-keys-for-authenticating-your-integrations: "Create and manage API keys for authenticating your integrations."
+  configure-webhook-endpoints-to-receive-real-time-event-notifications: "Configure webhook endpoints to receive real-time event notifications."
+  monitor-active-websocket-channels-and-connected-clients: "Monitor active WebSocket channels and connected clients."
+  browse-the-full-history-of-platform-events-and-payloads: "Browse the full history of platform events and payloads."
+  inspect-api-request-and-response-logs-for-debugging: "Inspect API request and response logs for debugging."
+  create-dispatch-and-track-delivery-orders-in-real-time: "Create, dispatch, and track delivery orders in real time."
+  manage-saved-locations-addresses-and-points-of-interest: "Manage saved locations, addresses, and points of interest."
+  manage-driver-profiles-assignments-and-live-locations: "Manage driver profiles, assignments, and live locations."
+  view-and-manage-your-vehicle-fleet-and-telematics: "View and manage your vehicle fleet and telematics."
+  organise-drivers-and-vehicles-into-operational-fleets: "Organise drivers and vehicles into operational fleets."
+  configure-pricing-rules-and-service-rate-cards: "Configure pricing rules and service rate cards."
+  manage-connected-telematics-devices-and-their-sensor-data: "Manage connected telematics devices and their sensor data."
+  generate-and-review-operational-analytics-reports: "Generate and review operational analytics reports."
+  intelligently-allocate-and-dispatch-orders-to-available-drivers: "Intelligently allocate and dispatch orders to available drivers."
+  manage-console-user-accounts-and-their-access-levels: "Manage console user accounts and their access levels."
+  view-and-manage-driver-accounts-linked-to-your-organisation: "View and manage driver accounts linked to your organisation."
+  view-and-manage-customer-accounts-linked-to-your-organisation: "View and manage customer accounts linked to your organisation."
+  organise-users-into-groups-for-bulk-permission-management: "Organise users into groups for bulk permission management."
+  define-named-roles-that-bundle-sets-of-permissions: "Define named roles that bundle sets of permissions."
+  create-fine-grained-access-control-policies-for-resources: "Create fine-grained access control policies for resources."
+  create-send-and-manage-customer-invoices: "Create, send, and manage customer invoices."
+  manage-driver-customer-and-company-wallets-and-balances: "Manage driver, customer, and company wallets and balances."
+  a-chronological-record-of-every-transaction: "A chronological record of every transaction."
+  configure-and-manage-payment-gateway-integrations: "Configure and manage payment gateway integrations."
+  view-and-manage-the-full-chart-of-accounts: "View and manage the full chart of accounts."
+  browse-and-create-double-entry-journal-entries: "Browse and create double-entry journal entries."
+  review-all-posted-transactions-across-every-account: "Review all posted transactions across every account."
+  browse-and-discover-extensions-available-in-the-registry: "Browse and discover extensions available in the registry."
+  view-and-manage-extensions-currently-installed-in-your-console: "View and manage extensions currently installed in your console."
+  access-extensions-you-have-purchased-from-the-registry: "Access extensions you have purchased from the registry."
+  manage-your-product-catalogue-categories-and-inventory: "Manage your product catalogue, categories, and inventory."
+  view-and-fulfil-incoming-storefront-orders: "View and fulfil incoming storefront orders."
+  browse-and-manage-your-storefront-customer-accounts: "Browse and manage your storefront customer accounts."
+  connect-and-manage-multi-store-networks-and-marketplaces: "Connect and manage multi-store networks and marketplaces."
+  organise-products-into-shareable-catalogs: "Organise products into shareable catalogs."
+  create-push-notifications-and-promotional-campaigns: "Create push notifications and promotional campaigns."

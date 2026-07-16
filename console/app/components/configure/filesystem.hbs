@@ -1,6 +1,6 @@
 <ContentPanel @title="Filesystem" @open={{true}} @wrapperClass="bordered-classic">
-    <InputGroup @name="Driver" @helpText="Select the default filesystem driver for Elite Logistics to use.">
-        <Select @options={{this.disks}} @value={{this.driver}} @onSelect={{this.setDriver}} @placeholder="Select filesystem driver" class="w-full" disabled={{this.isLoading}} />
+    <InputGroup @name="Driver" @helpText={{t "config.select-the-default-filesystem-driver-for-elite-logistics-to-"}}>
+        <Select @options={{this.disks}} @value={{this.driver}} @onSelect={{this.setDriver}} @placeholder={{t "config.select-filesystem-driver"}} class="w-full" disabled={{this.isLoading}} />
     </InputGroup>
     {{#if (eq this.driver "s3")}}
         <InputGroup @name="S3 Bucket" @value={{this.s3Bucket}} disabled={{this.isLoading}} />
@@ -19,7 +19,7 @@
         <InputGroup @name="GCS Bucket" @value={{this.gcsBucket}} disabled={{this.isLoading}} />
         <InputGroup @name="GCS Service Account Key File" @wrapperClass="">
             <div class="flex flex-row items-center mb-0i">
-                <UploadButton @name="firebase-service-account" @accept="text/plain,text/javascript,application/json" @onFileAdded={{this.uploadGcsCredentialsFile}} @buttonText="Upload Service Account JSON" @icon="upload" class="w-auto m-0i mt-0i" />
+                <UploadButton @name="firebase-service-account" @accept="text/plain,text/javascript,application/json" @onFileAdded={{this.uploadGcsCredentialsFile}} @buttonText={{t "config.upload-service-account-json"}} @icon="upload" class="w-auto m-0i mt-0i" />
                 {{#if this.gcsCredentialsFile}}
                     <div class="ml-2.5 text-sm dark:text-white text-black flex flex-row items-center border border-blue-500 rounded-lg px-2 py-0.5 -mt-1">
                         <FaIcon @icon="file-text" @size="sm" class="mr-2 dark:text-white text-black" />

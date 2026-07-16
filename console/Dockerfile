@@ -24,8 +24,12 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 # Copy over .npmrc if applicable
 COPY .npmr[c] ./
 
+# Copy pnpm patches so `patchedDependencies` (e.g. Arabic engine translations)
+# resolve during the install below. Must precede `pnpm install`.
+COPY patches ./patches
+
 # Install global dependencies
-RUN npm install -g ember-cli pnpm 
+RUN npm install -g ember-cli pnpm
 
 # Install git
 RUN apk update && apk add git openssh-client
@@ -33,8 +37,10 @@ RUN apk update && apk add git openssh-client
 # Trust GitHub's RSA host key
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-# Install app dependencies
-RUN pnpm install --frozen-lockfile
+# Install app dependencies.
+# --no-frozen-lockfile: the committed lockfile does not record `patchedDependencies`
+# (Arabic engine translations), so a frozen install fails with LOCKFILE_CONFIG_MISMATCH.
+RUN pnpm install --no-frozen-lockfile
 
 # Copy the console directory contents into the container at /console
 COPY . .
