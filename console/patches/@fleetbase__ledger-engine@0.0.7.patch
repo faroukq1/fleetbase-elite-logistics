@@ -666,6 +666,34 @@ index 719ace7fd6de5a43f928a6409eeee20da6af197f..eaecf7a6aaa52a5dc96e40b48aae9790
  
      @task *loadReport() {
          this.isLoading = true;
+diff --git a/addon/helpers/translate-enum.js b/addon/helpers/translate-enum.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..40af135010915b5548e7d3b91195d8520639df61
+--- /dev/null
++++ b/addon/helpers/translate-enum.js
+@@ -0,0 +1,22 @@
++import Helper from '@ember/component/helper';
++import { inject as service } from '@ember/service';
++
++/**
++ * Translates an enum-like value using a translation key prefix, falling back
++ * to the provided fallback (or the raw value) when no translation exists.
++ *
++ * {{translate-enum "ledger.account-names" account.code account.name}}
++ */
++export default class TranslateEnumHelper extends Helper {
++    @service intl;
++
++    compute([prefix, value, fallback]) {
++        const fallbackValue = fallback ?? value;
++        if (!prefix || !value) {
++            return fallbackValue;
++        }
++
++        const key = `${prefix}.${value}`;
++        return this.intl.exists(key) ? this.intl.t(key) : fallbackValue;
++    }
++}
 diff --git a/addon/templates/accounting/accounts/index/edit.hbs b/addon/templates/accounting/accounts/index/edit.hbs
 index d74c972e11afe151898ccfee8fa86821d2a5e04c..4ce3e83fc8d949026aa28bf9a579af8ddfd13d8c 100644
 --- a/addon/templates/accounting/accounts/index/edit.hbs
@@ -693,7 +721,7 @@ index 7db6fb99902bdaee6281dccff367bc9fe98a2be1..625df9ee92959839dd7f93668422c2ef
      @saveTask={{this.save}}
      @onPressCancel={{transition-to "accounting.accounts.index"}}
 diff --git a/addon/templates/accounting/general-ledger.hbs b/addon/templates/accounting/general-ledger.hbs
-index f2393c123ab17395e849ca2d9a02cbc90e9561b8..8364abca7ca6350fd887bb25adfa98634f30b106 100644
+index f2393c123ab17395e849ca2d9a02cbc90e9561b8..595c3a43209ab7c3fdf89a08f990abe75167c22e 100644
 --- a/addon/templates/accounting/general-ledger.hbs
 +++ b/addon/templates/accounting/general-ledger.hbs
 @@ -1,4 +1,4 @@
@@ -720,7 +748,14 @@ index f2393c123ab17395e849ca2d9a02cbc90e9561b8..8364abca7ca6350fd887bb25adfa9863
              {{on "click" this.toggleExpandAll}}
          />
      </div>
-@@ -58,7 +58,7 @@
+@@ -53,12 +53,12 @@
+                             <div class="flex items-center gap-3">
+                                 <FaIcon @icon={{if (get this.expandedMap acct.id) "chevron-down" "chevron-right"}} class="text-gray-400 w-3 h-3" />
+                                 <span class="text-xs font-mono text-gray-500 dark:text-gray-400">{{acct.code}}</span>
+-                                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{acct.name}}</span>
+-                                <Badge class="capitalize text-xs">{{acct.type}}</Badge>
++                                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{translate-enum "ledger.account-names" acct.code acct.name}}</span>
++                                <Badge class="capitalize text-xs">{{translate-enum "ledger.general-ledger.types" acct.type}}</Badge>
                              </div>
                              <div class="flex items-center gap-6 text-right">
                                  {{#if row.summary.entry_count}}
@@ -888,7 +923,7 @@ index c269b722d2f39e9664d0d60740d8507b6c4d659d..3a137cf90fe5faa8da2803947c3f1e32
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/balance-sheet.hbs b/addon/templates/reports/balance-sheet.hbs
-index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..e24aa2288c062e008aaa5fe18b568098637849ec 100644
+index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..f95a76494336c8ed4fb7c6e7be43516c1e3e0bc6 100644
 --- a/addon/templates/reports/balance-sheet.hbs
 +++ b/addon/templates/reports/balance-sheet.hbs
 @@ -1,7 +1,7 @@
@@ -927,7 +962,13 @@ index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..e24aa2288c062e008aaa5fe18b568098
                  )
                  as |section|
              }}
-@@ -39,12 +39,12 @@
+@@ -34,17 +34,17 @@
+                         <tbody>
+                             {{#each section.items as |item|}}
+                                 <tr class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+-                                    <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{item.name}}</td>
++                                    <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{translate-enum "ledger.account-names" item.code item.name}}</td>
+                                     <td class="px-4 py-2 text-xs text-gray-400 font-mono">{{item.code}}</td>
                                      <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">{{format-currency item.balance this.companyCurrency}}</td>
                                  </tr>
                              {{else}}
@@ -1057,7 +1098,7 @@ index cfc7abecabf42021df677e0d6ce706c9b5114ed9..b344c67a2b0c040b659999a5a7012f5c
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/income-statement.hbs b/addon/templates/reports/income-statement.hbs
-index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3424288d0 100644
+index 7367443edea2715508a3b8185ea74b8cc65518a1..a8cefb1e944956a86edf042884feca539448a788 100644
 --- a/addon/templates/reports/income-statement.hbs
 +++ b/addon/templates/reports/income-statement.hbs
 @@ -1,4 +1,4 @@
@@ -1079,7 +1120,7 @@ index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3
      </div>
  </Layout::Section::Header>
  <Layout::Section::Body class="overflow-y-auto h-full">
-@@ -19,18 +19,18 @@
+@@ -19,34 +19,34 @@
          {{else if this.data}}
              <div class="flex items-center justify-between mb-6">
                  <div>
@@ -1101,7 +1142,11 @@ index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3
                  </div>
                  <table class="w-full text-sm overflow-hidden">
                      <tbody>
-@@ -41,12 +41,12 @@
+                         {{#each this.data.revenue as |item|}}
+                             <tr class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{item.name}}</td>
++                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{translate-enum "ledger.account-names" item.code item.name}}</td>
+                                 <td class="px-4 py-2 text-xs text-gray-400 font-mono">{{item.code}}</td>
                                  <td class="px-4 py-2 text-right font-medium text-green-600 dark:text-green-400">{{format-currency item.amount (or item.currency this.companyCurrency)}}</td>
                              </tr>
                          {{else}}
@@ -1116,7 +1161,7 @@ index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3
                              <td class="px-4 py-2.5 text-right font-bold text-green-600 dark:text-green-400">{{format-currency this.data.total_revenue this.companyCurrency}}</td>
                          </tr>
                      </tfoot>
-@@ -56,7 +56,7 @@
+@@ -56,23 +56,23 @@
              {{! Expenses }}
              <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                  <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
@@ -1125,7 +1170,11 @@ index 7367443edea2715508a3b8185ea74b8cc65518a1..5c761d4aa6676870d6415e1fbfd757f3
                  </div>
                  <table class="w-full text-sm overflow-hidden">
                      <tbody>
-@@ -67,12 +67,12 @@
+                         {{#each this.data.expenses as |item|}}
+                             <tr class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{item.name}}</td>
++                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{translate-enum "ledger.account-names" item.code item.name}}</td>
+                                 <td class="px-4 py-2 text-xs text-gray-400 font-mono">{{item.code}}</td>
                                  <td class="px-4 py-2 text-right font-medium text-red-600 dark:text-red-400">{{format-currency item.amount (or item.currency this.companyCurrency)}}</td>
                              </tr>
                          {{else}}
@@ -1187,7 +1236,7 @@ index cada4ab4c6c573ae3ddcfcc8d6979d76b5126525..25a21fdf47fca545a9058f9462aaf918
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/trial-balance.hbs b/addon/templates/reports/trial-balance.hbs
-index ff62cb91960966abd98f17e68afe6b5066722402..ca7548a728da610014a72b96ff56586f38a1cc29 100644
+index ff62cb91960966abd98f17e68afe6b5066722402..912b2a7644f18910dd1650240b225634a3d41a30 100644
 --- a/addon/templates/reports/trial-balance.hbs
 +++ b/addon/templates/reports/trial-balance.hbs
 @@ -1,7 +1,7 @@
@@ -1201,7 +1250,7 @@ index ff62cb91960966abd98f17e68afe6b5066722402..ca7548a728da610014a72b96ff56586f
      </div>
  </Layout::Section::Header>
  <Layout::Section::Body class="overflow-y-auto h-full">
-@@ -11,23 +11,23 @@
+@@ -11,32 +11,32 @@
          {{else if this.data}}
              <div class="flex items-center justify-between mb-6">
                  <div>
@@ -1233,6 +1282,17 @@ index ff62cb91960966abd98f17e68afe6b5066722402..ca7548a728da610014a72b96ff56586f
                          </tr>
                      </thead>
                      <tbody>
+                         {{#each this.data.accounts as |row|}}
+                             <tr class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                 <td class="px-4 py-2 font-mono text-xs text-gray-400">{{row.code}}</td>
+-                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{row.name}}</td>
++                                <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{translate-enum "ledger.account-names" row.code row.name}}</td>
+                                 <td class="px-4 py-2">
+-                                    <Badge @color="blue">{{row.type}}</Badge>
++                                    <Badge @color="blue">{{translate-enum "ledger.general-ledger.types" row.type}}</Badge>
+                                 </td>
+                                 <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">
+                                     {{#if row.debit}}{{format-currency row.debit this.companyCurrency}}{{else}}—{{/if}}
 @@ -46,12 +46,12 @@
                                  </td>
                              </tr>
@@ -1258,7 +1318,7 @@ index ff62cb91960966abd98f17e68afe6b5066722402..ca7548a728da610014a72b96ff56586f
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/wallet-summary.hbs b/addon/templates/reports/wallet-summary.hbs
-index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690cb74db070 100644
+index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..6cff966e2d37705ca7133f6e2d41545b242cb4b3 100644
 --- a/addon/templates/reports/wallet-summary.hbs
 +++ b/addon/templates/reports/wallet-summary.hbs
 @@ -1,4 +1,4 @@
@@ -1289,7 +1349,7 @@ index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690c
                      {{#if this.data.period}}
                          <p class="text-sm text-gray-500 mt-0.5">
                              {{this.data.period.from}}
-@@ -33,15 +33,15 @@
+@@ -33,22 +33,22 @@
              {{! Wallet counts by owner type }}
              <div class="mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                  <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
@@ -1310,6 +1370,14 @@ index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690c
                          </tr>
                      </thead>
                      <tbody>
+                         {{#each this.data.wallet_counts as |row|}}
+                             <tr class="border-b border-gray-100 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800">
+                                 <td class="px-4 py-2">
+-                                    <Badge @color="blue">{{or row.type "unknown"}}</Badge>
++                                    <Badge @color="blue">{{translate-enum "ledger.owner-types" (or row.type "unknown")}}</Badge>
+                                 </td>
+                                 <td class="px-4 py-2 text-right text-gray-700 dark:text-gray-300">{{row.count}}</td>
+                                 <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">
 @@ -57,7 +57,7 @@
                                  <td class="px-4 py-2 text-gray-500 font-mono text-xs">{{or row.currency "—"}}</td>
                              </tr>
@@ -1372,7 +1440,15 @@ index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690c
                              </tr>
                          </thead>
                          <tbody>
-@@ -128,7 +128,7 @@
+@@ -121,14 +121,14 @@
+                                     <td class="px-4 py-2 font-mono text-xs text-gray-400">{{or wallet.wallet_public_id wallet.name "—"}}</td>
+                                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{or wallet.subject.name "—"}}</td>
+                                     <td class="px-4 py-2">
+-                                        <Badge @color="blue">{{or wallet.type "wallet"}}</Badge>
++                                        <Badge @color="blue">{{translate-enum "ledger.owner-types" (or wallet.type "wallet")}}</Badge>
+                                     </td>
+                                     <td class="px-4 py-2 text-right font-medium text-gray-900 dark:text-white">
+                                         {{format-currency wallet.balance (or wallet.currency this.companyCurrency)}}
                                      </td>
                                  </tr>
                              {{else}}
@@ -1392,10 +1468,10 @@ index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..f9ad35ca81381a311c406e0f744c690c
      </div>
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..a725821e5e64422f95b951edf07187b5bf583b37
+index 0000000000000000000000000000000000000000..040dc266cbac808e6e268575aef53b500a46b56c
 --- /dev/null
 +++ b/translations/ar-ae.yaml
-@@ -0,0 +1,300 @@
+@@ -0,0 +1,335 @@
 +ledger:
 +  extension-name: دفتر الأستاذ
 +  sidebar:
@@ -1592,6 +1668,41 @@ index 0000000000000000000000000000000000000000..a725821e5e64422f95b951edf07187b5
 +    create-journal-entry: إنشاء قيد يومية
 +    edit-journal-entry: تعديل قيد اليومية
 +
++  account-names:
++    AP-DEFAULT: الذمم الدائنة
++    AR-DEFAULT: الذمم المدينة
++    BANK-DEFAULT: الحساب البنكي
++    CASH-DEFAULT: النقدية
++    CUSTOMER-CREDIT: التزام رصيد العملاء
++    DEFERRED-REVENUE: إيرادات مؤجلة
++    DRIVER-PAYABLE: أرباح السائقين المستحقة
++    EQUITY-DEFAULT: حقوق المالك
++    EXPENSE-DRIVER-PAYOUT: مصروف مدفوعات السائقين
++    EXPENSE-GATEWAY-FEES: رسوم بوابة الدفع
++    EXPENSE-OTHER: مصروفات تشغيلية أخرى
++    EXPENSE-REFUNDS: المبالغ المستردة وعمليات رد المدفوعات
++    EXPENSE-WALLET: مصروفات المحفظة
++    GATEWAY-CLEARING: تسوية بوابة الدفع
++    PREPAID-DEFAULT: مصروفات مدفوعة مقدمًا
++    RETAINED-EARNINGS: الأرباح المحتجزة
++    REVENUE-DELIVERY: إيرادات التوصيل
++    REVENUE-OTHER: إيرادات أخرى
++    REVENUE-SERVICE-FEE: إيرادات رسوم الخدمة
++    REVENUE-SUBSCRIPTION: إيرادات الاشتراكات
++    STRIPE-CLEARING: حساب تسوية Stripe
++    STRIPE-FEES-PAYABLE: رسوم Stripe المستحقة
++    TAX-PAYABLE: الضرائب المستحقة
++    WALLET-POOL: مجمع التزامات المحافظ
++  owner-types:
++    company: شركة
++    user: مستخدم
++    customer: عميل
++    driver: سائق
++    vendor: مورد
++    contact: جهة اتصال
++    wallet: محفظة
++    unknown: غير معروف
++
 +common:
 +  ledger: دفتر الأستاذ
 +  overview: نظرة عامة
@@ -1697,10 +1808,10 @@ index 0000000000000000000000000000000000000000..a725821e5e64422f95b951edf07187b5
 +    void: إلغاء الفاتورة
 +    edit: تعديل الفاتورة
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index ab0883de2c82375e4085beba527d4d468f690c86..6f7d64dab8559420263476e3460db41177393b4b 100644
+index ab0883de2c82375e4085beba527d4d468f690c86..8939b2e3c3ca29c404ae1da7173ff0c284636fdb 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -1,5 +1,198 @@
+@@ -1,5 +1,233 @@
  ledger:
    extension-name: Ledger
 +  sidebar:
@@ -1896,6 +2007,41 @@ index ab0883de2c82375e4085beba527d4d468f690c86..6f7d64dab8559420263476e3460db411
 +    edit-account: Edit Account
 +    create-journal-entry: Create Journal Entry
 +    edit-journal-entry: Edit Journal Entry
++
++  account-names:
++    AP-DEFAULT: Accounts Payable
++    AR-DEFAULT: Accounts Receivable
++    BANK-DEFAULT: Bank Account
++    CASH-DEFAULT: Cash
++    CUSTOMER-CREDIT: Customer Credit Liability
++    DEFERRED-REVENUE: Deferred Revenue
++    DRIVER-PAYABLE: Driver Earnings Payable
++    EQUITY-DEFAULT: Owner's Equity
++    EXPENSE-DRIVER-PAYOUT: Driver Payout Expense
++    EXPENSE-GATEWAY-FEES: Payment Gateway Fees
++    EXPENSE-OTHER: Other Operating Expenses
++    EXPENSE-REFUNDS: Refunds & Chargebacks
++    EXPENSE-WALLET: Wallet Expenses
++    GATEWAY-CLEARING: Payment Gateway Clearing
++    PREPAID-DEFAULT: Prepaid Expenses
++    RETAINED-EARNINGS: Retained Earnings
++    REVENUE-DELIVERY: Delivery Revenue
++    REVENUE-OTHER: Other Revenue
++    REVENUE-SERVICE-FEE: Service Fee Revenue
++    REVENUE-SUBSCRIPTION: Subscription Revenue
++    STRIPE-CLEARING: Stripe Clearing Account
++    STRIPE-FEES-PAYABLE: Stripe Fees Payable
++    TAX-PAYABLE: Tax Payable
++    WALLET-POOL: Wallet Liability Pool
++  owner-types:
++    company: company
++    user: user
++    customer: customer
++    driver: driver
++    vendor: vendor
++    contact: contact
++    wallet: wallet
++    unknown: unknown
  
  common:
    ledger: Ledger
