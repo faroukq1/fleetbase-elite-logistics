@@ -92,27 +92,38 @@ index 87548c0ab2b2d0425b1a02c5f8d6797638201998..c666e8a7cf938092555da4c5c50cb83b
  
      @bool('args.item.onClick') isInteractive;
      @bool('args.item.href') isAnchor;
+diff --git a/addon/components/layout/header/dropdown.hbs b/addon/components/layout/header/dropdown.hbs
+index a0d17db807c0410d085503c176dfd411757f380e..49a78da99088ecfe94cc88774f61485eb8479839 100644
+--- a/addon/components/layout/header/dropdown.hbs
++++ b/addon/components/layout/header/dropdown.hbs
+@@ -6,7 +6,7 @@
+         @calculatePosition={{this.calculatePosition}}
+         @verticalPosition={{@verticalPosition}}
+         @horizontalPosition={{@horizontalPosition}}
+-        @renderInPlace={{or @renderInPlace (not (media "isMobile"))}}
++        @renderInPlace={{if @renderInPlace true false}}
+         @initiallyOpened={{@initiallyOpened}}
+         as |dd|
+     >
 diff --git a/addon/components/layout/header/dropdown.js b/addon/components/layout/header/dropdown.js
-index af903427e7a772a6cc3fffd0d474ad24f059e813..b2c7508bd08658b28405d0cbfd8a4bac0fd0d17e 100644
+index af903427e7a772a6cc3fffd0d474ad24f059e813..22f97fe11a8959060977dd55d5ff740d82fd7cda 100644
 --- a/addon/components/layout/header/dropdown.js
 +++ b/addon/components/layout/header/dropdown.js
-@@ -1,7 +1,6 @@
+@@ -1,7 +1,7 @@
  import Component from '@glimmer/component';
  import { action } from '@ember/object';
  import { inject as service } from '@ember/service';
 -import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
++import calculateTrayPosition from '../../../utils/calculate-tray-position';
  
  export default class LayoutHeaderDropdownComponent extends Component {
      @service media;
-@@ -36,6 +35,9 @@ export default class LayoutHeaderDropdownComponent extends Component {
+@@ -36,6 +36,6 @@ export default class LayoutHeaderDropdownComponent extends Component {
              return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
          }
  
 -        return calculatePosition(...arguments);
-+        // Desktop renders in place: CSS anchors the menu below the trigger and
-+        // postcss-rtlcss mirrors the alignment for RTL, so no JS coordinates
-+        // (ember-basic-dropdown's LTR math pushes the menu off-screen in RTL).
-+        return { style: {} };
++        return calculateTrayPosition(trigger, content);
      }
  }
 diff --git a/addon/components/layout/header/smart-nav-menu/customizer.hbs b/addon/components/layout/header/smart-nav-menu/customizer.hbs
@@ -655,14 +666,15 @@ index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9ae
                                      {{#if (eq this.currentLocale key)}}
                                          <div>
 diff --git a/addon/components/locale-selector-tray.js b/addon/components/locale-selector-tray.js
-index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..ff19498ecadcddf67754f72fcbd61d0240521522 100644
+index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..3de93fbce271473d369044a170233bb63e847cf5 100644
 --- a/addon/components/locale-selector-tray.js
 +++ b/addon/components/locale-selector-tray.js
-@@ -3,10 +3,13 @@ import { tracked } from '@glimmer/tracking';
+@@ -3,10 +3,14 @@ import { tracked } from '@glimmer/tracking';
  import { inject as service } from '@ember/service';
  import { action } from '@ember/object';
  import { task } from 'ember-concurrency';
 -import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
++import calculateTrayPosition from './../utils/calculate-tray-position';
  
  export default class LocaleSelectorTrayComponent extends Component {
      @service intl;
@@ -673,25 +685,34 @@ index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..ff19498ecadcddf67754f72fcbd61d02
      @service fetch;
      @service media;
      @service language;
-@@ -19,7 +22,9 @@ export default class LocaleSelectorTrayComponent extends Component {
-             return this.args.renderInPlace;
-         }
- 
--        return false;
-+        // Render in place on desktop so the menu is anchored to the trigger by
-+        // CSS instead of JS-computed viewport coordinates, which drift in RTL.
-+        return true;
-     }
- 
-     /**
-@@ -55,7 +60,9 @@ export default class LocaleSelectorTrayComponent extends Component {
+@@ -55,7 +59,7 @@ export default class LocaleSelectorTrayComponent extends Component {
              return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
          }
  
 -        return calculatePosition(...arguments);
-+        // Desktop renders in place: CSS anchors the menu below the trigger and
-+        // postcss-rtlcss mirrors the alignment for RTL, so no JS coordinates.
-+        return { style: {} };
++        return calculateTrayPosition(trigger, content);
+     }
+ 
+     /**
+diff --git a/addon/components/notification-tray.js b/addon/components/notification-tray.js
+index 9ddb2ee0a9ce88d8a30fca119f343b6b39c65870..98a74d7cf6fad55a643a39d27f3e20374603227d 100644
+--- a/addon/components/notification-tray.js
++++ b/addon/components/notification-tray.js
+@@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
+ import { inject as service } from '@ember/service';
+ import { isArray } from '@ember/array';
+ import { action } from '@ember/object';
+-import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
++import calculateTrayPosition from './../utils/calculate-tray-position';
+ 
+ function uniqBy(arr, key) {
+     return arr.reduce((unique, item) => {
+@@ -100,7 +100,7 @@ export default class NotificationTrayComponent extends Component {
+             return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
+         }
+ 
+-        return calculatePosition(...arguments);
++        return calculateTrayPosition(trigger, content);
      }
  
      /**
@@ -2489,6 +2510,47 @@ index 39e02d86f8f6ad5acbc3731001bd3e9b1b6b13ab..3fd1e2cbe93a1437e2396b7506560ceb
  }
  
  ::-webkit-scrollbar {
+diff --git a/addon/utils/calculate-tray-position.js b/addon/utils/calculate-tray-position.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..0d9171eda9d2aaf677531a720b07a91a226b4692
+--- /dev/null
++++ b/addon/utils/calculate-tray-position.js
+@@ -0,0 +1,35 @@
++/**
++ * Position a header tray dropdown (org/user menu, language selector,
++ * notifications) below its trigger, aligned to the trigger's inline-end edge,
++ * and clamped to the viewport.
++ *
++ * Used instead of ember-basic-dropdown's default calculate-position: its
++ * horizontal math assumes LTR document flow, so in RTL the content drifts away
++ * from the trigger or off-screen entirely. The dropdown renders through the
++ * wormhole (not in place), which also keeps it clear of page-level
++ * overflow/stacking contexts like the Fleet-Ops map layout.
++ *
++ * @param {HTMLElement} trigger
++ * @param {HTMLElement} content
++ * @return {Object} position result consumed by ember-basic-dropdown
++ */
++export default function calculateTrayPosition(trigger, content) {
++    const rect = trigger.getBoundingClientRect();
++    const contentWidth = content.offsetWidth || 260;
++    const isRtl = (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
++    const margin = 8;
++
++    // LTR: align the menu's right edge with the trigger's right edge.
++    // RTL (mirrored layout, trigger near the screen's left): align left edges.
++    let left = isRtl ? rect.left : rect.right - contentWidth;
++    left = Math.max(margin, Math.min(left, window.innerWidth - contentWidth - margin));
++
++    return {
++        horizontalPosition: isRtl ? 'left' : 'right',
++        verticalPosition: 'below',
++        style: {
++            left: Math.round(left + window.pageXOffset),
++            top: Math.round(rect.bottom + 6 + window.pageYOffset),
++        },
++    };
++}
 diff --git a/app/helpers/localize-label.js b/app/helpers/localize-label.js
 new file mode 100644
 index 0000000000000000000000000000000000000000..612a3f8a6a2caae16f56cab741fa71d617f7d661
