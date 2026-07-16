@@ -2512,10 +2512,10 @@ index 39e02d86f8f6ad5acbc3731001bd3e9b1b6b13ab..3fd1e2cbe93a1437e2396b7506560ceb
  ::-webkit-scrollbar {
 diff --git a/addon/utils/calculate-tray-position.js b/addon/utils/calculate-tray-position.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..0d9171eda9d2aaf677531a720b07a91a226b4692
+index 0000000000000000000000000000000000000000..60cc274b106118408689a599635efa36a90ac2ca
 --- /dev/null
 +++ b/addon/utils/calculate-tray-position.js
-@@ -0,0 +1,35 @@
+@@ -0,0 +1,41 @@
 +/**
 + * Position a header tray dropdown (org/user menu, language selector,
 + * notifications) below its trigger, aligned to the trigger's inline-end edge,
@@ -2526,6 +2526,11 @@ index 0000000000000000000000000000000000000000..0d9171eda9d2aaf677531a720b07a91a
 + * from the trigger or off-screen entirely. The dropdown renders through the
 + * wormhole (not in place), which also keeps it clear of page-level
 + * overflow/stacking contexts like the Fleet-Ops map layout.
++ *
++ * Coordinates are viewport-space with `position: fixed` (the header never
++ * scrolls): page-space `absolute` coordinates break as soon as the document
++ * has horizontal overflow — common in RTL — because the wormhole's containing
++ * block and the scroll offsets stop agreeing with what the user sees.
 + *
 + * @param {HTMLElement} trigger
 + * @param {HTMLElement} content
@@ -2546,8 +2551,9 @@ index 0000000000000000000000000000000000000000..0d9171eda9d2aaf677531a720b07a91a
 +        horizontalPosition: isRtl ? 'left' : 'right',
 +        verticalPosition: 'below',
 +        style: {
-+            left: Math.round(left + window.pageXOffset),
-+            top: Math.round(rect.bottom + 6 + window.pageYOffset),
++            position: 'fixed',
++            left: Math.round(left),
++            top: Math.round(rect.bottom + 6),
 +        },
 +    };
 +}

@@ -292,6 +292,21 @@ body:not([data-theme='dark']) [class*='-chart-widget'] {
     background-image: none !important;
 }
 
+/* ── Header tray dropdowns: fixed positioning ──────────────────────────────
+   ember-ui's calculate-tray-position emits viewport coordinates for the
+   org/user, language, and notification menus. They must render position:fixed
+   — with the default `absolute`, page-space coords disagree with the viewport
+   whenever the document has horizontal overflow (common in RTL) and the menus
+   drift to the screen edge. ember-basic-dropdown only inlines the position
+   property on the first open, so enforce it here for every open. Mobile keeps
+   its own full-width treatment. */
+.next-header-menu-item-dd-content:not(.is-mobile),
+.locale-selector-tray-content:not(.is-mobile),
+.notification-tray-panel-container:not(.is-mobile) {
+    /*rtl:ignore*/
+    position: fixed !important;
+}
+
 /* ── ELITE SKIN: panels, tables + engine surfaces (all pages) ──────────────
    Extends the reference card style beyond dashboards so every page matches:
    content panels (settings/forms), index tables (IAM, Fleet-Ops, …), the
