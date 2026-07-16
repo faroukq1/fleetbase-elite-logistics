@@ -292,6 +292,165 @@ body:not([data-theme='dark']) [class*='-chart-widget'] {
     background-image: none !important;
 }
 
+/* ── ELITE SKIN: panels, tables + engine surfaces (all pages) ──────────────
+   Extends the reference card style beyond dashboards so every page matches:
+   content panels (settings/forms), index tables (IAM, Fleet-Ops, …), the
+   storefront products workspace, and the ledger accounting row-cards. Same
+   recipe: dark = navy gradient + neon green border on black; light = white
+   + green border. `!important` because engine CSS load order is unknown.  */
+
+/* -- Dark mode: content panels (settings page & friends) ------------------ */
+body[data-theme='dark'] .next-content-panel,
+body[data-theme='dark'] .content-panel {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .next-content-panel > .next-content-panel-header,
+body[data-theme='dark'] .content-panel > .content-panel-header {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .next-content-panel > .next-content-panel-body,
+body[data-theme='dark'] .next-content-panel .next-content-panel-body-inner,
+body[data-theme='dark'] .content-panel > .content-panel-body {
+    background-color: transparent !important;
+}
+/* collapsed panel: keep the header rounded, no stray divider */
+body[data-theme='dark'] .next-content-panel > .next-content-panel-header.next-content-panel-is-closed {
+    border-bottom: none !important;
+}
+
+/* -- Dark mode: index tables (IAM users/drivers, Fleet-Ops, …) ------------ */
+body[data-theme='dark'] .next-table-wrapper,
+body[data-theme='dark'] .table-wrapper {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table,
+body[data-theme='dark'] .table-wrapper table,
+body[data-theme='dark'] .next-table-wrapper table tbody,
+body[data-theme='dark'] .table-wrapper table tbody {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table thead tr th,
+body[data-theme='dark'] .table-wrapper table thead tr th {
+    background-color: rgba(9, 30, 66, 0.6) !important;
+    border-color: rgba(93, 214, 44, 0.2) !important;
+    color: #9fb3c8 !important;
+}
+body[data-theme='dark'] .next-table-wrapper table tbody tr td,
+body[data-theme='dark'] .table-wrapper table tbody tr td {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.1) !important;
+}
+body[data-theme='dark'] .next-table-wrapper table tbody tr:hover td,
+body[data-theme='dark'] .table-wrapper table tbody tr:hover td {
+    background-color: rgba(93, 214, 44, 0.06) !important;
+}
+/* table empty state ("No records found" dashed box) */
+body[data-theme='dark'] .next-table-empty-state {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.3) !important;
+}
+/* floating "Showing x to y" pagination pill */
+body[data-theme='dark'] .floating-pagination {
+    background-color: #04081a !important;
+    border-color: rgba(93, 214, 44, 0.45) !important;
+    box-shadow: 0 0 14px rgba(93, 214, 44, 0.12) !important;
+}
+body:not([data-theme='dark']) .floating-pagination {
+    border-color: rgba(93, 214, 44, 0.4) !important;
+    box-shadow: 0 0 10px rgba(93, 214, 44, 0.1) !important;
+}
+
+/* -- Dark mode: storefront products workspace ----------------------------- */
+body[data-theme='dark'] .storefront-product-sidebar {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border: 1px solid rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 18px rgba(93, 214, 44, 0.14) !important;
+}
+body[data-theme='dark'] .storefront-product-sidebar__header {
+    background-color: transparent !important;
+    border-bottom-color: rgba(93, 214, 44, 0.15) !important;
+}
+body[data-theme='dark'] .storefront-product-category {
+    background-color: rgba(9, 30, 66, 0.45) !important;
+    border: 1px solid rgba(93, 214, 44, 0.2) !important;
+}
+body[data-theme='dark'] .storefront-product-category:hover,
+body[data-theme='dark'] .storefront-product-category.active,
+body[data-theme='dark'] .storefront-product-category.is-active {
+    border-color: rgba(93, 214, 44, 0.55) !important;
+    box-shadow: 0 0 12px rgba(93, 214, 44, 0.12) !important;
+}
+body[data-theme='dark'] .storefront-product-sidebar__empty,
+body[data-theme='dark'] .storefront-product-empty {
+    background-color: transparent !important;
+    border-color: rgba(93, 214, 44, 0.3) !important;
+}
+body[data-theme='dark'] .storefront-product-workspace,
+body[data-theme='dark'] .storefront-products-viewport {
+    background-color: transparent !important;
+}
+
+/* -- Dark mode: ledger accounting row-cards (general ledger, journal) ------ */
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg {
+    background-color: #04081a !important;
+    background-image: radial-gradient(140% 170% at 85% -10%, rgba(9, 30, 66, 0.95) 0%, rgba(4, 8, 26, 0.98) 55%, rgba(2, 4, 12, 1) 100%) !important;
+    border-color: rgba(93, 214, 44, 0.45) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 14px rgba(93, 214, 44, 0.12) !important;
+}
+/* their gray header/footer/expanded surfaces → navy tint, green hover */
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:bg-gray-800,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:bg-gray-900 {
+    background-color: transparent !important;
+}
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:hover\:bg-gray-700:hover,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:hover\:bg-gray-800\/50:hover {
+    background-color: rgba(93, 214, 44, 0.06) !important;
+}
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-600,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-700,
+body[data-theme='dark'] .next-view-section-body div.border.rounded-lg .dark\:border-gray-800 {
+    border-color: rgba(93, 214, 44, 0.15) !important;
+}
+
+/* -- Light mode: same surfaces, white card + green border ------------------ */
+body:not([data-theme='dark']) .next-content-panel,
+body:not([data-theme='dark']) .content-panel,
+body:not([data-theme='dark']) .next-table-wrapper,
+body:not([data-theme='dark']) .table-wrapper,
+body:not([data-theme='dark']) .storefront-product-sidebar,
+body:not([data-theme='dark']) .next-view-section-body div.border.rounded-lg {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 1px solid rgba(93, 214, 44, 0.4) !important;
+    border-radius: 0.8rem !important;
+    box-shadow: 0 0 12px rgba(93, 214, 44, 0.1) !important;
+}
+body:not([data-theme='dark']) .next-content-panel > .next-content-panel-header,
+body:not([data-theme='dark']) .content-panel > .content-panel-header {
+    border-bottom: 1px solid rgba(93, 214, 44, 0.2) !important;
+}
+body:not([data-theme='dark']) .next-content-panel > .next-content-panel-header.next-content-panel-is-closed {
+    border-bottom: none !important;
+}
+body:not([data-theme='dark']) .next-table-wrapper table thead tr th,
+body:not([data-theme='dark']) .table-wrapper table thead tr th {
+    background-color: rgba(93, 214, 44, 0.07) !important;
+    border-color: rgba(93, 214, 44, 0.2) !important;
+}
+
 /* ── Smooth light/dark theme toggle ────────────────────────────────────── */
 /* Transition surfaces/borders/text when [data-theme] flips on <html>. Scoped
    to common containers to avoid janking every element on the page. */
