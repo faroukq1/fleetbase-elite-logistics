@@ -261,28 +261,8 @@ body[data-theme='light'] .onboard-route-wrapper.elite-auth .elite-auth-card {
     margin-top: 0.5rem;
 }
 
-/* ── Sidebar: brand dark + green accents in dark mode only ──────────────── */
-/* Light mode keeps the standard light sidebar. */
-body[data-theme='dark'] .next-sidebar {
-    background-color: #0f0f0f !important;
-}
-body[data-theme='dark'] .next-sidebar::after {
-    background-color: rgba(93, 214, 44, 0.35) !important;
-}
-body[data-theme='dark'] .next-sidebar .next-sidebar-footer {
-    border-color: rgba(93, 214, 44, 0.2) !important;
-}
-body[data-theme='dark'] .next-sidebar a,
-body[data-theme='dark'] .next-sidebar button,
-body[data-theme='dark'] .next-sidebar span,
-body[data-theme='dark'] .next-sidebar label,
-body[data-theme='dark'] .next-sidebar .next-nav-item {
-    color: #e5e5e5;
-}
-body[data-theme='dark'] .next-sidebar a:hover,
-body[data-theme='dark'] .next-sidebar .next-nav-item:hover {
-    color: #5dd62c;
-}
+/* Sidebar styling: see the unified "always-black sidebar" section at the
+   end of this file — it must come after the ELITE SKIN blocks to win ties. */
 
 /* ── ELITE SKIN: client-reference card style ───────────────────────────────
    Reference: pure-black pages, cards = deep navy gradient with a thin neon
@@ -533,6 +513,104 @@ button,
 [class*='border-gray-'] {
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
+/* ── Sidebar: ALWAYS black (client request) — identical in light + dark ────
+   The client wants one unified sidebar look regardless of theme: pure-black
+   background, light text, green accents. These rules are theme-independent
+   and must out-rank ember-ui's light-theme rules (white bg, blue hovers,
+   white panel toggles) AND this file's own ELITE SKIN card rules, which
+   otherwise paint white/navy cards on `.next-content-panel` inside the
+   sidebar. Hence the end-of-file position, the mirrored body[data-theme]
+   selectors, and `!important` everywhere. */
+
+/* backdrop */
+.next-sidebar,
+body[data-theme='light'] .next-view-container > nav.next-sidebar,
+body[data-theme='dark'] .next-view-container > nav.next-sidebar {
+    background-color: #0f0f0f !important;
+}
+.next-sidebar::after {
+    background-color: rgba(93, 214, 44, 0.35) !important;
+}
+.next-sidebar .next-sidebar-footer {
+    border-color: rgba(93, 214, 44, 0.2) !important;
+}
+
+/* text — light on black in BOTH themes */
+.next-sidebar a,
+.next-sidebar button,
+.next-sidebar span,
+.next-sidebar label,
+.next-sidebar .next-nav-item {
+    color: #e5e5e5 !important;
+}
+.next-sidebar a:hover,
+.next-sidebar .next-nav-item:hover {
+    color: #5dd62c !important;
+}
+
+/* nav items: dark hover pill, green active pill (both themes) */
+.next-sidebar .next-nav-item:hover,
+body[data-theme='light'] .next-view-container > nav.next-sidebar a.next-nav-item:hover {
+    background-color: #1f1f1f !important;
+}
+.next-sidebar .next-nav-item.active,
+body[data-theme='dark'] .next-sidebar .next-nav-item.active {
+    background-color: #5dd62c !important;
+    color: #ffffff !important;
+}
+.next-sidebar .next-nav-item.active:hover {
+    background-color: #47a821 !important;
+    color: #ffffff !important;
+}
+.next-sidebar .next-nav-item.active .next-nav-item-icon-container svg,
+body[data-theme='dark'] .next-sidebar .next-nav-item.active .next-nav-item-icon-container svg {
+    color: currentColor !important;
+}
+
+/* collapsible section toggles: flat black, dark hover (kill white/blue) */
+.next-sidebar .next-content-panel-wrapper .next-content-panel-container .next-content-panel > .next-content-panel-header.next-sidebar-panel-toggle,
+body[data-theme='light'] .next-sidebar .next-content-panel-wrapper .next-content-panel-container .next-content-panel > .next-content-panel-header.next-sidebar-panel-toggle {
+    background-color: transparent !important;
+}
+.next-sidebar .next-sidebar-panel-container > .next-sidebar-panel > .next-content-panel > .next-sidebar-panel-toggle:hover,
+body[data-theme='light'] .next-sidebar .next-sidebar-panel-container > .next-sidebar-panel > .next-content-panel > .next-sidebar-panel-toggle:hover,
+body[data-theme='light'] .next-sidebar .next-content-panel-wrapper .next-content-panel-container .next-content-panel > .next-content-panel-header.next-sidebar-panel-toggle:hover {
+    background-color: #1f1f1f !important;
+    border-color: transparent !important;
+}
+
+/* neutralize the ELITE SKIN card treatment inside the sidebar: panels there
+   must stay flat black in both themes, not white/navy glow cards */
+body[data-theme='dark'] .next-sidebar .next-content-panel,
+body:not([data-theme='dark']) .next-sidebar .next-content-panel {
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* resize-gutter hover: green, not fleetbase blue */
+.next-sidebar > .next-sidebar-content + .gutter:hover::before,
+.next-sidebar.sidebar-is-resizing > .next-sidebar-content + .gutter::before {
+    background-color: #5dd62c !important;
+}
+
+/* ── Header logo: Elite black-background wordmark, slightly bigger ───────── */
+a.navbar-logo.elite-navbar-logo {
+    width: auto !important;
+    height: auto !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+}
+.elite-header-logo {
+    height: 52px;
+    width: auto;
+    border-radius: 0.375rem;
+    display: block;
+}
+
 /* Respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
     body,
