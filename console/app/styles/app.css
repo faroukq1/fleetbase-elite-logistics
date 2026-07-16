@@ -8,8 +8,22 @@
 .elite-auth {
     display: flex;
     min-height: 100vh;
-    background: #0f0f0f;
+    background: linear-gradient(to right, #000 0%, #030303 52%, #0d2004 72%, #2f7d12 88%, #5dd62c 100%);
     color: #f8f8f8;
+}
+/* theme-dependent logo variants */
+.elite-logo-img--light {
+    display: none;
+}
+body[data-theme='light'] .elite-logo-img--dark {
+    display: none;
+}
+body[data-theme='light'] .elite-logo-img--light {
+    display: block;
+}
+body[data-theme='light'] .elite-auth {
+    background: linear-gradient(to right, #fff 0%, #fcfcfc 52%, #e7f8dc 74%, #9be873 90%, #5dd62c 100%);
+    color: #111827;
 }
 .elite-auth-brand {
     display: none;
@@ -20,27 +34,15 @@
         flex: 1 1 55%;
         align-items: center;
         justify-content: center;
-        background: radial-gradient(120% 120% at 100% 50%, #5dd62c 0%, #337418 28%, #0b0b0b 62%, #000 100%);
     }
-}
-.elite-auth-brand-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-}
-.elite-auth-brand-logo {
-    width: 12rem;
-    height: 12rem;
-    border-radius: 1.25rem;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-.elite-auth-brand-tagline {
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    font-size: 1.1rem;
-    color: #f8f8f8;
-    opacity: 0.9;
+    .elite-auth-brand .elite-logo-img {
+        width: min(36vw, 36rem);
+        height: auto;
+        filter: drop-shadow(0 24px 60px rgba(0, 0, 0, 0.55));
+    }
+    body[data-theme='light'] .elite-auth-brand .elite-logo-img {
+        filter: drop-shadow(0 18px 45px rgba(17, 24, 39, 0.25));
+    }
 }
 .elite-auth-main {
     flex: 1 1 45%;
@@ -52,17 +54,26 @@
 }
 .elite-auth-card {
     width: 100%;
-    max-width: 24rem;
-    background: #141414;
-    border: 1px solid rgba(93, 214, 44, 0.35);
-    border-radius: 1rem;
-    padding: 2.25rem 2rem;
-    box-shadow: 0 0 40px rgba(93, 214, 44, 0.12);
+    max-width: 26rem;
+    background: #0b0b0b;
+    border: 1px solid rgba(93, 214, 44, 0.6);
+    border-radius: 1.1rem;
+    padding: 2.5rem 2.25rem;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55), 0 0 32px rgba(93, 214, 44, 0.1);
+}
+body[data-theme='light'] .elite-auth-card {
+    background: #ffffff;
+    border-color: rgba(71, 168, 33, 0.5);
+    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.12);
 }
 .elite-login-logo {
     display: flex;
     justify-content: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1.1rem;
+}
+.elite-login-logo .elite-logo-img {
+    width: 12.5rem;
+    height: auto;
 }
 .elite-login-title {
     font-size: 1.75rem;
@@ -70,11 +81,17 @@
     text-align: center;
     color: #f8f8f8;
 }
+body[data-theme='light'] .elite-login-title {
+    color: #111827;
+}
 .elite-login-subtitle {
     text-align: center;
     font-size: 0.9rem;
     color: #9ca3af;
     margin: 0.35rem 0 1.75rem;
+}
+body[data-theme='light'] .elite-login-subtitle {
+    color: #6b7280;
 }
 .elite-field {
     margin-bottom: 1rem;
@@ -86,6 +103,9 @@
     color: #f8f8f8;
     margin-bottom: 0.4rem;
 }
+body[data-theme='light'] .elite-field > label {
+    color: #111827;
+}
 .elite-field input {
     width: 100%;
     background: #f8f8f8 !important;
@@ -93,6 +113,10 @@
     border: 1px solid transparent !important;
     border-radius: 0.5rem !important;
     padding: 0.6rem 0.8rem !important;
+}
+body[data-theme='light'] .elite-field input {
+    background: #ffffff !important;
+    border-color: #d1d5db !important;
 }
 .elite-field input:focus {
     outline: none !important;
@@ -113,6 +137,9 @@
     color: #f8f8f8;
     cursor: pointer;
 }
+body[data-theme='light'] .elite-remember {
+    color: #374151;
+}
 .elite-forgot,
 .elite-contact {
     color: #5dd62c;
@@ -121,16 +148,24 @@
     border: none;
     cursor: pointer;
 }
+body[data-theme='light'] .elite-forgot,
+body[data-theme='light'] .elite-contact {
+    color: #2f7d12;
+}
 .elite-forgot:hover,
 .elite-contact:hover {
     color: #7ee352;
+}
+body[data-theme='light'] .elite-forgot:hover,
+body[data-theme='light'] .elite-contact:hover {
+    color: #47a821;
 }
 .elite-signin .btn,
 .elite-signin button {
     width: 100%;
     background: #5dd62c !important;
     border-color: #5dd62c !important;
-    color: #0f0f0f !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
 }
 .elite-signin .btn:hover,
@@ -144,6 +179,9 @@
     color: #9ca3af;
     margin-top: 1.25rem;
 }
+body[data-theme='light'] .elite-login-footer {
+    color: #6b7280;
+}
 .elite-login-alert {
     display: flex;
     align-items: flex-start;
@@ -156,6 +194,10 @@
     font-size: 0.8rem;
     margin-bottom: 1rem;
 }
+body[data-theme='light'] .elite-login-alert {
+    background: rgba(234, 179, 8, 0.12);
+    color: #92400e;
+}
 .elite-auth-attribution {
     margin-top: 1.5rem;
     opacity: 0.7;
@@ -167,6 +209,9 @@
 }
 .onboard-route-wrapper.elite-auth .elite-auth-card {
     color: #f8f8f8;
+}
+body[data-theme='light'] .onboard-route-wrapper.elite-auth .elite-auth-card {
+    color: #111827;
 }
 
 /* ── Onboard / create-account form (inside the wide auth card) ──────────── */
