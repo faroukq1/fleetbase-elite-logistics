@@ -325,12 +325,20 @@ body:not([data-theme='dark']) [class*='-chart-widget'] {
    drift to the screen edge. ember-basic-dropdown only inlines the position
    property on the first open, so enforce it here for every open. Mobile keeps
    its own full-width treatment. */
+/*rtl:begin:ignore*/
 .next-header-menu-item-dd-content:not(.is-mobile),
 .locale-selector-tray-content:not(.is-mobile),
 .notification-tray-panel-container:not(.is-mobile) {
-    /*rtl:ignore*/
     position: fixed !important;
+    /* calculate-tray-position anchors these with an inline viewport-space
+       `left`. ember-basic-dropdown's vendor CSS also stamps
+       [dir='rtl'] .ember-basic-dropdown-content--left { right: 0 } — with
+       both edges set the box is over-constrained, and in RTL the browser
+       keeps `right` and discards our `left`, pinning the panel to the
+       viewport edge. Kill the `right` so the JS `left` always wins. */
+    right: auto !important;
 }
+/*rtl:end:ignore*/
 
 /* ── ELITE SKIN: panels, tables + engine surfaces (all pages) ──────────────
    Extends the reference card style beyond dashboards so every page matches:
