@@ -518,19 +518,18 @@ index 94c81b20462ead270707a8d6ea5327e1f539fa7e..005b9e27d8b3f03251f626b5eb61274e
          >
              <FaIcon @icon="sliders" @size="sm" />
 diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
-index 0f85afe5db0501d86c41bb4762982d326a140d20..032676dfe7563bfb3056baa4c44380f05f730638 100644
+index 0f85afe5db0501d86c41bb4762982d326a140d20..8c210d38d3140f53c92aec407fad44b9a69de034 100644
 --- a/addon/components/layout/header.hbs
 +++ b/addon/components/layout/header.hbs
-@@ -1,7 +1,7 @@
+@@ -1,8 +1,5 @@
  <header class="next-view-header" ...attributes>
      <div class="next-view-header-left">
 -        <LinkToExternal @route="console" class="logo navbar-logo mr-4">
 -            <LogoIcon @brand={{@brand}} @size="8" />
-+        <LinkToExternal @route="console" class="logo navbar-logo elite-navbar-logo mr-4">
-+            <img src="/images/elite-logo-header.jpeg" alt="Elite Logistics" class="elite-header-logo" />
-         </LinkToExternal>
+-        </LinkToExternal>
          {{#if (and @showSidebarToggle (not (media "isMobile")))}}
              <Layout::Header::SidebarToggle class="mr-2" @onToggle={{@onSidebarToggle}} @disabled={{eq @sidebarToggleEnabled false}} />
+         {{/if}}
 diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
 index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff6615fd6e79e 100644
 --- a/addon/components/layout/header.js
@@ -653,6 +652,19 @@ index d52a85c1146138588638b6bf8d3cc6e1bdae9322..5ca14cef15167c5b8bd26f3fa1c0ea48
                          class="w-64 form-input form-input-sm {{@searchInputClass}}"
                          disabled={{@searchDisabled}}
                          {{on "keyup" @onSearch}}
+diff --git a/addon/components/layout/sidebar.hbs b/addon/components/layout/sidebar.hbs
+index 8f14b034e83caa8a4ceb52d8d4719c72f132fbb0..20b5f3cae51742e5cbc608f4f359bc0111f43c4c 100644
+--- a/addon/components/layout/sidebar.hbs
++++ b/addon/components/layout/sidebar.hbs
+@@ -1,5 +1,8 @@
+ <nav class="next-sidebar" {{did-insert (fn this.setupNode "sidebar")}} {{will-destroy this.teardown}} ...attributes>
+     <div class="next-sidebar-content">
++        <LinkToExternal @route="console" class="elite-sidebar-logo">
++            <img src="/images/elite-logo-header.jpeg" alt="Elite Logistics" />
++        </LinkToExternal>
+         <div class="next-sidebar-content-inner">
+             <div role="menu" id="sidebar-menu-items">
+                 {{yield
 diff --git a/addon/components/locale-selector-tray.hbs b/addon/components/locale-selector-tray.hbs
 index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9aef08d88bd 100644
 --- a/addon/components/locale-selector-tray.hbs
