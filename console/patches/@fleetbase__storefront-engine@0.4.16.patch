@@ -1,3 +1,131 @@
+diff --git a/addon/components/modals/create-catalog.hbs b/addon/components/modals/create-catalog.hbs
+index 98960bdb27137e21fb65f4741d1dde834c7489ca..c8991c42dcc190b5dd5e8ad65b2072062bc018b6 100644
+--- a/addon/components/modals/create-catalog.hbs
++++ b/addon/components/modals/create-catalog.hbs
+@@ -1,12 +1,12 @@
+ <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+     <div class="modal-body-container">
+-        <InputGroup @name="Catalog Name" @value={{@options.catalog.name}} @disabled={{cannot "storefront create catalog"}} />
+-        <InputGroup @name="Catalog Description" @value={{@options.catalog.description}} @disabled={{cannot "storefront create catalog"}} />
+-        <InputGroup @name="Catalog Status">
++        <InputGroup @name={{localize-label "Catalog Name" "storefront-label"}} @value={{@options.catalog.name}} @disabled={{cannot "storefront create catalog"}} />
++        <InputGroup @name={{localize-label "Catalog Description" "storefront-label"}} @value={{@options.catalog.description}} @disabled={{cannot "storefront create catalog"}} />
++        <InputGroup @name={{localize-label "Catalog Status" "storefront-label"}}>
+             <Select
+                 class="w-full"
+                 @value={{@options.catalog.status}}
+-                @placeholder="Select catalog status"
++                @placeholder={{localize-label "Select catalog status" "storefront-label"}}
+                 @options={{@options.statusOptions}}
+                 @onSelect={{fn (mut @options.catalog.status)}}
+                 @humanize={{true}}
+@@ -15,9 +15,9 @@
+         <InputGroup>
+             <div class="rounded-lg flex flex-col px-3 py-2 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                 <div class="mb-2 flex justify-between">
+-                    <div class="text-sm font-semibold dark:text-gray-100">Product Catalog</div>
++                    <div class="text-sm font-semibold dark:text-gray-100">{{localize-label "Product Catalog" "storefront-label"}}</div>
+                     <div>
+-                        <Button @icon="plus" @text="Add Catalog Category" @onClick={{@options.createCategory}} />
++                        <Button @icon="plus" @text={{localize-label "Add Catalog Category" "storefront-label"}} @onClick={{@options.createCategory}} />
+                     </div>
+                 </div>
+                 <div class="space-y-2">
+@@ -35,7 +35,7 @@
+                                     <Button
+                                         @icon={{if category.expanded "compress" "expand"}}
+                                         @onClick={{fn @options.toggleCategory category}}
+-                                        @helpText="Collapse or expand category products"
++                                        @helpText={{localize-label "Collapse or expand category products" "storefront-label"}}
+                                         @size="xs"
+                                     />
+                                     <Button @icon="tags" @onClick={{fn @options.addProducts category}} @helpText="Manage category products" @size="xs" />
+diff --git a/addon/components/modals/create-food-truck.hbs b/addon/components/modals/create-food-truck.hbs
+index 41b9a9e93f1e4b22b0f849ed3ffff83b1b05c7f3..580b6291da53982fde863ea6ce25e25284ff5320 100644
+--- a/addon/components/modals/create-food-truck.hbs
++++ b/addon/components/modals/create-food-truck.hbs
+@@ -1,10 +1,10 @@
+ <Modal::Default @modalIsOpened={{@modalIsOpened}} @options={{@options}} @confirm={{@onConfirm}} @decline={{@onDecline}}>
+     <div class="modal-body-container">
+-        <InputGroup @name="Assign Food Truck Vehicle">
++        <InputGroup @name={{localize-label "Assign Food Truck Vehicle" "storefront-label"}}>
+             <ModelSelect
+                 @modelName="vehicle"
+                 @selectedModel={{@options.foodTruck.vehicle}}
+-                @placeholder="Assign Food Truck Vehicle"
++                @placeholder={{localize-label "Assign Food Truck Vehicle" "storefront-label"}}
+                 @triggerClass="form-select form-input"
+                 @infiniteScroll={{false}}
+                 @renderInPlace={{true}}
+@@ -22,11 +22,11 @@
+                 </div>
+             </ModelSelect>
+         </InputGroup>
+-        <InputGroup @name="Service Area">
++        <InputGroup @name={{localize-label "Service Area" "storefront-label"}}>
+             <ModelSelect
+                 @modelName="service-area"
+                 @selectedModel={{@options.foodTruck.service_area}}
+-                @placeholder="Assign Food Truck to Service Area"
++                @placeholder={{localize-label "Assign Food Truck to Service Area" "storefront-label"}}
+                 @triggerClass="form-select form-input"
+                 @infiniteScroll={{false}}
+                 @renderInPlace={{true}}
+@@ -38,12 +38,12 @@
+             </ModelSelect>
+         </InputGroup>
+         {{#if @options.foodTruck.service_area}}
+-            <InputGroup @name="Zone">
++            <InputGroup @name={{localize-label "Zone" "storefront-label"}}>
+                 <ModelSelect
+                     @modelName="zone"
+                     @selectedModel={{@options.foodTruck.zone}}
+                     @query={{hash service_area_uuid=@options.foodTruck.service_area.id}}
+-                    @placeholder="Assign Food Truck to Zone"
++                    @placeholder={{localize-label "Assign Food Truck to Zone" "storefront-label"}}
+                     @triggerClass="form-select form-input"
+                     @infiniteScroll={{false}}
+                     @renderInPlace={{true}}
+@@ -55,11 +55,11 @@
+                 </ModelSelect>
+             </InputGroup>
+         {{/if}}
+-        <InputGroup @name="Food Truck Status">
++        <InputGroup @name={{localize-label "Food Truck Status" "storefront-label"}}>
+             <Select
+                 class="w-full"
+                 @value={{@options.foodTruck.status}}
+-                @placeholder="Select food truck status"
++                @placeholder={{localize-label "Select food truck status" "storefront-label"}}
+                 @options={{@options.statusOptions}}
+                 @onSelect={{fn (mut @options.foodTruck.status)}}
+                 @humanize={{true}}
+diff --git a/addon/components/storefront/product/addon-management.hbs b/addon/components/storefront/product/addon-management.hbs
+index f5db858bc7527958e2bff4abd7102a5bdadba751..ba99320e1cf9c4aea05a75e07a87b409a67ada4c 100644
+--- a/addon/components/storefront/product/addon-management.hbs
++++ b/addon/components/storefront/product/addon-management.hbs
+@@ -1,8 +1,8 @@
+ <div class="storefront-product-addon-management" data-test-storefront-product-addon-management>
+     <div class="storefront-product-addon-management__header">
+         <div>
+-            <h3>Checkout Add-ons</h3>
+-            <p>Reusable modifier groups customers can select during checkout.</p>
++            <h3>{{localize-label "Checkout Add-ons" "storefront-label"}}</h3>
++            <p>{{localize-label "Reusable modifier groups customers can select during checkout." "storefront-label"}}</p>
+         </div>
+         <div class="flex items-center">
+             {{#unless (and this.getAddonCategories.isIdle this.saveAddonCategory.isIdle)}}
+@@ -73,8 +73,8 @@
+         {{else}}
+             <div class="storefront-product-empty storefront-product-empty--compact">
+                 <FaIcon @icon="tags" />
+-                <h3>No add-on groups</h3>
+-                <p>Create reusable checkout modifiers like toppings, sides, or preparation choices.</p>
++                <h3>{{localize-label "No add-on groups" "storefront-label"}}</h3>
++                <p>{{localize-label "Create reusable checkout modifiers like toppings, sides, or preparation choices." "storefront-label"}}</p>
+             </div>
+         {{/each}}
+     </div>
 diff --git a/addon/components/storefront/product/category-sidebar.hbs b/addon/components/storefront/product/category-sidebar.hbs
 index a1eba0192aa5110b95784180321dee92249040b8..1a49ddcc72786fda8bbe5309c6240ead089d8420 100644
 --- a/addon/components/storefront/product/category-sidebar.hbs
@@ -48,6 +176,41 @@ index c5f4dfeb542c55ba74bd45dce07d9fd86b43fa80..d2cabf0385117ccdd1b6dbb79166e216
              </div>
          {{/if}}
      </div>
+diff --git a/addon/components/storefront/product/collection.js b/addon/components/storefront/product/collection.js
+index fbe859498b24410e9eefb2fbb87ffcb596789333..1912c0c9f467c18742438c8c85bb66579d53621c 100644
+--- a/addon/components/storefront/product/collection.js
++++ b/addon/components/storefront/product/collection.js
+@@ -1,6 +1,9 @@
+ import Component from '@glimmer/component';
++import { inject as service } from '@ember/service';
+ 
+ export default class StorefrontProductCollectionComponent extends Component {
++    @service intl;
++
+     get products() {
+         return this.args.products ?? [];
+     }
+@@ -14,6 +17,6 @@ export default class StorefrontProductCollectionComponent extends Component {
+     }
+ 
+     get title() {
+-        return this.args.category ? `${this.args.category.name} Products` : 'All Products';
++        return this.args.category ? this.intl.t('storefront.products.category-products', { category: this.args.category.name }) : this.intl.t('storefront.products.all-products');
+     }
+ }
+diff --git a/addon/components/storefront/product/form/addons.hbs b/addon/components/storefront/product/form/addons.hbs
+index b0605e5ae49b2eca818620489def7358d48e111f..8c4fa020521999b26f97b1af15ab3f17e8c99219 100644
+--- a/addon/components/storefront/product/form/addons.hbs
++++ b/addon/components/storefront/product/form/addons.hbs
+@@ -52,7 +52,7 @@
+                 </div>
+             </div>
+         {{else}}
+-            <div class="storefront-product-addon-empty">No add-on groups selected.</div>
++            <div class="storefront-product-addon-empty">{{localize-label "No add-on groups selected." "storefront-label"}}</div>
+         {{/each}}
+     </div>
+ </ContentPanel>
 diff --git a/addon/components/widget/customer-insights.hbs b/addon/components/widget/customer-insights.hbs
 index b0b98c38aeae91c3e98e7faa75d9b5886dac6ec3..63724a8820ecdeba8e239e161e82207e9870e3af 100644
 --- a/addon/components/widget/customer-insights.hbs
@@ -98,6 +261,28 @@ index b0b98c38aeae91c3e98e7faa75d9b5886dac6ec3..63724a8820ecdeba8e239e161e82207e
          {{/if}}
      </div>
  </div>
+diff --git a/addon/components/widget/customers.hbs b/addon/components/widget/customers.hbs
+index f9268eb5a018605e717ab79efe96e17258a6a37f..cdbcf39242e8f7db6030d09dc4c0b40b1356312c 100644
+--- a/addon/components/widget/customers.hbs
++++ b/addon/components/widget/customers.hbs
+@@ -28,7 +28,7 @@
+                     </div>
+                 </article>
+             {{else}}
+-                <div class="storefront-widget-empty">No recent customers yet.</div>
++                <div class="storefront-widget-empty">{{t "storefront.widgets.no-recent-customers"}}</div>
+             {{/each}}
+         </div>
+     {{else}}
+@@ -59,7 +59,7 @@
+                         </tr>
+                     {{else}}
+                         <tr>
+-                            <td colspan="5"><div class="storefront-widget-empty">No recent customers yet.</div></td>
++                            <td colspan="5"><div class="storefront-widget-empty">{{t "storefront.widgets.no-recent-customers"}}</div></td>
+                         </tr>
+                     {{/each}}
+                 </tbody>
 diff --git a/addon/components/widget/kpi-active-orders.hbs b/addon/components/widget/kpi-active-orders.hbs
 index 6d4f5ec38f3b9691e457de8940d245991166aac4..76afa34b04e1dbeb4c97800a47d41aa81d832d31 100644
 --- a/addon/components/widget/kpi-active-orders.hbs
@@ -356,6 +541,78 @@ index 3ae41901246e8e775f4ad35a99c01b590c284b86..d221798045cd55d6fcb2b8fe514592b6
          {{/if}}
      </div>
  </div>
+diff --git a/addon/controllers/application.js b/addon/controllers/application.js
+index e8e43b3a60d31a17d570b5ac5e3d5357a724fd0c..9a010c54e13127754e4386c9628f2bc13a7f1562 100644
+--- a/addon/controllers/application.js
++++ b/addon/controllers/application.js
+@@ -36,7 +36,7 @@ export default class ApplicationController extends Controller {
+                 disabled: !hasActiveStore,
+                 children: [
+                     {
+-                        label: 'All Products',
++                        label: this.intl.t('storefront.products.all-products'),
+                         description: 'Browse and manage product inventory.',
+                         icon: 'box',
+                         route: 'console.storefront.products',
+@@ -104,7 +104,7 @@ export default class ApplicationController extends Controller {
+                 disabled: !hasActiveStore,
+                 children: [
+                     {
+-                        label: 'Push Notifications',
++                        label: this.intl.t('storefront.sidebar.push-notifications'),
+                         description: 'Send push notifications to storefront customers.',
+                         icon: 'bell',
+                         route: 'console.storefront.promotions.push-notifications',
+diff --git a/addon/controllers/catalogs/index.js b/addon/controllers/catalogs/index.js
+index 67de1bf42a5567cb598221c9f2fd07073ed730ea..0b056c0ba5bd11ad564b6823ad11dab2a573e81b 100644
+--- a/addon/controllers/catalogs/index.js
++++ b/addon/controllers/catalogs/index.js
+@@ -23,8 +23,8 @@ export default class CatalogsIndexController extends Controller {
+         });
+ 
+         return this.editCatalog(catalog, {
+-            title: 'New Catalog',
+-            acceptButtonText: 'Confirm',
++            title: this.intl.t('storefront.catalogs.index.new-catalog'),
++            acceptButtonText: this.intl.t('common.confirm'),
+             acceptButtonIcon: 'check',
+             confirm: async (modal) => {
+                 modal.startLoading();
+@@ -46,8 +46,8 @@ export default class CatalogsIndexController extends Controller {
+         const allProducts = this.store.query('product', { limit: -1 });
+ 
+         this.modalsManager.show('modals/create-catalog', {
+-            title: 'Edit Food Truck',
+-            acceptButtonText: 'Save Changes',
++            title: this.intl.t('storefront.catalogs.index.edit-catalog'),
++            acceptButtonText: this.intl.t('common.save-changes'),
+             acceptButtonIcon: 'save',
+             statusOptions: this.statusOptions,
+             catalog,
+diff --git a/addon/controllers/food-trucks/index.js b/addon/controllers/food-trucks/index.js
+index d0fe2c6b89291f9c165fa62b7382e378c50301b6..61dccdeb31d3cf724527b0075e1b2cd0c4959a0f 100644
+--- a/addon/controllers/food-trucks/index.js
++++ b/addon/controllers/food-trucks/index.js
+@@ -23,7 +23,7 @@ export default class FoodTrucksIndexController extends Controller {
+         });
+ 
+         this.modalsManager.show('modals/create-food-truck', {
+-            title: 'New Food Truck',
++            title: this.intl.t('storefront.food-trucks.index.new-food-truck'),
+             statusOptions: this.statusOptions,
+             foodTruck,
+             confirm: async (modal) => {
+@@ -44,8 +44,8 @@ export default class FoodTrucksIndexController extends Controller {
+ 
+     @action editFoodTruck(foodTruck) {
+         this.modalsManager.show('modals/create-food-truck', {
+-            title: 'Edit Food Truck',
+-            acceptButtonText: 'Save Changes',
++            title: this.intl.t('storefront.food-trucks.index.edit-food-truck'),
++            acceptButtonText: this.intl.t('common.save-changes'),
+             acceptButtonIcon: 'save',
+             statusOptions: this.statusOptions,
+             foodTruck,
 diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
 index 3d592ac3acdb3422ad2af63d776fb5dd3afb2b3c..83020a1dadb29fdbf238d1c28d592574ba4a400c 100644
 --- a/addon/templates/application.hbs

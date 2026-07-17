@@ -1,0 +1,48 @@
+diff --git a/addon/services/crud.js b/addon/services/crud.js
+index edb2ff5394e05b16e82cd727784369b7fda5406b..6b823e63e82058d9b21e10290af6f5bccc3bf4db 100644
+--- a/addon/services/crud.js
++++ b/addon/services/crud.js
+@@ -19,6 +19,18 @@ export default class CrudService extends Service {
+     @service currentUser;
+     @service universe;
+     @service events;
++    @service intl;
++
++    localizeResourceName(modelName, { plural = false } = {}) {
++        const slug = dasherize(`${modelName}`);
++        const key = `resource.${plural ? pluralize(slug) : slug}`;
++        if (this.intl.exists(key)) {
++            return this.intl.t(key);
++        }
++
++        const humanized = smartHumanize(modelName);
++        return plural ? pluralize(humanized) : humanized;
++    }
+ 
+     /**
+      * Generic deletion modal with options
+@@ -283,18 +295,18 @@ export default class CrudService extends Service {
+         };
+ 
+         this.modalsManager.show('modals/import-form', {
+-            title: `Import ${pluralize(smartHumanize(modelName))} with spreadsheets`,
+-            acceptButtonText: 'Start Import',
++            title: this.intl.t('component.import-modal.title', { resource: this.localizeResourceName(modelName, { plural: true }) }),
++            acceptButtonText: this.intl.t('component.import-modal.start-import'),
+             acceptButtonScheme: 'magic',
+             acceptButtonIcon: 'upload',
+             acceptButtonDisabled: true,
+             isProcessing: false,
+             uploadQueue: [],
+             fileQueueColumns: [
+-                { name: 'Type', valuePath: 'extension', key: 'type' },
+-                { name: 'File Name', valuePath: 'name', key: 'fileName' },
+-                { name: 'File Size', valuePath: 'size', key: 'fileSize' },
+-                { name: 'Upload Date', valuePath: 'file.lastModifiedDate', key: 'uploadDate' },
++                { name: this.intl.t('column.type'), valuePath: 'extension', key: 'type' },
++                { name: this.intl.t('component.import-modal.file-name'), valuePath: 'name', key: 'fileName' },
++                { name: this.intl.t('component.import-modal.file-size'), valuePath: 'size', key: 'fileSize' },
++                { name: this.intl.t('component.import-modal.upload-date'), valuePath: 'file.lastModifiedDate', key: 'uploadDate' },
+                 { name: '', valuePath: '', key: 'delete' },
+             ],
+             acceptedFileTypes: ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'text/csv'],

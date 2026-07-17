@@ -2,6 +2,11 @@ app:
   name: Elite Logistics
 
 common:
+  no-records-found: No records found
+  upload-new: Upload new
+  not-available: N/A
+  fuel-integrations: Fuel Integrations
+  reprocess-selected-count: "Reprocess {count} selected"
   new: New
   create: Create
   add: Add
@@ -483,6 +488,12 @@ component:
     dropdown-label: File actions
 
   import-modal:
+    title: "Import {resource} with spreadsheets"
+    start-import: Start Import
+    download-template: Download Import Template (XLSX)
+    file-name: File Name
+    file-size: File Size
+    upload-date: Upload Date
     loading-message: Processing import...
     drop-upload: Drop to upload
     invalid: Invalid
@@ -997,3 +1008,124 @@ nav-card-desc:
   connect-and-manage-multi-store-networks-and-marketplaces: "Connect and manage multi-store networks and marketplaces."
   organise-products-into-shareable-catalogs: "Organise products into shareable catalogs."
   create-push-notifications-and-promotional-campaigns: "Create push notifications and promotional campaigns."
+
+column:
+  source: Source
+  provider: Provider
+  trip: Trip
+  station: Station
+  liters: Liters
+  amount: Amount
+  fuel-report: Fuel Report
+  date: Date
+  card-internal: Card / Internal
+
+menu:
+  resources-hub: Resources Hub
+  maintenance-hub: Maintenance Hub
+  dashboard: Dashboard
+  settings-hub: Settings Hub
+
+fleet-ops:
+  search-placeholder: Search Fleet-Ops...
+  fuel-transactions:
+    review-details: Review Details
+    open-fuel-report: Open Fuel Report
+    match-to-vehicle: Match to Vehicle
+    match-to-order: Match to Order
+    reprocess-rematch: Reprocess / Rematch
+    ignore-transaction: Ignore Transaction
+    mark-reviewed: Mark Reviewed
+  component:
+    issue-form-panel:
+      reopen-issue: Re-open Issue
+
+storefront:
+  sidebar:
+    push-notifications: Push Notifications
+  products:
+    all-products: All Products
+    category-products: "{category} Products"
+  widgets:
+    no-recent-customers: No recent customers yet.
+  catalogs:
+    index:
+      new-catalog: New Catalog
+      edit-catalog: Edit Catalog
+  food-trucks:
+    index:
+      new-food-truck: New Food Truck
+      edit-food-truck: Edit Food Truck
+
+iam:
+  common:
+    toggle-selected: Toggle Selected
+  components:
+    widget:
+      dashboard:
+        metric:
+          policy-surface:
+            total: Total
+            org-managed: Org managed
+            fleetbase: Fleetbase
+          privileged-access:
+            admin-roles: Admin roles
+            wildcard-policies: Wildcard policies
+            direct-grants: Direct grants
+        kpi:
+          mfa-coverage-unavailable: Org enforcement shown
+
+ledger:
+  cash-flow:
+    operating: Operating
+    financing: Financing
+    investing: Investing
+    net-cash-flow: Net cash flow
+  owner-types:
+    company: Company
+    driver: Driver
+    customer: Customer
+    user: User
+  wallet-names:
+    personal-wallet: Personal Wallet
+    refund-reserve: Refund Reserve
+    payout-reserve: Payout Reserve
+    revenue-wallet: Revenue Wallet
+    operating-wallet: Operating Wallet
+
+status-label:
+  active: Active
+  inactive: Inactive
+  frozen: Frozen
+  suspended: Suspended
+  draft: Draft
+  published: Published
+  pending: Pending
+  pending-approval: Pending Approval
+  approved: Approved
+  rejected: Rejected
+  submitted: Submitted
+  in-review: In Review
+  revised: Revised
+  confirmed: Confirmed
+  processed: Processed
+  archived: Archived
+  cancelled: Cancelled
+  canceled: Canceled
+  open: Open
+  closed: Closed
+  resolved: Resolved
+  in-progress: In Progress
+  completed: Completed
+  imported: Imported
+  matched: Matched
+  unmatched: Unmatched
+  reviewed: Reviewed
+  ignored: Ignored
+  duplicate: Duplicate
+  error: Error
+  expired: Expired
+  enabled: Enabled
+  disabled: Disabled
+  created: Created
+  dispatched: Dispatched

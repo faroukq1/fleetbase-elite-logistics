@@ -1,6 +1,11 @@
 app:
   name: Elite Logistics
 common:
+  no-records-found: لا توجد سجلات
+  upload-new: رفع جديد
+  not-available: غير متاح
+  fuel-integrations: تكاملات الوقود
+  reprocess-selected-count: "إعادة معالجة {count} محدد"
   new: جديد
   create: إنشاء
   add: إضافة
@@ -463,6 +468,12 @@ component:
   file:
     dropdown-label: إجراءات الملف
   import-modal:
+    title: "استيراد {resource} عبر جداول البيانات"
+    start-import: بدء الاستيراد
+    download-template: تنزيل قالب الاستيراد (XLSX)
+    file-name: اسم الملف
+    file-size: حجم الملف
+    upload-date: تاريخ الرفع
     loading-message: جارٍ معالجة الاستيراد...
     drop-upload: أسقط للتحميل
     invalid: غير صالح
@@ -966,3 +977,455 @@ nav-card-desc:
   connect-and-manage-multi-store-networks-and-marketplaces: "اربط وأدر شبكات المتاجر المتعددة والأسواق."
   organise-products-into-shareable-catalogs: "نظّم المنتجات في كتالوجات قابلة للمشاركة."
   create-push-notifications-and-promotional-campaigns: "أنشئ إشعارات فورية وحملات ترويجية."
+
+column:
+  source: المصدر
+  provider: المزود
+  trip: الرحلة
+  station: المحطة
+  liters: اللترات
+  amount: المبلغ
+  fuel-report: تقرير الوقود
+  date: التاريخ
+  card-internal: البطاقة / داخلي
+
+menu:
+  resources-hub: مركز الموارد
+  maintenance-hub: مركز الصيانة
+  dashboard: لوحة التحكم
+  settings-hub: مركز الإعدادات
+
+fleet-ops:
+  search-placeholder: البحث في عمليات الأسطول...
+  fuel-transactions:
+    review-details: عرض التفاصيل
+    open-fuel-report: فتح تقرير الوقود
+    match-to-vehicle: مطابقة مع مركبة
+    match-to-order: مطابقة مع طلب
+    reprocess-rematch: إعادة معالجة / إعادة مطابقة
+    ignore-transaction: تجاهل المعاملة
+    mark-reviewed: وضع علامة تمت المراجعة
+  component:
+    issue-form-panel:
+      reopen-issue: إعادة فتح المشكلة
+
+storefront:
+  sidebar:
+    push-notifications: الإشعارات الفورية
+  products:
+    all-products: كل المنتجات
+    category-products: "منتجات {category}"
+  widgets:
+    no-recent-customers: لا يوجد عملاء جدد بعد.
+  catalogs:
+    index:
+      new-catalog: كتالوج جديد
+      edit-catalog: تعديل الكتالوج
+  food-trucks:
+    index:
+      new-food-truck: شاحنة طعام جديدة
+      edit-food-truck: تعديل شاحنة الطعام
+
+iam:
+  common:
+    toggle-selected: تبديل المحدد
+  components:
+    widget:
+      dashboard:
+        metric:
+          policy-surface:
+            total: الإجمالي
+            org-managed: مُدارة من المنشأة
+            fleetbase: النظام
+          privileged-access:
+            admin-roles: أدوار المسؤولين
+            wildcard-policies: سياسات شاملة
+            direct-grants: منح مباشرة
+        kpi:
+          mfa-coverage-unavailable: يُعرض الفرض على مستوى المنشأة
+
+ledger:
+  cash-flow:
+    operating: تشغيلي
+    financing: تمويلي
+    investing: استثماري
+    net-cash-flow: صافي التدفق النقدي
+  owner-types:
+    company: شركة
+    driver: سائق
+    customer: عميل
+    user: مستخدم
+  wallet-names:
+    personal-wallet: المحفظة الشخصية
+    refund-reserve: احتياطي الاسترداد
+    payout-reserve: احتياطي المدفوعات
+    revenue-wallet: محفظة الإيرادات
+    operating-wallet: محفظة التشغيل
+
+status-label:
+  active: نشط
+  inactive: غير نشط
+  frozen: مجمّد
+  suspended: موقوف
+  draft: مسودة
+  published: منشور
+  pending: قيد الانتظار
+  pending-approval: بانتظار الموافقة
+  approved: معتمد
+  rejected: مرفوض
+  submitted: مُرسل
+  in-review: قيد المراجعة
+  revised: مُنقّح
+  confirmed: مؤكد
+  processed: معالج
+  archived: مؤرشف
+  cancelled: ملغى
+  canceled: ملغى
+  open: مفتوح
+  closed: مغلق
+  resolved: تم الحل
+  in-progress: قيد التنفيذ
+  completed: مكتمل
+  imported: مستورد
+  matched: مطابق
+  unmatched: غير مطابق
+  reviewed: تمت المراجعة
+  ignored: متجاهل
+  duplicate: مكرر
+  error: خطأ
+  expired: منتهي الصلاحية
+  enabled: مفعّل
+  disabled: معطّل
+  created: تم الإنشاء
+  dispatched: تم الإرسال
+
+series-label:
+  requests: الطلبات
+  success: النجاح
+  errors: الأخطاء
+  sent: المرسلة
+  succeeded: الناجحة
+  failed: الفاشلة
+  revenue: الإيرادات
+  expenses: المصروفات
+
+managed-type:
+  flb-managed: مُدارة من النظام
+  fleetbase-managed: مُدارة من النظام
+  org-managed: مُدارة من المنشأة
+
+empty-state:
+  add-your-first-contact: أضف أول جهة اتصال
+  add-your-first-driver: أضف أول سائق
+  add-your-first-place: أضف أول مكان
+  add-your-first-vehicle: أضف أول مركبة
+  add-your-first-vendor: أضف أول مورد
+  adjust-the-search-or-filters-to-find-another-contact: عدّل البحث أو عوامل التصفية للعثور على جهة اتصال أخرى.
+  adjust-the-search-or-filters-to-find-another-driver: عدّل البحث أو عوامل التصفية للعثور على سائق آخر.
+  adjust-the-search-or-filters-to-find-another-fleet: عدّل البحث أو عوامل التصفية للعثور على أسطول آخر.
+  adjust-the-search-or-filters-to-find-another-fuel-report: عدّل البحث أو عوامل التصفية للعثور على تقرير وقود آخر.
+  adjust-the-search-or-filters-to-find-another-saved-location: عدّل البحث أو عوامل التصفية للعثور على موقع محفوظ آخر.
+  adjust-the-search-or-filters-to-find-another-vehicle: عدّل البحث أو عوامل التصفية للعثور على مركبة أخرى.
+  adjust-the-search-or-filters-to-find-another-vendor: عدّل البحث أو عوامل التصفية للعثور على مورد آخر.
+  adjust-the-search-or-filters-to-review-other-imported-transactions: عدّل البحث أو عوامل التصفية لمراجعة معاملات مستوردة أخرى.
+  clear-the-search-or-filters-to-review-other-reported-issues: امسح البحث أو عوامل التصفية لمراجعة مشكلات أخرى تم الإبلاغ عنها.
+  contacts-guide: دليل جهات الاتصال
+  contacts-keep-customer-vendor-and-internal-stakeholder-details-ready-for-orders-and-communication: تحفظ جهات الاتصال بيانات العملاء والموردين والأطراف الداخلية جاهزة للطلبات والتواصل.
+  create-fuel-reports-to-track-vehicle-fuel-usage-cost-and-supporting-transaction-records: أنشئ تقارير وقود لتتبع استهلاك وقود المركبات وتكلفته وسجلات المعاملات الداعمة.
+  create-your-first-fleet: أنشئ أول أسطول
+  driver-guide: دليل السائقين
+  drivers-guide: دليل السائقين
+  drivers-power-dispatching-live-fleet-visibility-assignments-and-delivery-activity: السائقون هم أساس الإرسال ورؤية الأسطول المباشرة والتعيينات ونشاط التوصيل.
+  fleet-guide: دليل الأساطيل
+  fleets-guide: دليل الأساطيل
+  fleets-help-group-vehicles-and-drivers-for-dispatching-reporting-and-operational-coverage: تساعد الأساطيل في تجميع المركبات والسائقين لأغراض الإرسال والتقارير والتغطية التشغيلية.
+  fuel-reports-guide: دليل تقارير الوقود
+  import: استيراد
+  imported-fuel-card-bills-and-provider-purchase-records-appear-here-after-provider-syncs-complete: تظهر فواتير بطاقات الوقود وسجلات الشراء المستوردة من المزودين هنا بعد اكتمال المزامنة.
+  issues-guide: دليل المشكلات
+  new-contact: جهة اتصال جديدة
+  new-driver: سائق جديد
+  new-fleet: أسطول جديد
+  new-fuel-report: تقرير وقود جديد
+  new-issue: مشكلة جديدة
+  new-place: مكان جديد
+  new-vehicle: مركبة جديدة
+  new-vendor: مورد جديد
+  no-contacts-match-your-filters: لا توجد جهات اتصال مطابقة لعوامل التصفية
+  no-drivers-match-your-search: لا يوجد سائقون مطابقون لبحثك
+  no-fleets-match-your-filters: لا توجد أساطيل مطابقة لعوامل التصفية
+  no-fuel-reports-match-your-filters: لا توجد تقارير وقود مطابقة لعوامل التصفية
+  no-fuel-reports-yet: لا توجد تقارير وقود بعد
+  no-fuel-transactions: لا توجد معاملات وقود
+  no-issues-match-your-filters: لا توجد مشكلات مطابقة لعوامل التصفية
+  no-issues-reported: لا توجد مشكلات مُبلغ عنها
+  no-places-match-your-filters: لا توجد أماكن مطابقة لعوامل التصفية
+  no-transactions-match-your-filters: لا توجد معاملات مطابقة لعوامل التصفية
+  no-vehicles-match-your-filters: لا توجد مركبات مطابقة لعوامل التصفية
+  no-vendors-match-your-filters: لا يوجد موردون مطابقون لعوامل التصفية
+  places-guide: دليل الأماكن
+  places-keep-frequent-pickup-dropoff-facility-and-service-locations-ready-for-orders-and-routing: تحفظ الأماكن مواقع الاستلام والتسليم والمنشآت والخدمة المتكررة جاهزة للطلبات والتوجيه.
+  refresh: تحديث
+  track-vehicle-driver-facility-and-service-issues-here-so-follow-up-work-stays-visible: تتبع مشكلات المركبات والسائقين والمنشآت والخدمة هنا لتبقى أعمال المتابعة مرئية.
+  vehicle-guide: دليل المركبات
+  vehicles-connect-assignments-live-tracking-fleet-capacity-maintenance-and-compliance-history: تربط المركبات بين التعيينات والتتبع المباشر وسعة الأسطول والصيانة وسجل الامتثال.
+  vehicles-guide: دليل المركبات
+  vendor-guide: دليل الموردين
+  vendors-guide: دليل الموردين
+  vendors-let-your-team-manage-external-carriers-service-providers-and-operational-partners: تتيح جهات الموردين لفريقك إدارة الناقلين الخارجيين ومزودي الخدمات والشركاء التشغيليين.
+  no-unmatched-fuel-transactions: لا توجد معاملات وقود غير مطابقة
+  no-transactions-imported-for-this-integration: لا توجد معاملات مستوردة لهذا التكامل
+  no-fuel-transactions-imported-yet: لم يتم استيراد معاملات وقود بعد
+  fleet-ops-did-not-find-imported-provider-bills-that-still-need-vehicle-or-trip-matching: لم يعثر النظام على فواتير مزودين مستوردة لا تزال بحاجة إلى مطابقة مع مركبة أو رحلة.
+  run-a-sync-from-the-fuel-integration-detail-page-to-import-provider-bills-into-this-ledger: شغّل مزامنة من صفحة تفاصيل تكامل الوقود لاستيراد فواتير المزود إلى هذا السجل.
+  connect-petroapp-or-another-fuel-integration-then-run-a-transaction-sync-imported-provider-bills-appear-here-before-linked-fuel-reports-are-created: اربط PetroApp أو أي تكامل وقود آخر ثم شغّل مزامنة المعاملات. تظهر فواتير المزود المستوردة هنا قبل إنشاء تقارير الوقود المرتبطة.
+  open-fuel-integrations: فتح تكاملات الوقود
+
+fleetops-hub:
+  resources: الموارد
+  resources-hub: مركز الموارد
+  manage-the-people-vehicles-places-partners-and-operating-records-that-keep-dispatch-grounded: إدارة الأشخاص والمركبات والأماكن والشركاء والسجلات التشغيلية الداعمة لعمليات الإرسال.
+  action-queue: قائمة الإجراءات
+  prioritized-from-current-resource-readiness: مرتبة حسب أولوية جاهزية الموارد الحالية.
+  guides: الأدلة
+  read-the-guide-before-changing-resource-setup: اقرأ الدليل قبل تغيير إعداد الموارد.
+  read-the-guide-on: اقرأ الدليل حول
+  maintenance: الصيانة
+  maintenance-hub: مركز الصيانة
+  plan-recurring-service-coordinate-work-orders-and-keep-assets-ready-for-daily-operations: خطط للخدمة الدورية ونسّق أوامر العمل وأبقِ الأصول جاهزة للعمليات اليومية.
+  signals-from-schedules-work-orders-parts-and-equipment: إشارات من الجداول وأوامر العمل وقطع الغيار والمعدات.
+  read-the-guide-before-changing-maintenance-workflows: اقرأ الدليل قبل تغيير مسارات عمل الصيانة.
+  open: فتح
+  fuel-transaction-ledger: سجل معاملات الوقود
+  imported-fuel-card-bills-and-provider-purchase-records-are-reviewed-here-before-during-and-after-they-match-to-vehicles-trips-and-linked-fuel-reports: تُراجع هنا فواتير بطاقات الوقود وسجلات الشراء المستوردة من المزودين قبل مطابقتها مع المركبات والرحلات وتقارير الوقود المرتبطة وأثناءها وبعدها.
+  drivers: السائقون
+  vehicles: المركبات
+  open-issues: المشكلات المفتوحة
+  fuel-records: سجلات الوقود
+  driver-profiles-available-for-dispatch: ملفات السائقين متاحة للإرسال.
+  add-driver-profiles-before-dispatching-work: أضف ملفات السائقين قبل إرسال العمل.
+  vehicles-ready-for-assignment-and-tracking: المركبات جاهزة للتعيين والتتبع.
+  add-vehicles-so-dispatch-has-assignable-assets: أضف مركبات ليتوفر للإرسال أصول قابلة للتعيين.
+  issues-need-review-before-they-affect-service-quality: تحتاج المشكلات إلى مراجعة قبل أن تؤثر على جودة الخدمة.
+  no-open-issues-are-visible-right-now: لا توجد مشكلات مفتوحة حالياً.
+  fuel-activity-is-available-for-review: نشاط الوقود متاح للمراجعة.
+  fuel-records-will-appear-as-reports-or-transactions-arrive: ستظهر سجلات الوقود عند وصول التقارير أو المعاملات.
+  manage-drivers: إدارة السائقين
+  track-vehicles: تتبع المركبات
+  review-issues: مراجعة المشكلات
+  review-fuel-records: مراجعة سجلات الوقود
+  loading-resource-readiness: جارٍ تحميل جاهزية الموارد.
+  loading-fleet-asset-coverage: جارٍ تحميل تغطية أصول الأسطول.
+  loading-exception-health: جارٍ تحميل حالة الاستثناءات.
+  loading-fuel-activity: جارٍ تحميل نشاط الوقود.
+  people-and-assets: الأشخاص والأصول
+  keep-dispatchable-drivers-vehicles-and-fleet-groupings-ready-for-live-work: أبقِ السائقين والمركبات وتجميعات الأسطول القابلة للإرسال جاهزة للعمل المباشر.
+  operating-network: شبكة التشغيل
+  maintain-the-partners-contacts-and-places-used-while-creating-and-dispatching-orders: حافظ على الشركاء وجهات الاتصال والأماكن المستخدمة أثناء إنشاء الطلبات وإرسالها.
+  fuel-and-exceptions: الوقود والاستثناءات
+  review-fuel-activity-and-operational-issues-before-they-affect-service-quality: راجع نشاط الوقود والمشكلات التشغيلية قبل أن تؤثر على جودة الخدمة.
+  fleets: الأساطيل
+  vendors: الموردون
+  contacts: جهات الاتصال
+  places: الأماكن
+  fuel-reports: تقارير الوقود
+  fuel-transactions: معاملات الوقود
+  issues: المشكلات
+  manage-driver-profiles-assignments-and-schedules: إدارة ملفات السائقين والتعيينات والجداول.
+  track-vehicles-device-links-equipment-and-service-context: تتبع المركبات وارتباطات الأجهزة والمعدات وسياق الخدمة.
+  group-drivers-and-vehicles-by-team-region-or-service-type: تجميع السائقين والمركبات حسب الفريق أو المنطقة أو نوع الخدمة.
+  service-partners-connected-to-operational-work: شركاء الخدمة المرتبطون بالعمل التشغيلي.
+  customer-and-contact-records-for-order-workflows: سجلات العملاء وجهات الاتصال لمسارات عمل الطلبات.
+  reusable-locations-zones-and-address-context: مواقع ومناطق وسياق عناوين قابلة لإعادة الاستخدام.
+  review-reported-fuel-activity-and-costs: مراجعة نشاط الوقود المبلغ عنه وتكاليفه.
+  inspect-transaction-level-fueling-data-and-matching-context: فحص بيانات التزود بالوقود على مستوى المعاملة وسياق المطابقة.
+  track-incidents-service-issues-and-follow-up-work: تتبع الحوادث ومشكلات الخدمة وأعمال المتابعة.
+  add-driver-profiles: إضافة ملفات السائقين
+  drivers-are-required-before-dispatch-can-assign-live-orders: السائقون مطلوبون قبل أن يتمكن الإرسال من تعيين الطلبات المباشرة.
+  add-vehicles: إضافة مركبات
+  vehicles-make-assignment-tracking-and-service-context-usable: تجعل المركبات التعيين والتتبع وسياق الخدمة قابلة للاستخدام.
+  add-operating-places: إضافة أماكن التشغيل
+  places-keep-recurring-pickup-dropoff-facility-and-service-locations-ready: تُبقي الأماكن مواقع الاستلام والتسليم والمنشآت والخدمة المتكررة جاهزة.
+  add-vendors-for-service-work: إضافة موردين لأعمال الخدمة
+  vendors-connect-maintenance-service-work-and-operating-partners-to-resources: يربط الموردون الصيانة وأعمال الخدمة وشركاء التشغيل بالموارد.
+  add-operating-contacts: إضافة جهات اتصال التشغيل
+  contacts-connect-customers-partners-and-service-people-to-order-workflows: تربط جهات الاتصال العملاء والشركاء وموظفي الخدمة بمسارات عمل الطلبات.
+  open-fuel-records: فتح سجلات الوقود
+  fuel-activity-will-appear-here-once-reports-or-transactions-are-captured: سيظهر نشاط الوقود هنا بمجرد تسجيل التقارير أو المعاملات.
+  create-fleet-groups: إنشاء مجموعات أسطول
+  group-active-drivers-and-vehicles-by-team-region-or-service-type: تجميع السائقين والمركبات النشطة حسب الفريق أو المنطقة أو نوع الخدمة.
+  core-resources-look-ready: الموارد الأساسية تبدو جاهزة
+  drivers-vehicles-issues-and-supporting-records-are-in-a-healthy-operating-posture: السائقون والمركبات والمشكلات والسجلات الداعمة في وضع تشغيلي سليم.
+  create-driver-profiles-app-access-assignment-context-and-operating-status: إنشاء ملفات السائقين والوصول للتطبيق وسياق التعيين وحالة التشغيل.
+  track-fleet-assets-assignment-readiness-and-vehicle-operating-details: تتبع أصول الأسطول وجاهزية التعيين وتفاصيل تشغيل المركبات.
+  group-drivers-and-vehicles-by-team-region-or-service-coverage: تجميع السائقين والمركبات حسب الفريق أو المنطقة أو تغطية الخدمة.
+  manage-people-and-organizations-used-across-orders-and-operational-records: إدارة الأشخاص والمنظمات المستخدمة عبر الطلبات والسجلات التشغيلية.
+  manage-reusable-pickup-dropoff-hub-and-facility-locations: إدارة مواقع الاستلام والتسليم والمراكز والمنشآت القابلة لإعادة الاستخدام.
+  track-incidents-service-exceptions-and-operational-follow-up: تتبع الحوادث واستثناءات الخدمة والمتابعة التشغيلية.
+  overdue-schedules: الجداول المتأخرة
+  recurring-service-needs-attention: الخدمة الدورية بحاجة إلى اهتمام.
+  no-recurring-service-is-overdue: لا توجد خدمة دورية متأخرة.
+  due-this-week: مستحقة هذا الأسبوع
+  maintenance-schedules-due-in-the-next-7-days: جداول الصيانة المستحقة خلال الأيام السبعة القادمة.
+  open-work-orders: أوامر العمل المفتوحة
+  active-work-needs-assignment-or-closure: العمل النشط بحاجة إلى تعيين أو إغلاق.
+  no-open-work-orders-right-now: لا توجد أوامر عمل مفتوحة حالياً.
+  low-stock-parts: قطع غيار منخفضة المخزون
+  parts-inventory-may-need-replenishment: قد يحتاج مخزون قطع الغيار إلى تجديد.
+  no-low-stock-parts-detected: لم يتم رصد قطع غيار منخفضة المخزون.
+  planning: التخطيط
+  schedule-recurring-service-before-work-turns-urgent: جدولة الخدمة الدورية قبل أن يصبح العمل عاجلاً.
+  schedules: الجداول
+  recurring-maintenance-intervals-and-service-windows: فترات الصيانة الدورية ونوافذ الخدمة.
+  work-orders: أوامر العمل
+  repair-tasks-assignments-vendor-work-and-closure: مهام الإصلاح والتعيينات وأعمال الموردين والإغلاق.
+  records: السجلات
+  keep-the-maintenance-history-and-serviceable-asset-catalog-current: حافظ على تحديث سجل الصيانة ودليل الأصول القابلة للخدمة.
+  maintenances: سجلات الصيانة
+  maintenance-records-and-service-history-by-asset: سجلات الصيانة وتاريخ الخدمة حسب الأصل.
+  equipment: المعدات
+  assigned-equipment-and-serviceable-operational-assets: المعدات المعيّنة والأصول التشغيلية القابلة للخدمة.
+  parts: قطع الغيار
+  parts-inventory-visibility-for-repair-planning: رؤية مخزون قطع الغيار لتخطيط الإصلاح.
+  review-overdue-schedules: مراجعة الجداول المتأخرة
+  close-overdue-work-orders: إغلاق أوامر العمل المتأخرة
+  prioritize-critical-maintenance: إعطاء الأولوية للصيانة الحرجة
+  prepare-upcoming-service: التحضير للخدمة القادمة
+  prepare-upcoming-maintenance: التحضير للصيانة القادمة
+  no-open-work-orders: لا توجد أوامر عمل مفتوحة
+  create-work-orders-when-scheduled-service-or-asset-issues-need-assignment: أنشئ أوامر عمل عندما تحتاج الخدمة المجدولة أو مشكلات الأصول إلى تعيين.
+  replenish-low-stock-parts: تجديد قطع الغيار منخفضة المخزون
+  add-serviceable-equipment: إضافة معدات قابلة للخدمة
+  equipment-records-make-maintenance-planning-more-complete: تجعل سجلات المعدات تخطيط الصيانة أكثر اكتمالاً.
+  review-vehicle-and-driver-issues: مراجعة مشكلات المركبات والسائقين
+  review-open-issues: مراجعة المشكلات المفتوحة
+  review-open-work-orders: مراجعة أوامر العمل المفتوحة
+  review-unmatched-fuel-transactions: مراجعة معاملات الوقود غير المطابقة
+  assign-vehicles-to-drivers: تعيين مركبات للسائقين
+  assign-drivers-to-vehicles: تعيين سائقين للمركبات
+  attach-devices-to-vehicles: إرفاق أجهزة بالمركبات
+  plan-recurring-service-windows-and-convert-due-schedules-into-work-orders: خطط لنوافذ الخدمة الدورية وحوّل الجداول المستحقة إلى أوامر عمل.
+  coordinate-assigned-maintenance-work-vendors-due-dates-and-completion: نسّق أعمال الصيانة المعيّنة والموردين وتواريخ الاستحقاق والإنجاز.
+  track-serviceable-equipment-that-participates-in-maintenance-operations: تتبع المعدات القابلة للخدمة المشاركة في عمليات الصيانة.
+  manage-parts-inventory-and-restocking-signals-used-by-maintenance-teams: إدارة مخزون قطع الغيار وإشارات إعادة التخزين المستخدمة من فرق الصيانة.
+
+storefront-label:
+  checkout-add-ons: إضافات الدفع
+  reusable-modifier-groups-customers-can-select-during-checkout: مجموعات خيارات قابلة لإعادة الاستخدام يمكن للعملاء اختيارها أثناء الدفع.
+  no-add-on-groups: لا توجد مجموعات إضافات
+  create-reusable-checkout-modifiers-like-toppings-sides-or-preparation-choices: أنشئ خيارات دفع قابلة لإعادة الاستخدام مثل الإضافات والأطباق الجانبية وخيارات التحضير.
+  no-add-on-groups-selected: لم يتم اختيار مجموعات إضافات.
+  catalog-name: اسم الكتالوج
+  catalog-description: وصف الكتالوج
+  catalog-status: حالة الكتالوج
+  select-catalog-status: اختر حالة الكتالوج
+  product-catalog: كتالوج المنتجات
+  add-catalog-category: إضافة فئة كتالوج
+  collapse-or-expand-category-products: طي أو توسيع منتجات الفئة
+  assign-food-truck-vehicle: تعيين مركبة شاحنة الطعام
+  service-area: منطقة الخدمة
+  assign-food-truck-to-service-area: تعيين شاحنة الطعام لمنطقة خدمة
+  zone: النطاق
+  assign-food-truck-to-zone: تعيين شاحنة الطعام لنطاق
+  food-truck-status: حالة شاحنة الطعام
+  select-food-truck-status: اختر حالة شاحنة الطعام
+
+seeded-role:
+  storefront-administrator: مسؤول واجهة المتجر
+  customer-service: خدمة العملاء
+  inventory-manager: مدير المخزون
+  quality-assurance: ضمان الجودة
+  extension-admin: مسؤول الإضافات
+  extension-auditor: مدقق الإضافات
+  extension-developer: مطور الإضافات
+  accountant: محاسب
+  payments-operator: مشغل المدفوعات
+  ledger-administrator: مسؤول دفتر الأستاذ
+  finance-viewer: مطلع مالي
+  billing-specialist: أخصائي الفوترة
+  fleet-supervisor: مشرف الأسطول
+  fleet-ops-contact: جهة اتصال عمليات الأسطول
+  fleet-ops-customer: عميل عمليات الأسطول
+  driver-coordinator: منسق السائقين
+  maintenance-technician: فني الصيانة
+  navigator-app-manager: مدير تطبيق نافيجيتور
+  operations-administrator: مسؤول العمليات
+  operations-manager: مدير العمليات
+  driver: سائق
+  service-coordinator: منسق الخدمة
+  iam-administrator: مسؤول إدارة الهوية
+  iam-policy-manager: مدير سياسات إدارة الهوية
+  iam-user-manager: مدير مستخدمي إدارة الهوية
+  fleetbase-developer: مطور المنصة
+  administrator: مسؤول
+
+seeded-role-desc:
+  role-for-accountants-who-manage-the-chart-of-accounts-journal-entries-and-financial-reports: دور للمحاسبين الذين يديرون دليل الحسابات وقيود اليومية والتقارير المالية.
+  role-for-full-administrator-access-to-an-organization: دور لوصول المسؤول الكامل إلى المنشأة.
+  role-for-staff-responsible-for-creating-and-managing-invoices-and-following-up-on-payments: دور للموظفين المسؤولين عن إنشاء الفواتير وإدارتها ومتابعة المدفوعات.
+  role-for-providing-support-to-customers: دور لتقديم الدعم للعملاء.
+  role-for-drivers-with-the-necessary-access-to-manage-their-daily-tasks-including-order-management-and-vehicle-assignment: دور للسائقين مع الوصول اللازم لإدارة مهامهم اليومية بما فيها إدارة الطلبات وتعيين المركبات.
+  role-responsible-for-coordinating-drivers-vehicles-and-orders: دور مسؤول عن تنسيق السائقين والمركبات والطلبات.
+  role-for-full-control-of-extensions: دور للتحكم الكامل في الإضافات.
+  role-for-auditing-and-creating-reports-for-extensions: دور لتدقيق الإضافات وإنشاء تقارير عنها.
+  role-for-developing-and-publishing-extensions: دور لتطوير الإضافات ونشرها.
+  read-only-role-for-stakeholders-who-need-visibility-into-financial-data-without-the-ability-to-make-changes: دور للقراءة فقط للأطراف المعنية التي تحتاج إلى الاطلاع على البيانات المالية دون القدرة على التغيير.
+  role-with-responsibilities-focused-on-fleet-and-driver-management: دور بمسؤوليات تركز على إدارة الأسطول والسائقين.
+  role-for-contacts: دور لجهات الاتصال.
+  role-for-customers-with-the-necessary-access-to-view-their-orders: دور للعملاء مع الوصول اللازم لعرض طلباتهم.
+  role-for-developers-to-create-api-credentials-webhooks-and-view-real-time-events-and-logs: دور للمطورين لإنشاء بيانات اعتماد API وخطافات الويب وعرض الأحداث والسجلات الفورية.
+  role-for-managing-all-users-roles-groups-and-policies: دور لإدارة جميع المستخدمين والأدوار والمجموعات والسياسات.
+  role-for-managing-users-roles-and-groups: دور لإدارة المستخدمين والأدوار والمجموعات.
+  role-for-managing-all-products: دور لإدارة جميع المنتجات.
+  full-administrative-access-to-all-ledger-billing-payments-accounting-and-settings: وصول إداري كامل إلى جميع أقسام الفوترة والمدفوعات والمحاسبة والإعدادات في دفتر الأستاذ.
+  role-for-technicians-responsible-for-managing-maintenance-records-work-orders-equipment-and-parts-inventory: دور للفنيين المسؤولين عن إدارة سجلات الصيانة وأوامر العمل والمعدات ومخزون قطع الغيار.
+  role-responsible-for-managing-the-navigator-mobile-app-settings: دور مسؤول عن إدارة إعدادات تطبيق نافيجيتور للجوال.
+  role-with-complete-administrative-access-to-all-operational-aspects-of-fleet-ops: دور بوصول إداري كامل إلى جميع الجوانب التشغيلية لعمليات الأسطول.
+  role-responsible-for-overseeing-all-operations-including-dispatch-fleet-management-and-order-coordination: دور مسؤول عن الإشراف على جميع العمليات بما فيها الإرسال وإدارة الأسطول وتنسيق الطلبات.
+  role-for-staff-who-process-payments-manage-gateways-and-handle-wallet-operations: دور للموظفين الذين يعالجون المدفوعات ويديرون البوابات ويتولون عمليات المحافظ.
+  role-for-testing-extensions: دور لاختبار الإضافات.
+  role-dedicated-to-managing-service-rates-and-zones: دور مخصص لإدارة أسعار الخدمة والنطاقات.
+  role-for-managing-all-of-storefront-resources: دور لإدارة جميع موارد واجهة المتجر.
+
+seeded-policy-desc:
+  policy-for-managing-users-roles-and-groups: سياسة لإدارة المستخدمين والأدوار والمجموعات.
+  policy-for-read-only-access-to-fleetops: سياسة للوصول للقراءة فقط إلى عمليات الأسطول.
+  policy-for-managing-zones-and-service-areas: سياسة لإدارة النطاقات ومناطق الخدمة.
+  policy-for-managing-vehicles-drivers-and-fleets: سياسة لإدارة المركبات والسائقين والأساطيل.
+  policy-for-managing-settings-related-to-the-navigator-mobile-app-used-by-drivers: سياسة لإدارة الإعدادات المتعلقة بتطبيق نافيجيتور للجوال المستخدم من السائقين.
+  policy-for-dispatching-and-managing-orders: سياسة لإرسال الطلبات وإدارتها.
+  policy-for-viewing-all-financial-reports-and-the-accounting-dashboard: سياسة لعرض جميع التقارير المالية ولوحة المحاسبة.
+  policy-for-read-only-access-to-iam: سياسة للوصول للقراءة فقط إلى إدارة الهوية.
+  policy-for-drivers-to-manage-their-assigned-tasks-and-access-necessary-information: سياسة للسائقين لإدارة مهامهم المعيّنة والوصول إلى المعلومات اللازمة.
+  policy-for-managing-networks: سياسة لإدارة الشبكات.
+  policy-for-managing-wallets-including-top-ups-transfers-payouts-and-freezing: سياسة لإدارة المحافظ بما فيها الشحن والتحويلات والمدفوعات والتجميد.
+  policy-for-managing-order: سياسة لإدارة الطلبات.
+  policy-for-managing-payment-gateways-processing-charges-and-refunds-and-reviewing-transactions: سياسة لإدارة بوابات الدفع ومعالجة الرسوم والمبالغ المستردة ومراجعة المعاملات.
+  policy-for-creating-sending-and-managing-invoices-and-invoice-templates: سياسة لإنشاء الفواتير وقوالبها وإرسالها وإدارتها.
+  policy-for-read-only-access-to-registrybridge: سياسة للوصول للقراءة فقط إلى جسر السجل.
+  policy-for-coordinating-and-managing-orders-without-full-dispatch-capabilities: سياسة لتنسيق الطلبات وإدارتها دون صلاحيات الإرسال الكاملة.
+  policy-for-monitoring-activities-issues-and-fuel-reports-within-the-fleet-operations: سياسة لمراقبة الأنشطة والمشكلات وتقارير الوقود ضمن عمليات الأسطول.
+  policy-for-read-only-access-to-developers: سياسة للوصول للقراءة فقط إلى المطورين.
+  policy-for-read-only-access-to-all-ledger-resources: سياسة للوصول للقراءة فقط إلى جميع موارد دفتر الأستاذ.
+  policy-for-developing-and-publishing-extensions: سياسة لتطوير الإضافات ونشرها.
+  policy-for-read-only-access-to-storefront: سياسة للوصول للقراءة فقط إلى واجهة المتجر.
+  policy-for-view-and-read-access-to-development-resources: سياسة لعرض موارد التطوير وقراءتها.
+  policy-for-managing-the-chart-of-accounts-and-journal-entries: سياسة لإدارة دليل الحسابات وقيود اليومية.
+  policy-for-full-access-to-iam: سياسة للوصول الكامل إلى إدارة الهوية.
+  policy-for-managing-products-and-categories: سياسة لإدارة المنتجات والفئات.
+  policy-for-managing-ledger-invoice-payment-and-accounting-settings: سياسة لإدارة إعدادات الفواتير والمدفوعات والمحاسبة في دفتر الأستاذ.
+  policy-for-managing-policies-and-roles: سياسة لإدارة السياسات والأدوار.
+  policy-for-full-access-to-fleetops: سياسة للوصول الكامل إلى عمليات الأسطول.
+  policy-for-full-access-to-storefront: سياسة للوصول الكامل إلى واجهة المتجر.
+  policy-for-developers-to-create-api-credentials-webhooks-and-view-logs: سياسة للمطورين لإنشاء بيانات اعتماد API وخطافات الويب وعرض السجلات.
+  policy-for-managing-service-rates-including-importing-rate-information: سياسة لإدارة أسعار الخدمة بما فيها استيراد بيانات الأسعار.
+  policy-for-managing-maintenance-records-work-orders-equipment-and-parts: سياسة لإدارة سجلات الصيانة وأوامر العمل والمعدات وقطع الغيار.
+  policy-for-full-access-to-developers: سياسة للوصول الكامل إلى المطورين.
+  policy-for-providing-support-to-customers: سياسة لتقديم الدعم للعملاء.
+  policy-for-managing-finance-and-accounting-for-extensions: سياسة لإدارة الشؤون المالية والمحاسبة للإضافات.
+  policy-for-full-access-to-ledger: سياسة للوصول الكامل إلى دفتر الأستاذ.
+  policy-to-provide-insight-for-marketing-extensions: سياسة لتوفير رؤى لتسويق الإضافات.
+  policy-for-full-access-to-registrybridge: سياسة للوصول الكامل إلى جسر السجل.
+  policy-for-full-access-to-fleetbase-extensions-and-resources: سياسة للوصول الكامل إلى إضافات المنصة ومواردها.
+  policy-for-managing-sales-reports-of-extensions: سياسة لإدارة تقارير مبيعات الإضافات.
+  policy-for-complete-management-of-extensions: سياسة للإدارة الكاملة للإضافات.

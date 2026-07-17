@@ -79,6 +79,34 @@ index 8931aa30ebb949b275f3e3ae394bdf03730f36ac..19552114d359c325fd3c384d2985b34d
          {{/if}}
      </div>
  </div>
+diff --git a/addon/components/widget/cash-flow-summary.js b/addon/components/widget/cash-flow-summary.js
+index 363d766ea19356e70098ec0fbeee5eb100714ded..25db078d2497f84661e49aed7f579d76cc351d20 100644
+--- a/addon/components/widget/cash-flow-summary.js
++++ b/addon/components/widget/cash-flow-summary.js
+@@ -6,6 +6,7 @@ import formatCurrency from '@fleetbase/ember-ui/utils/format-currency';
+ 
+ export default class WidgetCashFlowSummaryComponent extends Component {
+     @service fetch;
++    @service intl;
+     @service ledgerDashboard;
+ 
+     @tracked data = null;
+@@ -22,13 +23,13 @@ export default class WidgetCashFlowSummaryComponent extends Component {
+     }
+ 
+     get labels() {
+-        return ['Operating', 'Financing', 'Investing'];
++        return [this.intl.t('ledger.cash-flow.operating'), this.intl.t('ledger.cash-flow.financing'), this.intl.t('ledger.cash-flow.investing')];
+     }
+ 
+     get datasets() {
+         return [
+             {
+-                label: 'Net cash flow',
++                label: this.intl.t('ledger.cash-flow.net-cash-flow'),
+                 data: [this.data?.operating ?? 0, this.data?.financing ?? 0, this.data?.investing ?? 0],
+                 backgroundColor: ['rgba(5, 150, 105, 0.72)', 'rgba(59, 130, 246, 0.72)', 'rgba(245, 158, 11, 0.72)'],
+                 borderColor: ['#059669', '#2563eb', '#d97706'],
 diff --git a/addon/components/widget/invoice-status.hbs b/addon/components/widget/invoice-status.hbs
 index 253eeca95e2564f37a59931e186157eceaf3735c..3c41204538ab6db9872437263da654720ab8648b 100644
 --- a/addon/components/widget/invoice-status.hbs
@@ -321,6 +349,43 @@ index 1049319077b515c7731a54cda13ce21c53f6c886..4b15064c0574f2120c212e69d6da17e4
          {{/if}}
      </div>
  </div>
+diff --git a/addon/components/widget/revenue-trend.js b/addon/components/widget/revenue-trend.js
+index 6c73d476f83d3bf3a0dc6da80cf3f6b393330814..2a7c86830578c77f0ce9df3527c33763c6cab9d3 100644
+--- a/addon/components/widget/revenue-trend.js
++++ b/addon/components/widget/revenue-trend.js
+@@ -7,6 +7,7 @@ import getCurrency from '@fleetbase/ember-ui/utils/get-currency';
+ export default class WidgetRevenueTrendComponent extends Component {
+     @service fetch;
+     @service ledgerDashboard;
++    @service intl;
+ 
+     @tracked data = null;
+     @tracked error = null;
+@@ -43,10 +44,24 @@ export default class WidgetRevenueTrendComponent extends Component {
+         return precision > 0 ? 10 ** precision : 1;
+     }
+ 
++    localizeSeriesLabel(label) {
++        if (!label || typeof label !== 'string') {
++            return label;
++        }
++
++        const slug = label
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        const key = `series-label.${slug}`;
++        return slug && this.intl.exists(key) ? this.intl.t(key) : label;
++    }
++
+     get chartDatasets() {
+         return (
+             this.data?.datasets?.map((dataset) => ({
+                 ...dataset,
++                label: this.localizeSeriesLabel(dataset.label),
+                 data: dataset.data?.map((value) => this.normalizeMoneyValue(value)) ?? [],
+             })) ?? []
+         );
 diff --git a/addon/components/widget/wallet-balances.hbs b/addon/components/widget/wallet-balances.hbs
 index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e2c054623 100644
 --- a/addon/components/widget/wallet-balances.hbs
@@ -363,6 +428,55 @@ index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e
          {{/if}}
      </div>
  </div>
+diff --git a/addon/controllers/accounting/accounts/index.js b/addon/controllers/accounting/accounts/index.js
+index fba37a649411f3d912d20c1e1bbe251366a8499c..162b1bd16ca079ad6cce19ed2c98b4eb8c8414b2 100644
+--- a/addon/controllers/accounting/accounts/index.js
++++ b/addon/controllers/accounting/accounts/index.js
+@@ -50,6 +50,8 @@ export default class AccountingAccountsIndexController extends Controller {
+                 sticky: true,
+                 label: this.intl.t('column.name'),
+                 valuePath: 'name',
++                translationPrefix: 'ledger.account-names',
++                translationKeyPath: 'code',
+                 cellComponent: 'table/cell/anchor',
+                 action: this.accountActions.transition.view,
+                 resizable: true,
+@@ -72,6 +74,7 @@ export default class AccountingAccountsIndexController extends Controller {
+             {
+                 label: this.intl.t('column.type'),
+                 valuePath: 'type',
++                translationPrefix: 'ledger.general-ledger.types',
+                 humanize: true,
+                 resizable: true,
+                 sortable: true,
+@@ -81,11 +84,11 @@ export default class AccountingAccountsIndexController extends Controller {
+                 filterOptionLabel: 'label',
+                 filterOptionValue: 'value',
+                 filterOptions: [
+-                    { label: 'Asset', value: 'asset' },
+-                    { label: 'Liability', value: 'liability' },
+-                    { label: 'Equity', value: 'equity' },
+-                    { label: 'Revenue', value: 'revenue' },
+-                    { label: 'Expense', value: 'expense' },
++                    { label: this.intl.t('ledger.general-ledger.types.asset'), value: 'asset' },
++                    { label: this.intl.t('ledger.general-ledger.types.liability'), value: 'liability' },
++                    { label: this.intl.t('ledger.general-ledger.types.equity'), value: 'equity' },
++                    { label: this.intl.t('ledger.general-ledger.types.revenue'), value: 'revenue' },
++                    { label: this.intl.t('ledger.general-ledger.types.expense'), value: 'expense' },
+                 ],
+             },
+             {
+@@ -114,8 +117,8 @@ export default class AccountingAccountsIndexController extends Controller {
+                 filterParam: 'status',
+                 filterComponent: 'filter/select',
+                 filterOptions: [
+-                    { label: 'Active', value: 'active' },
+-                    { label: 'Inactive', value: 'inactive' },
++                    { label: this.intl.t('status-label.active'), value: 'active' },
++                    { label: this.intl.t('status-label.inactive'), value: 'inactive' },
+                 ],
+             },
+         ];
 diff --git a/addon/controllers/accounting/general-ledger.js b/addon/controllers/accounting/general-ledger.js
 index 8607e44de909c4db645916012636b2512cfe8715..3621c4d5f18b417c2c99add6f7989c0631780088 100644
 --- a/addon/controllers/accounting/general-ledger.js
@@ -595,6 +709,56 @@ index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2
                          description: 'Configure accounting automation and posting behavior.',
                          icon: 'calculator',
                          route: 'console.ledger.settings.accounting',
+diff --git a/addon/controllers/payments/wallets/index.js b/addon/controllers/payments/wallets/index.js
+index 2b398196f1569f5148f64a7c72e9a356e91ff673..8466cdaed2c3f6a477cf3f777e80ce8694e34fd0 100644
+--- a/addon/controllers/payments/wallets/index.js
++++ b/addon/controllers/payments/wallets/index.js
+@@ -65,6 +65,7 @@ export default class PaymentsWalletsIndexController extends Controller {
+             {
+                 label: this.intl.t('column.name'),
+                 valuePath: 'name',
++                translationPrefix: 'ledger.wallet-names',
+                 cellComponent: 'table/cell/anchor',
+                 action: this.walletActions.transition.view,
+                 width: 160,
+@@ -77,6 +78,7 @@ export default class PaymentsWalletsIndexController extends Controller {
+             {
+                 label: this.intl.t('column.type'),
+                 valuePath: 'type',
++                translationPrefix: 'ledger.owner-types',
+                 cellComponent: 'table/cell/base',
+                 humanize: true,
+                 width: 110,
+@@ -88,10 +90,10 @@ export default class PaymentsWalletsIndexController extends Controller {
+                 filterOptionLabel: 'label',
+                 filterOptionValue: 'value',
+                 filterOptions: [
+-                    { label: 'Company', value: 'company' },
+-                    { label: 'Driver', value: 'driver' },
+-                    { label: 'Customer', value: 'customer' },
+-                    { label: 'User', value: 'user' },
++                    { label: this.intl.t('ledger.owner-types.company'), value: 'company' },
++                    { label: this.intl.t('ledger.owner-types.driver'), value: 'driver' },
++                    { label: this.intl.t('ledger.owner-types.customer'), value: 'customer' },
++                    { label: this.intl.t('ledger.owner-types.user'), value: 'user' },
+                 ],
+             },
+             {
+@@ -127,10 +129,10 @@ export default class PaymentsWalletsIndexController extends Controller {
+                 filterOptionLabel: 'label',
+                 filterOptionValue: 'value',
+                 filterOptions: [
+-                    { label: 'Active', value: 'active' },
+-                    { label: 'Inactive', value: 'inactive' },
+-                    { label: 'Frozen', value: 'frozen' },
+-                    { label: 'Suspended', value: 'suspended' },
++                    { label: this.intl.t('status-label.active'), value: 'active' },
++                    { label: this.intl.t('status-label.inactive'), value: 'inactive' },
++                    { label: this.intl.t('status-label.frozen'), value: 'frozen' },
++                    { label: this.intl.t('status-label.suspended'), value: 'suspended' },
+                 ],
+             },
+             {
 diff --git a/addon/controllers/reports/ar-aging.js b/addon/controllers/reports/ar-aging.js
 index 47739fc36502cca1973852a3dfb60a01faab24c2..6cb42db1f34e9c9d086607d7a37efe4cee4404a4 100644
 --- a/addon/controllers/reports/ar-aging.js

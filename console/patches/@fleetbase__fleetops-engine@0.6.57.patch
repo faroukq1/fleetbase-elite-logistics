@@ -165,6 +165,788 @@ index 59a0f1113a62ad8c8fd1a49779c6d746dbde9247..8de3e7a879ab9d81a857d9f83f7eedea
          ];
      }
  
+diff --git a/addon/components/layout/fleet-ops-sidebar.hbs b/addon/components/layout/fleet-ops-sidebar.hbs
+index c75bfd5aafe040641d4977ebfb33c402c68ed8b7..65f7599c80cf171ca59f663e901cf950b0e6a173 100644
+--- a/addon/components/layout/fleet-ops-sidebar.hbs
++++ b/addon/components/layout/fleet-ops-sidebar.hbs
+@@ -1,7 +1,7 @@
+ <Layout::Sidebar::Navigator
+     @items={{this.navigationItems}}
+     @primaryAction={{this.createOrderAction}}
+-    @searchPlaceholder="Search Fleet-Ops..."
++    @searchPlaceholder={{t "fleet-ops.search-placeholder"}}
+     @searchProvider={{this.searchNavigation}}
+     @shouldSyncInitialActiveParent={{this.shouldSyncInitialActiveParent}}
+     class="fleet-ops-sidebar-navigator"
+diff --git a/addon/components/layout/fleet-ops-sidebar.js b/addon/components/layout/fleet-ops-sidebar.js
+index f045dd88fb41d0e053f15b7588bdc473702bcf62..d1d77233d9e271e5109ae6c1693f1c1f92cb2d5d 100644
+--- a/addon/components/layout/fleet-ops-sidebar.js
++++ b/addon/components/layout/fleet-ops-sidebar.js
+@@ -135,7 +135,7 @@ export default class LayoutFleetOpsSidebarComponent extends Component {
+ 
+     get resourcesItems() {
+         return this.withRegistryItems('management', [
+-            this.createHubItem('Resources Hub', 'layer-group', 'management.index', 'fleet-ops list driver', 'fleet-ops see driver', [
++            this.createHubItem(this.intl.t('menu.resources-hub'), 'layer-group', 'management.index', 'fleet-ops list driver', 'fleet-ops see driver', [
+                 'resources hub',
+                 'resource dashboard',
+                 'resource readiness',
+@@ -154,7 +154,7 @@ export default class LayoutFleetOpsSidebarComponent extends Component {
+ 
+     get maintenanceItems() {
+         return this.withRegistryItems('maintenance', [
+-            this.createHubItem('Maintenance Hub', 'wrench', 'maintenance.index', 'fleet-ops list maintenance-schedule', 'fleet-ops see maintenance-schedule', [
++            this.createHubItem(this.intl.t('menu.maintenance-hub'), 'wrench', 'maintenance.index', 'fleet-ops list maintenance-schedule', 'fleet-ops see maintenance-schedule', [
+                 'maintenance hub',
+                 'service readiness',
+                 'maintenance control panel',
+@@ -179,14 +179,14 @@ export default class LayoutFleetOpsSidebarComponent extends Component {
+ 
+     get analyticsItems() {
+         return this.withRegistryItems('analytics', [
+-            this.createHubItem('Dashboard', 'chart-line', 'analytics.index', 'iam list report', 'fleet-ops see report', ['dashboard', 'fleetops dashboard', 'metrics']),
++            this.createHubItem(this.intl.t('menu.dashboard'), 'chart-line', 'analytics.index', 'iam list report', 'fleet-ops see report', ['dashboard', 'fleetops dashboard', 'metrics']),
+             this.createItem('menu.reports', 'file-import', 'analytics.reports', 'iam list report', 'fleet-ops see report'),
+         ]);
+     }
+ 
+     get settingsItems() {
+         return this.withRegistryItems('settings', [
+-            this.createHubItem('Settings Hub', 'sliders', 'settings.index', 'fleet-ops view navigator-settings', 'fleet-ops see navigator-settings', [
++            this.createHubItem(this.intl.t('menu.settings-hub'), 'sliders', 'settings.index', 'fleet-ops view navigator-settings', 'fleet-ops see navigator-settings', [
+                 'settings hub',
+                 'configuration dashboard',
+                 'setup focus',
+diff --git a/addon/controllers/management/contacts.js b/addon/controllers/management/contacts.js
+index 44cabb06d4bfaac489a133bcecd8fab1fd8e5ced..67dc45aba54c2b0458947392e71717b3e8997aef 100644
+--- a/addon/controllers/management/contacts.js
++++ b/addon/controllers/management/contacts.js
+@@ -5,16 +5,17 @@ import getCurrentNestedController from '@fleetbase/ember-core/utils/get-current-
+ 
+ export default class ManagementContactsController extends Controller {
+     @service hostRouter;
++    @service intl;
+ 
+     get tabs() {
+         return [
+             {
+                 route: 'management.contacts.index',
+-                label: 'Contacts',
++                label: this.intl.t('resource.contacts'),
+             },
+             {
+                 route: 'management.contacts.customers',
+-                label: 'Customers',
++                label: this.intl.t('resource.customers'),
+             },
+         ];
+     }
+diff --git a/addon/controllers/management/fuel-reports/index.js b/addon/controllers/management/fuel-reports/index.js
+index e2a0d56e803740dbddece599382015bbfed146bc..a24abd681039cb6750fac6a7053499fbfaf0f7d8 100644
+--- a/addon/controllers/management/fuel-reports/index.js
++++ b/addon/controllers/management/fuel-reports/index.js
+@@ -209,7 +209,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
+                 filterOptions: ['draft', 'pending-approval', 'approved', 'rejected', 'revised', 'submitted', 'in-review', 'confirmed', 'processed', 'archived', 'cancelled'],
+             },
+             {
+-                label: 'Source',
++                label: this.intl.t('column.source'),
+                 valuePath: 'source',
+                 resizable: true,
+                 sortable: false,
+@@ -218,7 +218,7 @@ export default class ManagementFuelReportsIndexController extends Controller {
+                 filterOptions: ['manual', 'import', 'fuel_provider'],
+             },
+             {
+-                label: 'Provider',
++                label: this.intl.t('column.provider'),
+                 valuePath: 'provider',
+                 resizable: true,
+                 sortable: false,
+diff --git a/addon/controllers/management/fuel-transactions/index.js b/addon/controllers/management/fuel-transactions/index.js
+index 78931aa01be1ab5c3a4feedaae5d73e82162cbaf..3177c7efdaa8939710bfd97d0a7d39490017eab6 100644
+--- a/addon/controllers/management/fuel-transactions/index.js
++++ b/addon/controllers/management/fuel-transactions/index.js
+@@ -9,6 +9,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+     @service fetch;
+     @service notifications;
+     @service hostRouter;
++    @service intl;
+ 
+     @tracked queryParams = ['page', 'limit', 'sort', 'query', 'provider', 'sync_status', 'vehicle', 'connection', 'transaction_at'];
+     @tracked page = 1;
+@@ -55,11 +56,11 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+             {
+                 icon: 'refresh',
+                 onClick: this.refresh,
+-                helpText: 'Refresh',
++                helpText: this.intl.t('common.refresh'),
+             },
+             {
+                 icon: 'gas-pump',
+-                text: 'Fuel Integrations',
++                text: this.intl.t('common.fuel-integrations'),
+                 onClick: () => this.hostRouter.transitionTo('console.fleet-ops.connectivity.fuel-providers.index'),
+             },
+         ];
+@@ -74,7 +75,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+ 
+         return [
+             {
+-                label: `Reprocess ${selected.length} selected`,
++                label: this.intl.t('common.reprocess-selected-count', { count: selected.length }),
+                 fn: () => selected.forEach((transaction) => this.reprocessTransaction.perform(transaction)),
+             },
+         ];
+@@ -84,7 +85,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+         return [
+             {
+                 sticky: true,
+-                label: 'Transaction',
++                label: this.intl.t('column.transaction'),
+                 valuePath: 'provider_transaction_id',
+                 cellComponent: 'click-to-copy',
+                 resizable: true,
+@@ -94,7 +95,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+                 filterComponent: 'filter/string',
+             },
+             {
+-                label: 'Provider',
++                label: this.intl.t('column.provider'),
+                 valuePath: 'provider',
+                 resizable: true,
+                 sortable: true,
+@@ -102,7 +103,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+                 filterComponent: 'filter/string',
+             },
+             {
+-                label: 'Status',
++                label: this.intl.t('column.status'),
+                 valuePath: 'sync_status',
+                 cellComponent: 'table/cell/status',
+                 resizable: true,
+@@ -112,7 +113,7 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+                 filterOptions: ['imported', 'matched', 'unmatched', 'reviewed', 'ignored', 'duplicate', 'error'],
+             },
+             {
+-                label: 'Vehicle',
++                label: this.intl.t('column.vehicle'),
+                 valuePath: 'vehicle_name',
+                 resizable: true,
+                 sortable: false,
+@@ -123,43 +124,43 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+                 modelNamePath: 'displayName',
+             },
+             {
+-                label: 'Card / Internal',
++                label: this.intl.t('column.card-internal'),
+                 valuePath: 'vehicle_card_id',
+                 resizable: true,
+             },
+             {
+-                label: 'Trip',
++                label: this.intl.t('column.trip'),
+                 valuePath: 'trip_number',
+                 resizable: true,
+                 hidden: true,
+             },
+             {
+-                label: 'Station',
++                label: this.intl.t('column.station'),
+                 valuePath: 'station_name',
+                 resizable: true,
+             },
+             {
+-                label: 'Liters',
++                label: this.intl.t('column.liters'),
+                 valuePath: 'volume',
+                 resizable: true,
+                 sortable: true,
+             },
+             {
+-                label: 'Amount',
++                label: this.intl.t('column.amount'),
+                 valuePath: 'amount',
+                 cellComponent: 'table/cell/currency',
+                 resizable: true,
+                 sortable: true,
+             },
+             {
+-                label: 'Fuel Report',
++                label: this.intl.t('column.fuel-report'),
+                 valuePath: 'fuel_report_id',
+                 cellComponent: 'table/cell/anchor',
+                 action: this.openFuelReport,
+                 resizable: true,
+             },
+             {
+-                label: 'Date',
++                label: this.intl.t('column.date'),
+                 valuePath: 'transactionAt',
+                 sortParam: 'transaction_at',
+                 resizable: true,
+@@ -180,14 +181,14 @@ export default class ManagementFuelTransactionsIndexController extends Controlle
+                 sticky: 'right',
+                 width: 60,
+                 actions: [
+-                    { label: 'Review Details', fn: this.openDetails },
+-                    { label: 'Open Fuel Report', fn: this.openFuelReport },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.review-details'), fn: this.openDetails },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.open-fuel-report'), fn: this.openFuelReport },
+                     { separator: true },
+-                    { label: 'Match to Vehicle', fn: this.matchVehicle },
+-                    { label: 'Match to Order', fn: this.matchOrder },
+-                    { label: 'Reprocess / Rematch', fn: (transaction) => this.reprocessTransaction.perform(transaction) },
+-                    { label: 'Ignore Transaction', fn: (transaction) => this.markReviewed.perform(transaction, 'ignored') },
+-                    { label: 'Mark Reviewed', fn: (transaction) => this.markReviewed.perform(transaction, 'reviewed') },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.match-to-vehicle'), fn: this.matchVehicle },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.match-to-order'), fn: this.matchOrder },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.reprocess-rematch'), fn: (transaction) => this.reprocessTransaction.perform(transaction) },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.ignore-transaction'), fn: (transaction) => this.markReviewed.perform(transaction, 'ignored') },
++                    { label: this.intl.t('fleet-ops.fuel-transactions.mark-reviewed'), fn: (transaction) => this.markReviewed.perform(transaction, 'reviewed') },
+                 ],
+                 sortable: false,
+                 filterable: false,
+diff --git a/addon/services/issue-actions.js b/addon/services/issue-actions.js
+index 3d9caa682350c1a1d26f6b634b50063636432623..2abe92ab9b34a3561f03c09f078d58007f589095 100644
+--- a/addon/services/issue-actions.js
++++ b/addon/services/issue-actions.js
+@@ -123,7 +123,7 @@ export default class IssueActionsService extends ResourceActionService {
+         this.modalsManager.confirm({
+             title: `Re-open ${issue.public_id || 'issue'}?`,
+             body: 'This will move the issue back into an active re-opened state and clear the active resolution date.',
+-            acceptButtonText: 'Re-open Issue',
++            acceptButtonText: this.intl.t('fleet-ops.component.issue-form-panel.reopen-issue'),
+             acceptButtonIcon: 'rotate-left',
+             confirm: async (modal) => {
+                 modal.startLoading();
+diff --git a/addon/templates/maintenance/index.hbs b/addon/templates/maintenance/index.hbs
+index f4264ac9ecc3808335aba232eae2d59b140005d5..1cf2c1e31e3d035faf94a33a520b5457e817fcf5 100644
+--- a/addon/templates/maintenance/index.hbs
++++ b/addon/templates/maintenance/index.hbs
+@@ -1,9 +1,9 @@
+ <div class="fleet-ops-control-hub" data-test-fleet-ops-maintenance-hub>
+     <section class="fleet-ops-control-hub-header">
+         <div class="fleet-ops-control-hub-header-copy">
+-            <div class="fleet-ops-control-hub-eyebrow">Maintenance</div>
+-            <h1 class="fleet-ops-control-hub-title">Maintenance Hub</h1>
+-            <p class="fleet-ops-control-hub-subtitle">Plan recurring service, coordinate work orders, and keep assets ready for daily operations.</p>
++            <div class="fleet-ops-control-hub-eyebrow">{{localize-label "Maintenance" "fleetops-hub"}}</div>
++            <h1 class="fleet-ops-control-hub-title">{{localize-label "Maintenance Hub" "fleetops-hub"}}</h1>
++            <p class="fleet-ops-control-hub-subtitle">{{localize-label "Plan recurring service, coordinate work orders, and keep assets ready for daily operations." "fleetops-hub"}}</p>
+         </div>
+         <div class="fleet-ops-control-hub-header-actions">
+             <Button @icon="refresh" @size="sm" @helpText={{t "common.reload"}} @onClick={{perform this.loadHub}} />
+@@ -15,11 +15,11 @@
+             {{#each this.kpis as |kpi|}}
+                 <LinkTo @route={{kpi.route}} class="fleet-ops-control-hub-kpi fleet-ops-control-hub-tone-{{kpi.tone}}" data-test-fleet-ops-maintenance-kpi={{kpi.key}}>
+                     <div class="fleet-ops-control-hub-kpi-copy">
+-                        <div class="fleet-ops-control-hub-kpi-label">{{kpi.label}}</div>
++                        <div class="fleet-ops-control-hub-kpi-label">{{localize-label kpi.label "fleetops-hub"}}</div>
+                         <div class="fleet-ops-control-hub-kpi-value">{{kpi.value}}</div>
+-                        <div class="fleet-ops-control-hub-kpi-caption">{{kpi.caption}}</div>
++                        <div class="fleet-ops-control-hub-kpi-caption">{{localize-label kpi.caption "fleetops-hub"}}</div>
+                         <div class="fleet-ops-control-hub-kpi-action">
+-                            <span>Open {{kpi.label}}</span>
++                            <span>{{localize-label "Open" "fleetops-hub"}} {{localize-label kpi.label "fleetops-hub"}}</span>
+                             <FaIcon @icon="arrow-right" />
+                         </div>
+                     </div>
+@@ -34,8 +34,8 @@
+                     <div class="fleet-ops-control-hub-panel" data-test-fleet-ops-maintenance-section={{section.key}}>
+                         <div class="fleet-ops-control-hub-panel-header">
+                             <div>
+-                                <h2>{{section.title}}</h2>
+-                                <p>{{section.description}}</p>
++                                <h2>{{localize-label section.title "fleetops-hub"}}</h2>
++                                <p>{{localize-label section.description "fleetops-hub"}}</p>
+                             </div>
+                         </div>
+ 
+@@ -44,8 +44,8 @@
+                                 <LinkTo @route={{link.route}} class="fleet-ops-control-hub-link" data-test-fleet-ops-hub-card={{link.label}}>
+                                     <span class="fleet-ops-control-hub-link-icon"><FaIcon @icon={{link.icon}} /></span>
+                                     <span class="fleet-ops-control-hub-link-copy">
+-                                        <span class="fleet-ops-control-hub-link-title">{{link.label}}</span>
+-                                        <span class="fleet-ops-control-hub-link-description">{{link.description}}</span>
++                                        <span class="fleet-ops-control-hub-link-title">{{localize-label link.label "fleetops-hub"}}</span>
++                                        <span class="fleet-ops-control-hub-link-description">{{localize-label link.description "fleetops-hub"}}</span>
+                                     </span>
+                                     <span class="fleet-ops-control-hub-link-count">{{link.count}}</span>
+                                 </LinkTo>
+@@ -59,8 +59,8 @@
+                 <div class="fleet-ops-control-hub-panel">
+                     <div class="fleet-ops-control-hub-panel-header">
+                         <div>
+-                            <h2>Action Queue</h2>
+-                            <p>Signals from schedules, work orders, parts, and equipment.</p>
++                            <h2>{{localize-label "Action Queue" "fleetops-hub"}}</h2>
++                            <p>{{localize-label "Signals from schedules, work orders, parts, and equipment." "fleetops-hub"}}</p>
+                         </div>
+                     </div>
+ 
+@@ -70,16 +70,16 @@
+                                 <LinkTo @route={{action.route}} @query={{action.query}} class="fleet-ops-control-hub-action fleet-ops-control-hub-tone-{{action.tone}}">
+                                     <FaIcon @icon={{action.icon}} />
+                                     <span>
+-                                        <strong>{{action.label}}</strong>
+-                                        <small>{{action.description}}</small>
++                                        <strong>{{localize-label action.label "fleetops-hub"}}</strong>
++                                        <small>{{localize-label action.description "fleetops-hub"}}</small>
+                                     </span>
+                                 </LinkTo>
+                             {{else}}
+                                 <div class="fleet-ops-control-hub-action fleet-ops-control-hub-tone-{{action.tone}}">
+                                     <FaIcon @icon={{action.icon}} />
+                                     <span>
+-                                        <strong>{{action.label}}</strong>
+-                                        <small>{{action.description}}</small>
++                                        <strong>{{localize-label action.label "fleetops-hub"}}</strong>
++                                        <small>{{localize-label action.description "fleetops-hub"}}</small>
+                                     </span>
+                                 </div>
+                             {{/if}}
+@@ -90,16 +90,16 @@
+                 <div class="fleet-ops-control-hub-doc-note">
+                     <div class="fleet-ops-control-hub-doc-note-heading">
+                         <FaIcon @icon="lightbulb" />
+-                        <span>Guides</span>
++                        <span>{{localize-label "Guides" "fleetops-hub"}}</span>
+                     </div>
+-                    <p class="fleet-ops-control-hub-doc-note-copy">Read the guide before changing maintenance workflows.</p>
++                    <p class="fleet-ops-control-hub-doc-note-copy">{{localize-label "Read the guide before changing maintenance workflows." "fleetops-hub"}}</p>
+                     <div class="fleet-ops-control-hub-doc-grid">
+                         {{#each this.docs as |doc|}}
+                             <button type="button" class="fleet-ops-control-hub-doc-link" {{on "click" (fn this.openDocs doc)}}>
+                                 <FaIcon @icon={{doc.icon}} />
+                                 <span class="fleet-ops-control-hub-doc-copy">
+-                                    <strong>Read the guide on {{doc.label}}</strong>
+-                                    <small>{{doc.description}}</small>
++                                    <strong>{{localize-label "Read the guide on" "fleetops-hub"}} {{localize-label doc.label "fleetops-hub"}}</strong>
++                                    <small>{{localize-label doc.description "fleetops-hub"}}</small>
+                                 </span>
+                             </button>
+                         {{/each}}
+diff --git a/addon/templates/management/contacts/index.hbs b/addon/templates/management/contacts/index.hbs
+index 3a76f77f704bb179e42cbeeab4967e246b067243..6eaaf2c212b79d7583360fca54dbd7d9c75ec6b5 100644
+--- a/addon/templates/management/contacts/index.hbs
++++ b/addon/templates/management/contacts/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="address-book"
+-        title="Add your first contact"
+-        description="Contacts keep customer, vendor, and internal stakeholder details ready for orders and communication."
+-        filteredTitle="No contacts match your filters"
+-        filteredDescription="Adjust the search or filters to find another contact."
+-        primaryText="New contact"
++        title=(localize-label "Add your first contact" "empty-state")
++        description=(localize-label "Contacts keep customer, vendor, and internal stakeholder details ready for orders and communication." "empty-state")
++        filteredTitle=(localize-label "No contacts match your filters" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another contact." "empty-state")
++        primaryText=(localize-label "New contact" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.contactActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.contactActions.import
+         docsSlug="fleet-ops/resources/contacts/overview"
+-        docsTitle="Contacts guide"
+-        docsText="Contacts guide"
++        docsTitle=(localize-label "Contacts guide" "empty-state")
++        docsText=(localize-label "Contacts guide" "empty-state")
+         docsSource="fleet-ops-empty-contacts"
+     }}
+     @withoutHeader={{true}}
+diff --git a/addon/templates/management/drivers/index.hbs b/addon/templates/management/drivers/index.hbs
+index 33ec8a6a9a148e5f989bfc0eb63ba318e0ebf2ee..fb4f8422f225bbbdafd1eefb3506bd617c88f0f6 100644
+--- a/addon/templates/management/drivers/index.hbs
++++ b/addon/templates/management/drivers/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="id-card"
+-        title="Add your first driver"
+-        description="Drivers power dispatching, live fleet visibility, assignments, and delivery activity."
+-        filteredTitle="No drivers match your search"
+-        filteredDescription="Adjust the search or filters to find another driver."
+-        primaryText="New driver"
++        title=(localize-label "Add your first driver" "empty-state")
++        description=(localize-label "Drivers power dispatching, live fleet visibility, assignments, and delivery activity." "empty-state")
++        filteredTitle=(localize-label "No drivers match your search" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another driver." "empty-state")
++        primaryText=(localize-label "New driver" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.driverActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.driverActions.import
+         docsSlug="fleet-ops/resources/drivers/overview"
+-        docsTitle="Drivers guide"
+-        docsText="Driver guide"
++        docsTitle=(localize-label "Drivers guide" "empty-state")
++        docsText=(localize-label "Driver guide" "empty-state")
+         docsSource="fleet-ops-empty-drivers"
+     }}
+ />
+diff --git a/addon/templates/management/fleets/index.hbs b/addon/templates/management/fleets/index.hbs
+index 21179053123ba6f14719b308b92f3d36d9b0a6a3..11a961be4cec010e04139eb6151886213e403967 100644
+--- a/addon/templates/management/fleets/index.hbs
++++ b/addon/templates/management/fleets/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="layer-group"
+-        title="Create your first fleet"
+-        description="Fleets help group vehicles and drivers for dispatching, reporting, and operational coverage."
+-        filteredTitle="No fleets match your filters"
+-        filteredDescription="Adjust the search or filters to find another fleet."
+-        primaryText="New fleet"
++        title=(localize-label "Create your first fleet" "empty-state")
++        description=(localize-label "Fleets help group vehicles and drivers for dispatching, reporting, and operational coverage." "empty-state")
++        filteredTitle=(localize-label "No fleets match your filters" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another fleet." "empty-state")
++        primaryText=(localize-label "New fleet" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.fleetActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.fleetActions.import
+         docsSlug="fleet-ops/resources/fleets/overview"
+-        docsTitle="Fleets guide"
+-        docsText="Fleet guide"
++        docsTitle=(localize-label "Fleets guide" "empty-state")
++        docsText=(localize-label "Fleet guide" "empty-state")
+         docsSource="fleet-ops-empty-fleets"
+     }}
+ />
+diff --git a/addon/templates/management/fuel-reports/index.hbs b/addon/templates/management/fuel-reports/index.hbs
+index 31522749a2a5ef6448efdc57e814996085f626f6..ce8dc9f85d6bb6439dcc83cb605e91d7e0220509 100644
+--- a/addon/templates/management/fuel-reports/index.hbs
++++ b/addon/templates/management/fuel-reports/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="gas-pump"
+-        title="No fuel reports yet"
+-        description="Create fuel reports to track vehicle fuel usage, cost, and supporting transaction records."
+-        filteredTitle="No fuel reports match your filters"
+-        filteredDescription="Adjust the search or filters to find another fuel report."
+-        primaryText="New fuel report"
++        title=(localize-label "No fuel reports yet" "empty-state")
++        description=(localize-label "Create fuel reports to track vehicle fuel usage, cost, and supporting transaction records." "empty-state")
++        filteredTitle=(localize-label "No fuel reports match your filters" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another fuel report." "empty-state")
++        primaryText=(localize-label "New fuel report" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.fuelReportActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.fuelReportActions.import
+         docsSlug="fleet-ops/resources/fuel-reports/overview"
+-        docsTitle="Fuel reports guide"
+-        docsText="Fuel reports guide"
++        docsTitle=(localize-label "Fuel reports guide" "empty-state")
++        docsText=(localize-label "Fuel reports guide" "empty-state")
+         docsSource="fleet-ops-empty-fuel-reports"
+     }}
+ />
+diff --git a/addon/templates/management/fuel-transactions/index.hbs b/addon/templates/management/fuel-transactions/index.hbs
+index 81b5e689a7998d4d1a06376f0ba616ab100d83dc..3032c61a828cb0b86ba32be50e1b69c270bf1674 100644
+--- a/addon/templates/management/fuel-transactions/index.hbs
++++ b/addon/templates/management/fuel-transactions/index.hbs
+@@ -2,10 +2,10 @@
+     <section class="flex-shrink-0 border-b border-gray-200 bg-white px-4 py-4 shadow-sm dark:border-gray-700 dark:bg-gray-900 md:px-6">
+         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+             <div>
+-                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500">Fuel transaction ledger</div>
++                <div class="text-xs font-semibold uppercase text-gray-400 dark:text-gray-500">{{localize-label "Fuel transaction ledger" "fleetops-hub"}}</div>
+                 <h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{t "menu.fuel-transactions"}}</h1>
+                 <p class="mt-1 max-w-4xl text-sm leading-5 text-gray-500 dark:text-gray-300">
+-                    Imported fuel card bills and provider purchase records are reviewed here before, during, and after they match to vehicles, trips, and linked Fuel Reports.
++                    {{localize-label "Imported fuel card bills and provider purchase records are reviewed here before, during, and after they match to vehicles, trips, and linked Fuel Reports." "fleetops-hub"}}
+                 </p>
+             </div>
+         </div>
+@@ -28,16 +28,16 @@
+                 @emptyStateComponent={{component
+                     "table/empty-state"
+                     icon="receipt"
+-                    title="No fuel transactions"
+-                    description="Imported fuel card bills and provider purchase records appear here after provider syncs complete."
+-                    filteredTitle="No transactions match your filters"
+-                    filteredDescription="Adjust the search or filters to review other imported transactions."
+-                    primaryText="Refresh"
++                    title=(localize-label "No fuel transactions" "empty-state")
++                    description=(localize-label "Imported fuel card bills and provider purchase records appear here after provider syncs complete." "empty-state")
++                    filteredTitle=(localize-label "No transactions match your filters" "empty-state")
++                    filteredDescription=(localize-label "Adjust the search or filters to review other imported transactions." "empty-state")
++                    primaryText=(localize-label "Refresh" "empty-state")
+                     primaryIcon="refresh"
+                     primaryAction=this.refresh
+                     docsSlug="fleet-ops/resources/fuel-reports/overview"
+-                    docsTitle="Fuel reports guide"
+-                    docsText="Fuel reports guide"
++                    docsTitle=(localize-label "Fuel reports guide" "empty-state")
++                    docsText=(localize-label "Fuel reports guide" "empty-state")
+                 }}
+             />
+         {{else}}
+@@ -45,11 +45,11 @@
+                 <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-300">
+                     <FaIcon @icon="receipt" />
+                 </div>
+-                <h2 class="mt-3 text-sm font-bold text-gray-900 dark:text-gray-100">{{this.emptyStateTitle}}</h2>
+-                <p class="mx-auto mt-1 max-w-2xl text-xs leading-5 text-gray-500 dark:text-gray-300">{{this.emptyStateMessage}}</p>
++                <h2 class="mt-3 text-sm font-bold text-gray-900 dark:text-gray-100">{{localize-label this.emptyStateTitle "empty-state"}}</h2>
++                <p class="mx-auto mt-1 max-w-2xl text-xs leading-5 text-gray-500 dark:text-gray-300">{{localize-label this.emptyStateMessage "empty-state"}}</p>
+                 <div class="mt-4 flex flex-wrap items-center justify-center gap-2">
+-                    <Button @icon="gas-pump" @text="Open Fuel Integrations" @type="primary" @size="sm" @onClick={{transition-to "connectivity.fuel-providers.index"}} />
+-                    <Button @icon="refresh" @text="Refresh" @size="sm" @onClick={{this.refresh}} />
++                    <Button @icon="gas-pump" @text={{localize-label "Open Fuel Integrations" "empty-state"}} @type="primary" @size="sm" @onClick={{transition-to "connectivity.fuel-providers.index"}} />
++                    <Button @icon="refresh" @text={{t "common.refresh"}} @size="sm" @onClick={{this.refresh}} />
+                 </div>
+             </section>
+         {{/if}}
+diff --git a/addon/templates/management/index.hbs b/addon/templates/management/index.hbs
+index 5969e6a40985d74af10a9f7d504827bbaa7d49dd..9d5a323781a45ee65e35f855ee5bf1f3dd266556 100644
+--- a/addon/templates/management/index.hbs
++++ b/addon/templates/management/index.hbs
+@@ -1,9 +1,9 @@
+ <div class="fleet-ops-control-hub" data-test-fleet-ops-resources-hub>
+     <section class="fleet-ops-control-hub-header">
+         <div class="fleet-ops-control-hub-header-copy">
+-            <div class="fleet-ops-control-hub-eyebrow">Resources</div>
+-            <h1 class="fleet-ops-control-hub-title">Resources Hub</h1>
+-            <p class="fleet-ops-control-hub-subtitle">Manage the people, vehicles, places, partners, and operating records that keep dispatch grounded.</p>
++            <div class="fleet-ops-control-hub-eyebrow">{{localize-label "Resources" "fleetops-hub"}}</div>
++            <h1 class="fleet-ops-control-hub-title">{{localize-label "Resources Hub" "fleetops-hub"}}</h1>
++            <p class="fleet-ops-control-hub-subtitle">{{localize-label "Manage the people, vehicles, places, partners, and operating records that keep dispatch grounded." "fleetops-hub"}}</p>
+         </div>
+         <div class="fleet-ops-control-hub-header-actions">
+             <Button @icon="refresh" @size="sm" @helpText={{t "common.reload"}} @onClick={{perform this.loadHub}} />
+@@ -15,11 +15,11 @@
+             {{#each this.kpis as |kpi|}}
+                 <LinkTo @route={{kpi.route}} class="fleet-ops-control-hub-kpi fleet-ops-control-hub-tone-{{kpi.tone}}" data-test-fleet-ops-resources-kpi={{kpi.key}}>
+                     <div class="fleet-ops-control-hub-kpi-copy">
+-                        <div class="fleet-ops-control-hub-kpi-label">{{kpi.label}}</div>
++                        <div class="fleet-ops-control-hub-kpi-label">{{localize-label kpi.label "fleetops-hub"}}</div>
+                         <div class="fleet-ops-control-hub-kpi-value">{{kpi.value}}</div>
+-                        <div class="fleet-ops-control-hub-kpi-caption">{{kpi.caption}}</div>
++                        <div class="fleet-ops-control-hub-kpi-caption">{{localize-label kpi.caption "fleetops-hub"}}</div>
+                         <div class="fleet-ops-control-hub-kpi-action">
+-                            <span>{{kpi.actionLabel}}</span>
++                            <span>{{localize-label kpi.actionLabel "fleetops-hub"}}</span>
+                             <FaIcon @icon="arrow-right" />
+                         </div>
+                     </div>
+@@ -34,8 +34,8 @@
+                     <div class="fleet-ops-control-hub-panel" data-test-fleet-ops-resources-section={{section.key}}>
+                         <div class="fleet-ops-control-hub-panel-header">
+                             <div>
+-                                <h2>{{section.title}}</h2>
+-                                <p>{{section.description}}</p>
++                                <h2>{{localize-label section.title "fleetops-hub"}}</h2>
++                                <p>{{localize-label section.description "fleetops-hub"}}</p>
+                             </div>
+                         </div>
+ 
+@@ -44,8 +44,8 @@
+                                 <LinkTo @route={{link.route}} class="fleet-ops-control-hub-link" data-test-fleet-ops-hub-card={{link.label}}>
+                                     <span class="fleet-ops-control-hub-link-icon"><FaIcon @icon={{link.icon}} /></span>
+                                     <span class="fleet-ops-control-hub-link-copy">
+-                                        <span class="fleet-ops-control-hub-link-title">{{link.label}}</span>
+-                                        <span class="fleet-ops-control-hub-link-description">{{link.description}}</span>
++                                        <span class="fleet-ops-control-hub-link-title">{{localize-label link.label "fleetops-hub"}}</span>
++                                        <span class="fleet-ops-control-hub-link-description">{{localize-label link.description "fleetops-hub"}}</span>
+                                     </span>
+                                     <span class="fleet-ops-control-hub-link-count">{{link.count}}</span>
+                                 </LinkTo>
+@@ -59,8 +59,8 @@
+                 <div class="fleet-ops-control-hub-panel">
+                     <div class="fleet-ops-control-hub-panel-header">
+                         <div>
+-                            <h2>Action Queue</h2>
+-                            <p>Prioritized from current resource readiness.</p>
++                            <h2>{{localize-label "Action Queue" "fleetops-hub"}}</h2>
++                            <p>{{localize-label "Prioritized from current resource readiness." "fleetops-hub"}}</p>
+                         </div>
+                     </div>
+ 
+@@ -70,16 +70,16 @@
+                                 <LinkTo @route={{action.route}} @query={{action.query}} class="fleet-ops-control-hub-action fleet-ops-control-hub-tone-{{action.tone}}">
+                                     <FaIcon @icon={{action.icon}} />
+                                     <span>
+-                                        <strong>{{action.label}}</strong>
+-                                        <small>{{action.description}}</small>
++                                        <strong>{{localize-label action.label "fleetops-hub"}}</strong>
++                                        <small>{{localize-label action.description "fleetops-hub"}}</small>
+                                     </span>
+                                 </LinkTo>
+                             {{else}}
+                                 <div class="fleet-ops-control-hub-action fleet-ops-control-hub-tone-{{action.tone}}">
+                                     <FaIcon @icon={{action.icon}} />
+                                     <span>
+-                                        <strong>{{action.label}}</strong>
+-                                        <small>{{action.description}}</small>
++                                        <strong>{{localize-label action.label "fleetops-hub"}}</strong>
++                                        <small>{{localize-label action.description "fleetops-hub"}}</small>
+                                     </span>
+                                 </div>
+                             {{/if}}
+@@ -90,16 +90,16 @@
+                 <div class="fleet-ops-control-hub-doc-note">
+                     <div class="fleet-ops-control-hub-doc-note-heading">
+                         <FaIcon @icon="lightbulb" />
+-                        <span>Guides</span>
++                        <span>{{localize-label "Guides" "fleetops-hub"}}</span>
+                     </div>
+-                    <p class="fleet-ops-control-hub-doc-note-copy">Read the guide before changing resource setup.</p>
++                    <p class="fleet-ops-control-hub-doc-note-copy">{{localize-label "Read the guide before changing resource setup." "fleetops-hub"}}</p>
+                     <div class="fleet-ops-control-hub-doc-grid">
+                         {{#each this.docs as |doc|}}
+                             <button type="button" class="fleet-ops-control-hub-doc-link" {{on "click" (fn this.openDocs doc)}}>
+                                 <FaIcon @icon={{doc.icon}} />
+                                 <span class="fleet-ops-control-hub-doc-copy">
+-                                    <strong>Read the guide on {{doc.label}}</strong>
+-                                    <small>{{doc.description}}</small>
++                                    <strong>{{localize-label "Read the guide on" "fleetops-hub"}} {{localize-label doc.label "fleetops-hub"}}</strong>
++                                    <small>{{localize-label doc.description "fleetops-hub"}}</small>
+                                 </span>
+                             </button>
+                         {{/each}}
+diff --git a/addon/templates/management/issues/index.hbs b/addon/templates/management/issues/index.hbs
+index 2837f99e851feadd8e2be8294ba3746669aec84d..4f43165f90dcf55706ee99ca2f0e95c0741f1e7f 100644
+--- a/addon/templates/management/issues/index.hbs
++++ b/addon/templates/management/issues/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="triangle-exclamation"
+-        title="No issues reported"
+-        description="Track vehicle, driver, facility, and service issues here so follow-up work stays visible."
+-        filteredTitle="No issues match your filters"
+-        filteredDescription="Clear the search or filters to review other reported issues."
+-        primaryText="New issue"
++        title=(localize-label "No issues reported" "empty-state")
++        description=(localize-label "Track vehicle, driver, facility, and service issues here so follow-up work stays visible." "empty-state")
++        filteredTitle=(localize-label "No issues match your filters" "empty-state")
++        filteredDescription=(localize-label "Clear the search or filters to review other reported issues." "empty-state")
++        primaryText=(localize-label "New issue" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.issueActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.issueActions.import
+         docsSlug="fleet-ops/resources/issues/overview"
+-        docsTitle="Issues guide"
+-        docsText="Issues guide"
++        docsTitle=(localize-label "Issues guide" "empty-state")
++        docsText=(localize-label "Issues guide" "empty-state")
+         docsSource="fleet-ops-empty-issues"
+     }}
+ />
+diff --git a/addon/templates/management/places/index.hbs b/addon/templates/management/places/index.hbs
+index 145d7501e5c6a49f5b95684385b1db87fe71d0c5..50b323ee669d0b2f9bd2e8d1ab26d82618e7923d 100644
+--- a/addon/templates/management/places/index.hbs
++++ b/addon/templates/management/places/index.hbs
+@@ -13,19 +13,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="location-dot"
+-        title="Add your first place"
+-        description="Places keep frequent pickup, dropoff, facility, and service locations ready for orders and routing."
+-        filteredTitle="No places match your filters"
+-        filteredDescription="Adjust the search or filters to find another saved location."
+-        primaryText="New place"
++        title=(localize-label "Add your first place" "empty-state")
++        description=(localize-label "Places keep frequent pickup, dropoff, facility, and service locations ready for orders and routing." "empty-state")
++        filteredTitle=(localize-label "No places match your filters" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another saved location." "empty-state")
++        primaryText=(localize-label "New place" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.placeActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.placeActions.import
+         docsSlug="fleet-ops/resources/places/overview"
+-        docsTitle="Places guide"
+-        docsText="Places guide"
++        docsTitle=(localize-label "Places guide" "empty-state")
++        docsText=(localize-label "Places guide" "empty-state")
+         docsSource="fleet-ops-empty-places"
+     }}
+ />
+diff --git a/addon/templates/management/vehicles/index.hbs b/addon/templates/management/vehicles/index.hbs
+index 6aa88f3774d06888cb60debbda0aa778ab06a241..fecd6fbd36c39e24792d9112d2e022eea6504810 100644
+--- a/addon/templates/management/vehicles/index.hbs
++++ b/addon/templates/management/vehicles/index.hbs
+@@ -15,19 +15,19 @@
+         @emptyStateComponent={{component
+             "table/empty-state"
+             icon="truck"
+-            title="Add your first vehicle"
+-            description="Vehicles connect assignments, live tracking, fleet capacity, maintenance, and compliance history."
+-            filteredTitle="No vehicles match your filters"
+-            filteredDescription="Adjust the search or filters to find another vehicle."
+-            primaryText="New vehicle"
++            title=(localize-label "Add your first vehicle" "empty-state")
++            description=(localize-label "Vehicles connect assignments, live tracking, fleet capacity, maintenance, and compliance history." "empty-state")
++            filteredTitle=(localize-label "No vehicles match your filters" "empty-state")
++            filteredDescription=(localize-label "Adjust the search or filters to find another vehicle." "empty-state")
++            primaryText=(localize-label "New vehicle" "empty-state")
+             primaryIcon="plus"
+             primaryAction=this.vehicleActions.transition.create
+-            secondaryText="Import"
++            secondaryText=(localize-label "Import" "empty-state")
+             secondaryIcon="upload"
+             secondaryAction=this.vehicleActions.import
+             docsSlug="fleet-ops/resources/vehicles/overview"
+-            docsTitle="Vehicles guide"
+-            docsText="Vehicle guide"
++            docsTitle=(localize-label "Vehicles guide" "empty-state")
++            docsText=(localize-label "Vehicle guide" "empty-state")
+             docsSource="fleet-ops-empty-vehicles"
+         }}
+     />
+diff --git a/addon/templates/management/vendors/index.hbs b/addon/templates/management/vendors/index.hbs
+index c3bfe016ff00657626c5a2a00dab5e627c0bff7f..b406609f4a402ccbfdf1983a19cabf6007157bdb 100644
+--- a/addon/templates/management/vendors/index.hbs
++++ b/addon/templates/management/vendors/index.hbs
+@@ -14,19 +14,19 @@
+     @emptyStateComponent={{component
+         "table/empty-state"
+         icon="building"
+-        title="Add your first vendor"
+-        description="Vendors let your team manage external carriers, service providers, and operational partners."
+-        filteredTitle="No vendors match your filters"
+-        filteredDescription="Adjust the search or filters to find another vendor."
+-        primaryText="New vendor"
++        title=(localize-label "Add your first vendor" "empty-state")
++        description=(localize-label "Vendors let your team manage external carriers, service providers, and operational partners." "empty-state")
++        filteredTitle=(localize-label "No vendors match your filters" "empty-state")
++        filteredDescription=(localize-label "Adjust the search or filters to find another vendor." "empty-state")
++        primaryText=(localize-label "New vendor" "empty-state")
+         primaryIcon="plus"
+         primaryAction=this.vendorActions.transition.create
+-        secondaryText="Import"
++        secondaryText=(localize-label "Import" "empty-state")
+         secondaryIcon="upload"
+         secondaryAction=this.vendorActions.import
+         docsSlug="fleet-ops/resources/vendors/overview"
+-        docsTitle="Vendors guide"
+-        docsText="Vendor guide"
++        docsTitle=(localize-label "Vendors guide" "empty-state")
++        docsText=(localize-label "Vendor guide" "empty-state")
+         docsSource="fleet-ops-empty-vendors"
+     }}
+ />
 diff --git a/translations/ar-ae.yml b/translations/ar-ae.yml
 index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9864f05f4 100644
 --- a/translations/ar-ae.yml

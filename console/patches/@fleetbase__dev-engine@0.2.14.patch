@@ -21,7 +21,7 @@ index 4194167db57c8556c9eb4b6fcc7383ca58de63f6..bb2e694a62504a6f9bacfc525afb1e90
          <button type="button" class="developers-widget-icon-button" {{on "click" this.refresh}} title={{t "developers.common.reload"}}>
              <FaIcon @icon="rotate" class={{if this.load.isRunning "animate-spin"}} />
 diff --git a/addon/components/widget/developers-chart.js b/addon/components/widget/developers-chart.js
-index 1f0891b12c9f31529a809b91161167e833b7d73f..5210257d7c849c898c6ade0582eab0eae52d7a76 100644
+index 1f0891b12c9f31529a809b91161167e833b7d73f..5f43de630b4f1b8fdf1830e0009ceef4cc168435 100644
 --- a/addon/components/widget/developers-chart.js
 +++ b/addon/components/widget/developers-chart.js
 @@ -13,6 +13,7 @@ const COLORS = [
@@ -32,7 +32,7 @@ index 1f0891b12c9f31529a809b91161167e833b7d73f..5210257d7c849c898c6ade0582eab0ea
  
      @tracked data = null;
      @tracked error = null;
-@@ -22,6 +23,14 @@ export default class WidgetDevelopersChartComponent extends Component {
+@@ -22,16 +23,38 @@ export default class WidgetDevelopersChartComponent extends Component {
          this.load.perform();
      }
  
@@ -47,7 +47,31 @@ index 1f0891b12c9f31529a809b91161167e833b7d73f..5210257d7c849c898c6ade0582eab0ea
      get labels() {
          return this.data?.labels ?? [];
      }
-@@ -67,7 +76,7 @@ export default class WidgetDevelopersChartComponent extends Component {
+ 
++    localizeSeriesLabel(label) {
++        if (!label || typeof label !== 'string') {
++            return label;
++        }
++
++        const slug = label
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        const key = `series-label.${slug}`;
++        return slug && this.intl.exists(key) ? this.intl.t(key) : label;
++    }
++
+     get datasets() {
+         return (this.data?.datasets ?? []).map((dataset, index) => {
+             const color = COLORS[index % COLORS.length];
+ 
+             return {
+                 ...dataset,
++                label: this.localizeSeriesLabel(dataset.label),
+                 borderColor: color[0],
+                 backgroundColor: color[1],
+                 borderWidth: 2,
+@@ -67,7 +90,7 @@ export default class WidgetDevelopersChartComponent extends Component {
              this.data = yield this.fetch.get(`metrics/dev/${this.args.endpoint}`, { period: this.args.period ?? '30d' });
              this.error = null;
          } catch (error) {

@@ -1,3 +1,66 @@
+diff --git a/addon/components/badge.hbs b/addon/components/badge.hbs
+index 49fa85aa050de46d9767c594f5e16ac828c5e506..3011aeb79a942670f53a1f9258c112046931f875 100644
+--- a/addon/components/badge.hbs
++++ b/addon/components/badge.hbs
+@@ -14,6 +14,8 @@
+             {{#unless @hideText}}
+                 {{#if @disableHumanize}}
+                     {{or @text @status}}
++                {{else if this.localizedText}}
++                    {{this.localizedText}}
+                 {{else}}
+                     {{safe-humanize (or @text @status)}}
+                 {{/if}}
+diff --git a/addon/components/badge.js b/addon/components/badge.js
+index 7ee3bf5fb2e4710bb6bc433cdb61c099ecb3d72a..1393ab1a15eed790576506ed3450e7f251333898 100644
+--- a/addon/components/badge.js
++++ b/addon/components/badge.js
+@@ -1,4 +1,5 @@
+ import Component from '@glimmer/component';
++import { inject as service } from '@ember/service';
+ 
+ const BADGE_SIZE_CLASS = {
+     xxs: 'status-badge-xxs',
+@@ -15,6 +16,8 @@ const BADGE_ICON_SIZE = {
+ };
+ 
+ export default class BadgeComponent extends Component {
++    @service intl;
++
+     get sizeClass() {
+         return BADGE_SIZE_CLASS[this.args.size];
+     }
+@@ -22,4 +25,30 @@ export default class BadgeComponent extends Component {
+     get iconSize() {
+         return this.args.iconSize ?? BADGE_ICON_SIZE[this.args.size] ?? 'xs';
+     }
++
++    // Localizes status text via `status-label.<slug>` or `common.<slug>` when a
++    // translation exists, otherwise the hbs falls back to humanizing the raw value.
++    get localizedText() {
++        const raw = this.args.text ?? this.args.status;
++        if (!raw || typeof raw !== 'string') {
++            return null;
++        }
++
++        const slug = raw
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        if (!slug) {
++            return null;
++        }
++
++        for (const prefix of ['status-label', 'common']) {
++            const key = `${prefix}.${slug}`;
++            if (this.intl.exists(key)) {
++                return this.intl.t(key);
++            }
++        }
++
++        return null;
++    }
+ }
 diff --git a/addon/components/layout/header/dark-mode-toggle.hbs b/addon/components/layout/header/dark-mode-toggle.hbs
 index a49999fc60210ce40e6b7447a8477a21d89ba608..b70d12f9735b1b0d30ec6a7c71fbdf1ada65f584 100644
 --- a/addon/components/layout/header/dark-mode-toggle.hbs
@@ -707,6 +770,41 @@ index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..3de93fbce271473d369044a170233bb6
      }
  
      /**
+diff --git a/addon/components/modal/default.hbs b/addon/components/modal/default.hbs
+index e9ba500434fb2104b0d272a594930f22894a9f22..493b2f271e5a6c7520160c32efaf1cb8292f7c52 100644
+--- a/addon/components/modal/default.hbs
++++ b/addon/components/modal/default.hbs
+@@ -40,7 +40,7 @@
+                         @size={{or @options.buttonSize "md"}}
+                         @icon={{or @options.declineButtonIcon "times"}}
+                         @iconPrefix={{@options.declineButtonIconPrefix}}
+-                        @text={{or @options.declineButtonText "Cancel"}}
++                        @text={{or @options.declineButtonText (t "common.cancel")}}
+                         @onClick={{modal.close}}
+                         @disabled={{or @options.declineButtonDisabled @options.isLoading}}
+                     />
+@@ -135,7 +135,7 @@
+                         @icon={{or @options.acceptButtonIcon "check"}}
+                         @iconPrefix={{@options.acceptButtonIconPrefix}}
+                         @isLoading={{@options.isLoading}}
+-                        @text={{or @options.acceptButtonText "Confirm"}}
++                        @text={{or @options.acceptButtonText (t "common.confirm")}}
+                         @onClick={{modal.submit}}
+                         @disabled={{or @options.acceptButtonDisabled @options.isLoading}}
+                     />
+diff --git a/addon/components/modals/import-form.hbs b/addon/components/modals/import-form.hbs
+index f1f6575548281ce7b44e9b1250804a25627525d8..57f0ae326132655c1b4df0250271038d321d1a6c 100644
+--- a/addon/components/modals/import-form.hbs
++++ b/addon/components/modals/import-form.hbs
+@@ -100,7 +100,7 @@
+ 
+         {{#if @options.onImportTemplate}}
+             <div class="mt-4">
+-                <a onClick={{@options.onImportTemplate}} download="true" class="text-blue-500 hover:text-blue-400 text-xs">Download Import Template (XLSX)</a>
++                <a onClick={{@options.onImportTemplate}} download="true" class="text-blue-500 hover:text-blue-400 text-xs">{{t "component.import-modal.download-template"}}</a>
+             </div>
+         {{/if}}
+     </div>
 diff --git a/addon/components/notification-tray.js b/addon/components/notification-tray.js
 index 9ddb2ee0a9ce88d8a30fca119f343b6b39c65870..98a74d7cf6fad55a643a39d27f3e20374603227d 100644
 --- a/addon/components/notification-tray.js
@@ -780,6 +878,88 @@ index ba5c1e182766033fbc4d0a061bb5307be4572d58..cd3f866fd65d6daf259b94ad7d6c80e6
              </p>
          </div>
  
+diff --git a/addon/components/select.hbs b/addon/components/select.hbs
+index 6ff70087d1454a782e012d02895fa6c8c82ff7ba..369ac07e185183b934db7cd8f33ac102b5145fdf 100644
+--- a/addon/components/select.hbs
++++ b/addon/components/select.hbs
+@@ -73,7 +73,7 @@
+                         class={{@optionClass}}
+                     >
+                         {{#if @humanize}}
+-                            {{or (humanize label) (humanize (get selectable @optionValue))}}
++                            {{translate-value (or (humanize label) (humanize (get selectable @optionValue))) "status-label"}}
+                         {{else}}
+                             {{or label (get selectable @optionValue)}}
+                         {{/if}}
+@@ -82,7 +82,7 @@
+             {{else}}
+                 <option value={{selectable}} selected={{eq this.value selectable}} class={{@optionClass}}>
+                     {{#if @humanize}}
+-                        {{humanize selectable}}
++                        {{translate-value (humanize selectable) "status-label"}}
+                     {{else}}
+                         {{selectable}}
+                     {{/if}}
+diff --git a/addon/components/table/cell/anchor.hbs b/addon/components/table/cell/anchor.hbs
+index 9c0da656c14a61f504b80cf4db1dae13f4171c64..f473e5579ceccd0ef43c93809b0634e477d1a9ce 100644
+--- a/addon/components/table/cell/anchor.hbs
++++ b/addon/components/table/cell/anchor.hbs
+@@ -15,6 +15,12 @@
+     {{#if (has-block)}}
+         {{yield}}
+     {{else}}
+-        <span class={{@column.anchorSpanClass}}>{{or @value @column.anchorText "-"}}</span>
++        <span class={{@column.anchorSpanClass}}>
++            {{~#if @column.translationPrefix~}}
++                {{translate-value (or @value @column.anchorText "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
++            {{~else~}}
++                {{or @value @column.anchorText "-"}}
++            {{~/if~}}
++        </span>
+     {{/if}}
+ </a>
+\ No newline at end of file
+diff --git a/addon/components/table/cell/base.hbs b/addon/components/table/cell/base.hbs
+index 23e3b19c94c206168ef0fb791002d457757257c3..cc40ae0169ac61d3a750078bc6aa71f86d623115 100644
+--- a/addon/components/table/cell/base.hbs
++++ b/addon/components/table/cell/base.hbs
+@@ -3,7 +3,9 @@
+         {{#if (has-block)}}
+             {{yield}}
+         {{else}}
+-            {{#if @column.humanize}}
++            {{#if @column.translationPrefix}}
++                {{translate-value (or @value "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
++            {{else if @column.humanize}}
+                 {{smart-humanize (or @value "-")}}
+             {{else}}
+                 {{or @value "-"}}
+diff --git a/addon/components/table.hbs b/addon/components/table.hbs
+index 3dcbfdf5fcda68492e4f540495608b92275e1c0f..e2e11f2689ca499ac56190fe4ea8e1d7a08412e7 100644
+--- a/addon/components/table.hbs
++++ b/addon/components/table.hbs
+@@ -78,7 +78,7 @@
+                                             <FaIcon @icon={{@emptyStateIcon}} @prefix={{@emptyStateIconPrefix}} />
+                                         </div>
+                                     {{/if}}
+-                                    <div class="next-table-empty-state-title">{{or @emptyStateTitle "No records found"}}</div>
++                                    <div class="next-table-empty-state-title">{{or @emptyStateTitle (t "common.no-records-found")}}</div>
+                                     {{#if @emptyStateDescription}}
+                                         <div class="next-table-empty-state-description">{{@emptyStateDescription}}</div>
+                                     {{/if}}
+diff --git a/addon/components/upload-button.hbs b/addon/components/upload-button.hbs
+index d006adfc3c2ce6a8d127195da0e2393a3615dc9e..f1a9cd60a7488db2da40d98ab9e00eefe2d524af 100644
+--- a/addon/components/upload-button.hbs
++++ b/addon/components/upload-button.hbs
+@@ -20,7 +20,7 @@
+             <FaIcon @icon={{or @icon "image"}} class="{{@iconClass}} {{unless @hideButtonText 'mr-2'}}" />
+             {{#unless @hideButtonText}}
+                 <span>
+-                    {{or @buttonText "Upload new"}}
++                    {{or @buttonText (t "common.upload-new")}}
+                 </span>
+             {{/unless}}
+         {{/if}}
 diff --git a/addon/helpers/localize-label.js b/addon/helpers/localize-label.js
 new file mode 100644
 index 0000000000000000000000000000000000000000..5a628d072b9ddb230eef130af04e948615972698
@@ -815,6 +995,49 @@ index 0000000000000000000000000000000000000000..5a628d072b9ddb230eef130af04e9486
 +            }
 +        }
 +        return text;
++    }
++}
+diff --git a/addon/helpers/translate-value.js b/addon/helpers/translate-value.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..b64d9642273c51b6ade6ecac9aa0028d369140f4
+--- /dev/null
++++ b/addon/helpers/translate-value.js
+@@ -0,0 +1,37 @@
++import Helper from '@ember/component/helper';
++import { inject as service } from '@ember/service';
++
++/**
++ * {{translate-value value "prefix" keySource}}
++ *
++ * Translates an API-provided value using `<prefix>.<keySource|value>` when the
++ * key exists (tried verbatim first, then slugified), falling back to the raw
++ * value. Used by table cells via `column.translationPrefix` /
++ * `column.translationKeyPath` to localize backend enum/seed values.
++ */
++export default class TranslateValueHelper extends Helper {
++    @service intl;
++
++    compute([value, prefix, keySource]) {
++        if (!prefix || value === null || value === undefined || value === '') {
++            return value;
++        }
++
++        const source = `${keySource ?? value}`;
++        const exactKey = `${prefix}.${source}`;
++        if (this.intl.exists(exactKey)) {
++            return this.intl.t(exactKey);
++        }
++
++        const slug = source
++            .toLowerCase()
++            .replace(/[^a-z0-9]+/g, '-')
++            .replace(/^-|-$/g, '');
++        const slugKey = `${prefix}.${slug}`;
++        if (slug && this.intl.exists(slugKey)) {
++            return this.intl.t(slugKey);
++        }
++
++        return value;
 +    }
 +}
 diff --git a/addon/styles/addon.css b/addon/styles/addon.css
@@ -2577,6 +2800,13 @@ index 0000000000000000000000000000000000000000..612a3f8a6a2caae16f56cab741fa71d6
 +++ b/app/helpers/localize-label.js
 @@ -0,0 +1 @@
 +export { default } from '@fleetbase/ember-ui/helpers/localize-label';
+diff --git a/app/helpers/translate-value.js b/app/helpers/translate-value.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..110e315172a6373ab11c9d4e64f44066a71e2df1
+--- /dev/null
++++ b/app/helpers/translate-value.js
+@@ -0,0 +1 @@
++export { default } from '@fleetbase/ember-ui/helpers/translate-value';
 diff --git a/tailwind.config.js b/tailwind.config.js
 index 94b914c0ec88068cb0467755c5e59fe90eec3565..13d6d877806cbee5f373a323b57a21a245b8c4ff 100644
 --- a/tailwind.config.js

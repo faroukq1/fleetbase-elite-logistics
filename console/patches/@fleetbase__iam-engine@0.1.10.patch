@@ -1,3 +1,16 @@
+diff --git a/addon/components/permission-picker.hbs b/addon/components/permission-picker.hbs
+index c0860ee3d0995293be05174929564093bbd85ac2..0ff380eef758a0d7b66fc9ef25df1c5eaa6c553d 100644
+--- a/addon/components/permission-picker.hbs
++++ b/addon/components/permission-picker.hbs
+@@ -18,7 +18,7 @@
+                 {{/if}}
+             </div>
+             <div>
+-                <a href="javascript:;" class="ml-2 text-xs text-blue-500 hover:opacity-50" {{on "click" this.toggleSelected}}>Toggle Selected</a>
++                <a href="javascript:;" class="ml-2 text-xs text-blue-500 hover:opacity-50" {{on "click" this.toggleSelected}}>{{t "iam.common.toggle-selected"}}</a>
+             </div>
+         </div>
+         <div class="text-xs dark:text-gray-100">
 diff --git a/addon/components/widget/access-coverage.hbs b/addon/components/widget/access-coverage.hbs
 index 175fc0dbcc1e9c4f800faf0947d444f71b1f037a..e64191b3d835bd7f5bc12e5ab93b99a135bcbdff 100644
 --- a/addon/components/widget/access-coverage.hbs
@@ -85,7 +98,7 @@ index e0fbc77f77fe2800ca09d64958b3dfe5aa4b275a..563075752c041deb563d1bfc28e01f7e
                  <div class="mt-2 truncate text-xs font-semibold text-rose-600 dark:text-rose-300">{{this.error}}</div>
              {{else if this.load.isRunning}}
 diff --git a/addon/components/widget/iam-kpi-tile.js b/addon/components/widget/iam-kpi-tile.js
-index 3bcc4d604e101d1895967b2fb55f75311736efd3..e301d0be3dbf32f013c5aca7f6dac7ab6ffe1aa3 100644
+index 3bcc4d604e101d1895967b2fb55f75311736efd3..15261b3c16faa15aadab09d9094d576eccef74c5 100644
 --- a/addon/components/widget/iam-kpi-tile.js
 +++ b/addon/components/widget/iam-kpi-tile.js
 @@ -5,6 +5,7 @@ import { task } from 'ember-concurrency';
@@ -96,7 +109,16 @@ index 3bcc4d604e101d1895967b2fb55f75311736efd3..e301d0be3dbf32f013c5aca7f6dac7ab
  
      @tracked data = null;
      @tracked error = null;
-@@ -30,12 +31,20 @@ export default class WidgetIamKpiTileComponent extends Component {
+@@ -20,7 +21,7 @@ export default class WidgetIamKpiTileComponent extends Component {
+ 
+     get value() {
+         if (this.metric.format === 'unavailable' || this.metric.available === false) {
+-            return 'N/A';
++            return this.intl.t('common.not-available');
+         }
+ 
+         if (this.metric.format === 'percent') {
+@@ -30,12 +31,24 @@ export default class WidgetIamKpiTileComponent extends Component {
          return Number(this.metric.value ?? 0).toLocaleString();
      }
  
@@ -107,6 +129,10 @@ index 3bcc4d604e101d1895967b2fb55f75311736efd3..e301d0be3dbf32f013c5aca7f6dac7ab
      get footnote() {
          if (this.metric.format === 'unavailable' || this.metric.available === false) {
 -            return this.args.unavailableText ?? 'Coverage unavailable';
++            if (this.args.unavailableTextKey) {
++                return this.intl.t(this.args.unavailableTextKey);
++            }
++
 +            return this.args.unavailableText ?? this.intl.t('iam.components.widget.dashboard.common.coverage-unavailable');
 +        }
 +
@@ -119,7 +145,7 @@ index 3bcc4d604e101d1895967b2fb55f75311736efd3..e301d0be3dbf32f013c5aca7f6dac7ab
      }
  
      get accentClass() {
-@@ -47,7 +56,7 @@ export default class WidgetIamKpiTileComponent extends Component {
+@@ -47,7 +60,7 @@ export default class WidgetIamKpiTileComponent extends Component {
              this.data = yield this.fetch.get('metrics/iam/kpis');
              this.error = null;
          } catch (error) {
@@ -160,12 +186,12 @@ index 05cf8aab3381068d345c8c59af9e50d83a8b8bc2..7ced2707ca72f50598f26ad9b3b47cbf
 -<Widget::IamKpiTile @metric="inactive_users" @title="Inactive Users" @icon="user-slash" @accent="slate" @footnote="Disabled access" ...attributes />
 +<Widget::IamKpiTile @metric="inactive_users" @titleKey="iam.components.widget.dashboard.kpi.inactive-users" @icon="user-slash" @accent="slate" @footnoteKey="iam.components.widget.dashboard.footnote.disabled-access" ...attributes />
 diff --git a/addon/components/widget/kpi-mfa-coverage.hbs b/addon/components/widget/kpi-mfa-coverage.hbs
-index 06c2d0b2fbfcd801661158333eea4c4a6f3eae93..8dd3c9c942727ad7e21e95b256ed6360cf6afb85 100644
+index 06c2d0b2fbfcd801661158333eea4c4a6f3eae93..f2d342d8d83b3b999c23190cd2db5804445578d0 100644
 --- a/addon/components/widget/kpi-mfa-coverage.hbs
 +++ b/addon/components/widget/kpi-mfa-coverage.hbs
 @@ -1 +1 @@
 -<Widget::IamKpiTile @metric="mfa_coverage" @title="MFA Coverage" @icon="lock" @accent="violet" @unavailableText="Org enforcement shown" ...attributes />
-+<Widget::IamKpiTile @metric="mfa_coverage" @titleKey="iam.components.widget.dashboard.kpi.mfa-coverage" @icon="lock" @accent="violet" @unavailableText="Org enforcement shown" ...attributes />
++<Widget::IamKpiTile @metric="mfa_coverage" @titleKey="iam.components.widget.dashboard.kpi.mfa-coverage" @icon="lock" @accent="violet" @unavailableTextKey="iam.components.widget.dashboard.kpi.mfa-coverage-unavailable" ...attributes />
 diff --git a/addon/components/widget/kpi-pending-invites.hbs b/addon/components/widget/kpi-pending-invites.hbs
 index 7706f2a06d211da6d1daef36c731834a416617af..a78024091d291859077824672f1cc5104a1d4878 100644
 --- a/addon/components/widget/kpi-pending-invites.hbs
@@ -195,15 +221,22 @@ index 8a5b0e85f17ca8a2c1e2c0dd4d132a98246bcdb6..4c5edc780e87a4917b894c04a5c9641a
 -<Widget::IamKpiTile @metric="verified_users" @title="Verified Users" @icon="circle-check" @accent="blue" @footnote="Identity verified" ...attributes />
 +<Widget::IamKpiTile @metric="verified_users" @titleKey="iam.components.widget.dashboard.kpi.verified-users" @icon="circle-check" @accent="blue" @footnoteKey="iam.components.widget.dashboard.footnote.identity-verified" ...attributes />
 diff --git a/addon/components/widget/policy-surface.hbs b/addon/components/widget/policy-surface.hbs
-index 4abb7b866461d31abc9049c50a27c24b5080414c..8b01fa8110c041798febc0dbb5aea917f3ddb5e6 100644
+index 4abb7b866461d31abc9049c50a27c24b5080414c..cadadc1bdf3876a3a204c66c8087764aa849892a 100644
 --- a/addon/components/widget/policy-surface.hbs
 +++ b/addon/components/widget/policy-surface.hbs
-@@ -1,4 +1,4 @@
+@@ -1,8 +1,8 @@
 -<Widget::IamDashboardWidget @endpoint="policy-surface" @title="Policy Surface" @subtitle="Policies by service" @icon="diagram-project" as |data|>
 +<Widget::IamDashboardWidget @endpoint="policy-surface" @titleKey="iam.components.widget.dashboard.metric.policy-surface.title" @subtitleKey="iam.components.widget.dashboard.metric.policy-surface.subtitle" @icon="diagram-project" as |data|>
      <div class="iam-stat-grid iam-stat-grid-3">
-         <div class="iam-stat-card"><span>{{data.total}}</span><small>Total</small></div>
-         <div class="iam-stat-card"><span>{{data.organization_managed}}</span><small>Org managed</small></div>
+-        <div class="iam-stat-card"><span>{{data.total}}</span><small>Total</small></div>
+-        <div class="iam-stat-card"><span>{{data.organization_managed}}</span><small>Org managed</small></div>
+-        <div class="iam-stat-card"><span>{{data.fleetbase_managed}}</span><small>Fleetbase</small></div>
++        <div class="iam-stat-card"><span>{{data.total}}</span><small>{{t "iam.components.widget.dashboard.metric.policy-surface.total"}}</small></div>
++        <div class="iam-stat-card"><span>{{data.organization_managed}}</span><small>{{t "iam.components.widget.dashboard.metric.policy-surface.org-managed"}}</small></div>
++        <div class="iam-stat-card"><span>{{data.fleetbase_managed}}</span><small>{{t "iam.components.widget.dashboard.metric.policy-surface.fleetbase"}}</small></div>
+     </div>
+     <div class="iam-scroll-list mt-3">
+         {{#each data.by_service as |service|}}
 @@ -11,7 +11,7 @@
                  <strong>{{service.value}}</strong>
              </div>
@@ -214,16 +247,28 @@ index 4abb7b866461d31abc9049c50a27c24b5080414c..8b01fa8110c041798febc0dbb5aea917
      </div>
  </Widget::IamDashboardWidget>
 diff --git a/addon/components/widget/privileged-access.hbs b/addon/components/widget/privileged-access.hbs
-index 226bb1a73e6cd77f269fea9f798539dd85779128..378e54f04ab21abf0c18f748103062066b389138 100644
+index 226bb1a73e6cd77f269fea9f798539dd85779128..d7da9c1b4bac6dc054263e3f0d42efb366592b18 100644
 --- a/addon/components/widget/privileged-access.hbs
 +++ b/addon/components/widget/privileged-access.hbs
-@@ -1,4 +1,4 @@
+@@ -1,20 +1,20 @@
 -<Widget::IamDashboardWidget @endpoint="privileged-access" @title="Privileged Access" @subtitle="High access exposure" @icon="user-lock" as |data|>
 +<Widget::IamDashboardWidget @endpoint="privileged-access" @titleKey="iam.components.widget.dashboard.metric.privileged-access.title" @subtitleKey="iam.components.widget.dashboard.metric.privileged-access.subtitle" @icon="user-lock" as |data|>
      <div class="iam-stat-grid iam-stat-grid-3">
-         <div class="iam-stat-card"><span>{{data.privileged_roles_count}}</span><small>Admin roles</small></div>
-         <div class="iam-stat-card"><span>{{data.wildcard_policies_count}}</span><small>Wildcard policies</small></div>
-@@ -14,7 +14,7 @@
+-        <div class="iam-stat-card"><span>{{data.privileged_roles_count}}</span><small>Admin roles</small></div>
+-        <div class="iam-stat-card"><span>{{data.wildcard_policies_count}}</span><small>Wildcard policies</small></div>
+-        <div class="iam-stat-card"><span>{{data.direct_privileged_grants}}</span><small>Direct grants</small></div>
++        <div class="iam-stat-card"><span>{{data.privileged_roles_count}}</span><small>{{t "iam.components.widget.dashboard.metric.privileged-access.admin-roles"}}</small></div>
++        <div class="iam-stat-card"><span>{{data.wildcard_policies_count}}</span><small>{{t "iam.components.widget.dashboard.metric.privileged-access.wildcard-policies"}}</small></div>
++        <div class="iam-stat-card"><span>{{data.direct_privileged_grants}}</span><small>{{t "iam.components.widget.dashboard.metric.privileged-access.direct-grants"}}</small></div>
+     </div>
+     <div class="iam-scroll-list mt-3">
+         {{#each data.roles as |role|}}
+             <div class="iam-list-row">
+                 <div class="min-w-0">
+                     <div class="iam-list-title">{{role.name}}</div>
+-                    <div class="iam-list-subtitle">{{role.type}}</div>
++                    <div class="iam-list-subtitle">{{localize-label role.type "managed-type"}}</div>
+                 </div>
                  <strong>{{role.permissions_count}}</strong>
              </div>
          {{else}}
@@ -385,6 +430,93 @@ index 6605b553ec727ebef62a1b1bd1e00b0126b20c8b..29960d6919828ada8da3822eec7c69cd
                  icon: 'shield',
                  route: 'console.iam.policies',
                  permission: 'iam list policy',
+diff --git a/addon/controllers/policies/index.js b/addon/controllers/policies/index.js
+index 5c2cd1e1e59751c4d6bdb74dcf4eaaec9643c5d0..3f1e29aa1caa299c7516ef8f650c8216a47f562c 100644
+--- a/addon/controllers/policies/index.js
++++ b/addon/controllers/policies/index.js
+@@ -77,6 +77,7 @@ export default class PoliciesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.name'),
+             valuePath: 'name',
++            translationPrefix: 'seeded-policy',
+             cellComponent: 'table/cell/anchor',
+             permission: 'iam view policy',
+             onClick: this.editPolicy,
+@@ -86,6 +87,7 @@ export default class PoliciesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.description'),
+             valuePath: 'description',
++            translationPrefix: 'seeded-policy-desc',
+             sortable: false,
+             width: '35%',
+         },
+@@ -101,6 +103,7 @@ export default class PoliciesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.type'),
+             valuePath: 'type',
++            translationPrefix: 'managed-type',
+             sortable: false,
+             width: '10%',
+             filterable: true,
+diff --git a/addon/controllers/roles/index.js b/addon/controllers/roles/index.js
+index 3aea2995e6b0b4a05b0c5a2a22a01dc361414913..8876aea71550117589cf624b827adc20b83d232c 100644
+--- a/addon/controllers/roles/index.js
++++ b/addon/controllers/roles/index.js
+@@ -77,6 +77,7 @@ export default class RolesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.name'),
+             valuePath: 'name',
++            translationPrefix: 'seeded-role',
+             cellComponent: 'table/cell/anchor',
+             permission: 'iam view role',
+             onClick: this.editRole,
+@@ -86,6 +87,7 @@ export default class RolesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.description'),
+             valuePath: 'description',
++            translationPrefix: 'seeded-role-desc',
+             sortable: false,
+             width: '28%',
+         },
+@@ -101,6 +103,7 @@ export default class RolesIndexController extends Controller {
+         {
+             label: this.intl.t('iam.common.type'),
+             valuePath: 'type',
++            translationPrefix: 'managed-type',
+             sortable: false,
+             width: '13%',
+             filterable: true,
+diff --git a/addon/controllers/users.js b/addon/controllers/users.js
+index e4d28774dcd5e559172071c19d26051c1e8a2d86..b47007f66125eeca66a7b1a8f98565a6901f3868 100644
+--- a/addon/controllers/users.js
++++ b/addon/controllers/users.js
+@@ -3,21 +3,23 @@ import { inject as service } from '@ember/service';
+ import { getOwner } from '@ember/application';
+ 
+ export default class UsersController extends Controller {
++    @service intl;
++
+     @service hostRouter;
+ 
+     get tabs() {
+         return [
+             {
+                 route: 'users.index',
+-                label: 'Users',
++                label: this.intl.t('resource.users'),
+             },
+             {
+                 route: 'users.drivers',
+-                label: 'Drivers',
++                label: this.intl.t('resource.drivers'),
+             },
+             {
+                 route: 'users.customers',
+-                label: 'Customers',
++                label: this.intl.t('resource.customers'),
+             },
+         ];
+     }
 diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
 index 492f6bd3af336ecd51766ea9b530eb36d0229256..27fecab332d59f394069eed490b046afbbead3f0 100644
 --- a/addon/templates/application.hbs
