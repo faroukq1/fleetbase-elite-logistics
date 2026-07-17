@@ -708,6 +708,27 @@ body:not([data-theme='dark']) .next-sidebar .next-content-panel {
     border-radius: 0.5rem;
 }
 
+/* ── Slide-in overlay panels (create/edit driver, vehicle, fleet, chat…) ──
+   postcss-rtlcss rewrites every direction-sensitive rule under [dir="ltr"] /
+   [dir="rtl"], so ember-ui's closed-state rule
+   `.next-content-overlay-pos-right > .next-content-overlay-panel-container
+   { right:0; transform:translateX(100%) }` gains an attribute selector and
+   out-ranks the direction-neutral open-state reset
+   `.next-content-overlay.is-open > … { transform:translate(0) }` — the panel
+   stays translated 100% off-canvas forever and every "+ New" button appears
+   dead. Re-assert the open state at matching specificity per direction.
+   translate(0) is direction-neutral, so rtlcss leaves these rules alone. */
+[dir='ltr'] .next-content-overlay.is-open > .next-content-overlay-panel-container,
+[dir='rtl'] .next-content-overlay.is-open > .next-content-overlay-panel-container {
+    transform: translate(0);
+}
+/* chat compose stacked next to the inbox has one extra class on its
+   closed-state rule (`.has-inbox`), so it needs its own higher-rank reset */
+[dir='ltr'] .chat-compose-overlay.has-inbox.is-open > .next-content-overlay-panel-container,
+[dir='rtl'] .chat-compose-overlay.has-inbox.is-open > .next-content-overlay-panel-container {
+    transform: translate(0);
+}
+
 /* Respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
     body,
