@@ -1,0 +1,39 @@
+services:
+  application:
+    volumes:
+      - ./api/config/filesystems.php:/fleetbase/api/config/filesystems.php
+    environment:
+      APP_KEY: "base64:5AHH8DVqh2CEWs2w8YJXOVWPucis2xhzqXNTIcQecA8="
+      APP_NAME: "Elite Logistics"
+      APP_URL: "http://localhost:8000"
+      CONSOLE_HOST: "http://localhost:4200"
+      ENVIRONMENT: "Development"
+      APP_DEBUG: "true"
+      DATABASE_URL: "mysql://fleetbase:65b114b155bb0ec1ceeaa886cce89a32117946d0@database/fleetbase"
+      SESSION_DOMAIN: "localhost"
+      MAIL_MAILER: "log"
+      MAIL_FROM_ADDRESS: "hello@example.com"
+      MAIL_FROM_NAME: "Elite Logistics"
+      FILESYSTEM_DRIVER: "public"
+
+  queue:
+    volumes:
+      - ./api/storage/app:/fleetbase/api/storage/app
+      - ./api/config/filesystems.php:/fleetbase/api/config/filesystems.php
+
+  scheduler:
+    volumes:
+      - ./api/storage/app:/fleetbase/api/storage/app
+      - ./api/config/filesystems.php:/fleetbase/api/config/filesystems.php
+
+  socket:
+    environment:
+      SOCKETCLUSTER_OPTIONS: "{\"origins\":\"http://localhost:*,https://localhost:*,ws://localhost:*,wss://localhost:*\"}"
+
+  database:
+    environment:
+      MYSQL_ROOT_PASSWORD: "1db2a20b37005302dae2f338faa77a08839566e6"
+      MYSQL_DATABASE: "fleetbase"
+      MYSQL_USER: "fleetbase"
+      MYSQL_PASSWORD: "65b114b155bb0ec1ceeaa886cce89a32117946d0"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
