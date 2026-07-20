@@ -109,6 +109,13 @@ RUN mkdir -p /var/www/.cache/composer && chown -R www-data:www-data /var/www/.ca
 # Optimize Composer Dependency Installation
 COPY --chown=www-data:www-data ./api/composer.json ./api/composer.lock /fleetbase/api/
 
+# Copy composer patches so `extra.patches` (e.g. Arabic export column
+# headings) resolve as local files during the install below — cweagans/
+# composer-patches falls back to treating an unresolvable local path as a
+# remote URL, which fails with a cryptic TypeError, so this must precede
+# `composer install`. Mirrors the equivalent step in console/Dockerfile.
+COPY --chown=www-data:www-data ./api/patches /fleetbase/api/patches
+
 # Pre-install Composer dependencies
 RUN su www-data -s /bin/sh -c "composer install --no-scripts --optimize-autoloader --no-dev --no-cache"
 
