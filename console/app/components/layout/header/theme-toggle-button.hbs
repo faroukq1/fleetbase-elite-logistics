@@ -1,0 +1,11 @@
+<div class="next-user-button theme-toggle-tray" ...attributes>
+    <button
+        type="button"
+        class="next-org-button-trigger theme-toggle-trigger {{if this.isDark 'is-dark'}}"
+        {{on "click" this.toggle}}
+        title={{this.label}}
+        aria-label={{this.label}}
+    >
+        <FaIcon @icon={{if this.isDark "sun" "moon"}} @size="sm" />
+    </button>
+</div>

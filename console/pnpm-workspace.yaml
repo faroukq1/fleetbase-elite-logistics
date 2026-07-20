@@ -16,6 +16,7 @@ allowBuilds:
   core-js: false
   fsevents: false
 patchedDependencies:
+  '@fleetbase/ai-engine@0.0.2': patches/@fleetbase__ai-engine@0.0.2.patch
   '@fleetbase/dev-engine@0.2.14': patches/@fleetbase__dev-engine@0.2.14.patch
   '@fleetbase/ember-core@0.3.24': patches/@fleetbase__ember-core@0.3.24.patch
   '@fleetbase/ember-ui@0.3.41': patches/@fleetbase__ember-ui@0.3.41.patch

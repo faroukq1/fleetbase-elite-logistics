@@ -217,6 +217,82 @@ index f045dd88fb41d0e053f15b7588bdc473702bcf62..d1d77233d9e271e5109ae6c1693f1c1f
                  'settings hub',
                  'configuration dashboard',
                  'setup focus',
+diff --git a/addon/components/map/toolbar/visibility-control-panel.js b/addon/components/map/toolbar/visibility-control-panel.js
+index 244722fac6b0c6f90cc93fe6ba71f0b46b770bce..1fb15a791eb580634307ea43aae454191cc6f51a 100644
+--- a/addon/components/map/toolbar/visibility-control-panel.js
++++ b/addon/components/map/toolbar/visibility-control-panel.js
+@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
+ import { inject as service } from '@ember/service';
+ import { action } from '@ember/object';
+ import { calculateInPlacePosition } from 'ember-basic-dropdown/utils/calculate-position';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class MapToolbarVisibilityControlPanel extends Component {
+     @service leafletLayerVisibilityManager;
+@@ -45,7 +46,10 @@ export default class MapToolbarVisibilityControlPanel extends Component {
+         const position = calculateInPlacePosition(...arguments);
+         const rect = trigger.getBoundingClientRect();
+         position.style.top = '-0.5rem';
+-        position.style.left = `calc(${rect.width}px + 0.75rem)`;
++        // Elite Logistics: see the matching comment in zones-panel.js —
++        // mirror the offset side so the panel opens beside its trigger in
++        // both directions instead of always opening rightward.
++        position.style[resolveStickySide('left')] = `calc(${rect.width}px + 0.75rem)`;
+         return position;
+     }
+ 
+diff --git a/addon/components/map/toolbar/zones-panel.js b/addon/components/map/toolbar/zones-panel.js
+index 13de1df8dad838afd11fe054f6403ce3fc7762f9..2f7b26bcd9a42a5211193024984ecf10249f29d8 100644
+--- a/addon/components/map/toolbar/zones-panel.js
++++ b/addon/components/map/toolbar/zones-panel.js
+@@ -2,6 +2,7 @@ import Component from '@glimmer/component';
+ import { inject as service } from '@ember/service';
+ import { action } from '@ember/object';
+ import { calculateInPlacePosition } from 'ember-basic-dropdown/utils/calculate-position';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class MapToolbarZonesPanelComponent extends Component {
+     @service leafletMapManager;
+@@ -17,7 +18,12 @@ export default class MapToolbarZonesPanelComponent extends Component {
+         const rect = trigger.getBoundingClientRect();
+ 
+         position.style.top = '-0.5rem';
+-        position.style.left = `calc(${rect.width}px + 0.75rem)`;
++        // Elite Logistics: this offsets the panel so it opens beside its
++        // toolbar trigger — hardcoding `left` always opens it rightward,
++        // which in RTL runs the panel back over the toolbar/off in the
++        // wrong direction. Mirror the property so it opens the same way
++        // relative to the trigger in both directions.
++        position.style[resolveStickySide('left')] = `calc(${rect.width}px + 0.75rem)`;
+ 
+         return position;
+     }
+diff --git a/addon/components/map/toolbar.js b/addon/components/map/toolbar.js
+index 7e20db4fccade48fb73e4c002f4d29050324432a..92aa8dd3c859f0ceaf272f1fded264cfe5cb93fd 100644
+--- a/addon/components/map/toolbar.js
++++ b/addon/components/map/toolbar.js
+@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
+ import { action } from '@ember/object';
+ import { debug } from '@ember/debug';
+ import { task } from 'ember-concurrency';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class MapToolbarComponent extends Component {
+     @service mapManager;
+@@ -21,9 +22,12 @@ export default class MapToolbarComponent extends Component {
+     @action calculatePosition(trigger) {
+         let { width } = trigger.getBoundingClientRect();
+ 
++        // Elite Logistics: see the matching comment in
++        // map/toolbar/zones-panel.js — mirror the offset side so this opens
++        // beside its trigger in both directions instead of always rightward.
+         let style = {
+             marginTop: '0px',
+-            left: `${width + 13}px`,
++            [resolveStickySide('left')]: `${width + 13}px`,
+             top: '0px',
+         };
+ 
 diff --git a/addon/controllers/management/contacts.js b/addon/controllers/management/contacts.js
 index 44cabb06d4bfaac489a133bcecd8fab1fd8e5ced..67dc45aba54c2b0458947392e71717b3e8997aef 100644
 --- a/addon/controllers/management/contacts.js
@@ -948,7 +1024,7 @@ index c3bfe016ff00657626c5a2a00dab5e627c0bff7f..b406609f4a402ccbfdf1983a19cabf60
      }}
  />
 diff --git a/translations/ar-ae.yml b/translations/ar-ae.yml
-index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9864f05f4 100644
+index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..c16804028bd6e0a40d197da81b4fbd1251219606 100644
 --- a/translations/ar-ae.yml
 +++ b/translations/ar-ae.yml
 @@ -1,228 +1,1001 @@
@@ -1946,9 +2022,9 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 +        notes-placeholder: أدخل ملاحظات الطلب هنا....
 +        notes-title: ملاحظات
 +        optimize-route: تحسين المسار
-+        optimize-route-help-text: سيقوم Fleetbase بتحسين المسار تلقائيًا.
++        optimize-route-help-text: سيقوم النظام بتحسين المسار تلقائيًا.
 +        order-type: نوع الطلب
-+        order-type-help-text: اختيار نوع الطلب سيخبر Fleetbase بتكوينات الطلب التي يجب استخدامها.
++        order-type-help-text: اختيار نوع الطلب سيخبر النظام بتكوينات الطلب التي يجب استخدامها.
 +        order-type-placeholder: اختر نوع الطلب
 +        payload-entities: الحمولة / الكيانات
 +        pickup: الاستلام
@@ -2069,7 +2145,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 +
 +order-config-manager:
 +    title: تكوين الطلبات
-+    message: تتيح لك تكوينات الطلبات تحديد التكوينات الديناميكية التي ستخبر Fleetbase بكيفية تنفيذ أنواع مختلفة من الطلبات.
++    message: تتيح لك تكوينات الطلبات تحديد التكوينات الديناميكية التي ستخبر النظام بكيفية تنفيذ أنواع مختلفة من الطلبات.
 +    configuration: التكوين
 +    new-order-config: تكوين طلب جديد
 +    select-order-config: اختر تكوين الطلب
@@ -2582,7 +2658,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 +        title: المعاملات الأخيرة
 +        loading: جارٍ تحميل المعاملات الأخيرة...
 +        no-transactions: لا توجد معاملات هذا الأسبوع
-+        message: عندما تمر الطلبات بمعدلات الخدمة، تتعقب Fleetbase المعاملات تلقائيًا.
++        message: عندما تمر الطلبات بمعدلات الخدمة، يتعقب النظام المعاملات تلقائيًا.
 +
 +display-panel:
 +    no-address: لا يوجد عنوان {type}!
@@ -3286,7 +3362,8 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 +    order-new-activity:
 +        select-message: اختر حالة نشاط لتحديث نشاط تتبع الطلب.
          order-currently-message: هذا الطلب حاليًا {options}، سيتم استبدال النشاط الإضافي بهذه الحالة.
-         not-recommend-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
+-        not-recommend-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
++        not-recommend-message: لا يُنصح بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
          activity-options: خيارات النشاط
          activity: النشاط
 -        dispatch: سيؤدي هذا إلى إرسال الطلب.
@@ -3294,13 +3371,14 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
          status: حالة النشاط المخصصة
          details: تفاصيل النشاط المخصصة
          code: رمز النشاط المخصص
-         fleetbase-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
+-        fleetbase-message: لا توصي Fleetbase بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
 -      order-route-form:
++        fleetbase-message: لا يُنصح بهذا إلا إذا كنت تعرف تمامًا ما تفعله.
 +    order-route-form:
          toggle: تبديل عمليات التسليم المتعددة
          optimize: تحسين المسار
 -        optimize-text: ستقوم Fleetbase تلقائيًا بتحسين المسار.
-+        optimize-text: سيقوم Fleetbase بتحسين المسار تلقائيًا.
++        optimize-text: سيقوم النظام بتحسين المسار تلقائيًا.
          add: إضافة نقطة توقف
 -        add-text: استخدم زر `إضافة نقطة توقف` لإضافة المزيد من التوقفات لهذا الطلب. سيقوم محرك التوجيه Fleetbase تلقائيًا بتحسين المسار مع إضافة أو إزالة كل توقف.
 -        select-waypoint: اختر نقطة توقف 
@@ -3361,7 +3439,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 -        message: مرحبًا بك في Fleetbase! قبل أن تبدأ، قم بتعيين كلمة مرور جديدة للمتابعة أدناه.
 +        country-text: اختياريًا، حدد البلد الذي تقع فيه منطقة الخدمة.
 +    set-password:
-+        message: مرحبًا بك في Fleetbase! قبل أن تبدأ، قم بتعيين كلمة مرور جديدة للمتابعة.
++        message: مرحبًا بك في Elite Logistics! قبل أن تبدأ، قم بتعيين كلمة مرور جديدة للمتابعة.
          new-password: كلمة مرور جديدة
          confirm-password: تأكيد كلمة المرور
          help-text: أدخل كلمة مرور لا تقل عن 8 أحرف للمتابعة.
@@ -4571,7 +4649,7 @@ index 2bd5b00c61d1f81959f6ed98f15c49e7ffa11b16..b2d8d0e792349fbc7060562cb1fbd9a9
 +        warning-message: غير قادر على تحديد موقع المركبة.
 +        message: تصفية المركبات بالكلمة المفتاحية...
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index bd27d73a35bfc1eade94c7d00acc81746cc84df0..24f1e7891a7e233687452eb0793d804f77996f8f 100644
+index bd27d73a35bfc1eade94c7d00acc81746cc84df0..07a54b1b15e01d8ae8c125472c8dd36d8784a666 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
 @@ -1,4 +1,28 @@
@@ -4603,3 +4681,113 @@ index bd27d73a35bfc1eade94c7d00acc81746cc84df0..24f1e7891a7e233687452eb0793d804f
      extension-name: Fleet-Ops
  
  common:
+@@ -638,7 +662,7 @@ order:
+         add-item-button: Add Item
+         add-item-order: Add Item to Order
+         add-waypoint: Add Waypoint
+-        add-waypoint-help-text: 'Use the `Add Waypoint` button to add more stops for this order. The Fleetbase routing engine will automatically optimize the route as each stop is added or removed.'
++        add-waypoint-help-text: 'Use the `Add Waypoint` button to add more stops for this order. The routing engine will automatically optimize the route as each stop is added or removed.'
+         adhoc-ping: Adhoc Ping Distance
+         adhoc-ping-help-text: This setting determines the adhoc distance to ping for this order, if unset it will fallback to the default setting.
+         adhoc-ping-message: Distance must be in meters
+@@ -662,7 +686,7 @@ order:
+         facilitator: Facilitator
+         facilitator-help-text: Optionally assign a facilitator for this order, a facilitator can be a 3rd party subcontractor or service that will facilitate the transport of this order.
+         facilitator-placeholder: Select Facilitator
+-        info-text: Select a real time service quote to apply to this order. Once a quote is applied to the order, it will become a purchased rate. Transactions will be tracked within the Fleetbase ledger.
++        info-text: Select a real time service quote to apply to this order. Once a quote is applied to the order, it will become a purchased rate. Transactions will be tracked within the ledger.
+         internal-id: Internal ID
+         internal-id-help-text: Use this field to optionally set a custom identifier or internal identifier for the order.
+         invalid-coordinates: 'Invalid coordinates!'
+@@ -672,9 +696,9 @@ order:
+         notes-placeholder: Enter order notes here....
+         notes-title: Notes
+         optimize-route: Optimize Route
+-        optimize-route-help-text: Fleetbase will automatically optimize the route.
++        optimize-route-help-text: The platform will automatically optimize the route.
+         order-type: Order Type
+-        order-type-help-text: Selecting the order type will tell fleetbase what order configurations to use.
++        order-type-help-text: Selecting the order type will tell the platform what order configurations to use.
+         order-type-placeholder: Select Order Type
+         payload-entities: Payload / Entities
+         pickup: Pickup
+@@ -732,7 +756,7 @@ order:
+         current-destination: Current Destination
+         no-service-quotes: No service quotes.
+         input-order-routes: Input order route to view service quotes.
+-        service-quote-info: Select a real time service quote to apply to this order. Once a quote is applied to the order, it will become a purchased rate. Transactions will be tracked within the Fleetbase ledger.
++        service-quote-info: Select a real time service quote to apply to this order. Once a quote is applied to the order, it will become a purchased rate. Transactions will be tracked within the ledger.
+     prompts:
+         update-details-success: '{orderId} details has been updated.'
+         route-error: Route optimization failed, check route entry and try again.
+@@ -796,7 +820,7 @@ order:
+ 
+ order-config-manager:
+     title: Orders Configuration
+-    message: Order configurations allow you to define dynamic configurations which will tell Fleetbase how different types of orders should be executed.
++    message: Order configurations allow you to define dynamic configurations which will tell the platform how different types of orders should be executed.
+     configuration: Configuration
+     new-order-config: New Order Config
+     select-order-config: Select Order Config
+@@ -1070,7 +1094,7 @@ integrated-vendor:
+         reset-credentials: Click here to reset credentials
+         sandbox: Sandbox
+         webhook: Webhook URL
+-        webhook-help-text: Integrated vendors will typically require this so that Fleetbase can receive activity updates on the order. Do not change unless you know what you are doing! Changing this may break your order updates!
++        webhook-help-text: Integrated vendors will typically require this so that the platform can receive activity updates on the order. Do not change unless you know what you are doing! Changing this may break your order updates!
+         host: Custom Host
+         host-help-text: Optionally provide a custom host that should be used for this integration.
+         namespace: Custom Namespace
+@@ -1562,21 +1586,21 @@ modals:
+     order-new-activity:
+         select-message: Select an activity status to update order tracking activity, or input a custom activity.
+         order-currently-message: This order is currently {options}, additional activity will overwrite this status.
+-        not-recommend-message: Fleetbase does not recommend this unless you absolutely know what you're doing.
++        not-recommend-message: This is not recommended unless you absolutely know what you're doing.
+         activity-options: Activity Options
+         activity: activity
+         dispatch: This will trigger the order to dispatch.
+         status: Custom activity status
+         details: Custom activity details
+         code: Custom activity code
+-        fleetbase-message: Fleetbase does not recommend this unless you absolutely know what you're doing.
++        fleetbase-message: This is not recommended unless you absolutely know what you're doing.
+ 
+     order-route-form:
+         toggle: Toggle Multiple Dropoff's
+         optimize: Optimize Route
+-        optimize-text: Fleetbase will automatically optimize the route.
++        optimize-text: The platform will automatically optimize the route.
+         add: Add Waypoint
+-        add-text: Use the `Add Waypoint` button to add more stops for this order. The Fleetbase routing engine will automatically optimize the route as each stop is added or removed.
++        add-text: Use the `Add Waypoint` button to add more stops for this order. The routing engine will automatically optimize the route as each stop is added or removed.
+         select-waypoint: Select Waypoint
+         pickup: Pickup
+         edit-address: Edit Address
+@@ -1622,7 +1646,7 @@ modals:
+         country-text: Optionally set the country in which this service area is located or based in.
+ 
+     set-password:
+-        message: Welcome to Fleetbase! Before you get started, set a new password to continue below.
++        message: Welcome to Elite Logistics! Before you get started, set a new password to continue below.
+         new-password: New Password
+         confirm-password: Confirm Password
+         help-text: Enter a password at-least 8 characters to continue.
+@@ -1717,7 +1741,7 @@ modals:
+         custom-namespace: Custom Namespace
+         namespace-text: Optionally provide a custom namespace or api version that should be used for the integration.
+         webhook: Webhook URL
+-        webhook-text: Integrated vendors will typically require this so that Fleetbase can receive activity updates on the order. Do not change unless you know what you are doing! Changing this may break your order updates!
++        webhook-text: Integrated vendors will typically require this so that the platform can receive activity updates on the order. Do not change unless you know what you are doing! Changing this may break your order updates!
+         cancel-credentials: Cancel credentials reset
+         reset-message: Sensitive credentials can only be reset, to update credentials you must re-enter the credentials.
+         optionally: Optionally supply your own
+@@ -1816,7 +1840,7 @@ widget:
+         title: Recent Transactions
+         loading: Loading recent transactions...
+         no-transactions: No transactions this week
+-        message: When orders are going through with service rates, Fleetbase tracks transactions automatically.
++        message: When orders are going through with service rates, the platform tracks transactions automatically.
+ 
+ display-panel:
+     no-address: No {type} address!

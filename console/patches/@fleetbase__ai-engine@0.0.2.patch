@@ -1,0 +1,71 @@
+diff --git a/addon/components/admin/ai-settings.hbs b/addon/components/admin/ai-settings.hbs
+index 3bd6dea4942ca6f93fd2ddb67a2e97dcb229cc5d..09305f0793d887302a14bb58f667b8beac4526ed 100644
+--- a/addon/components/admin/ai-settings.hbs
++++ b/addon/components/admin/ai-settings.hbs
+@@ -1,6 +1,6 @@
+-<ContentPanel @title="Fleetbase AI" @open={{true}} @wrapperClass="bordered-classic">
++<ContentPanel @title="Elite AI" @open={{true}} @wrapperClass="bordered-classic">
+     <InputGroup class="mb-2">
+-        <Toggle @isToggled={{this.config.enabled}} @onToggle={{fn this.setValue "enabled"}} @label="Enable Fleetbase AI" />
++        <Toggle @isToggled={{this.config.enabled}} @onToggle={{fn this.setValue "enabled"}} @label="Enable Elite AI" />
+     </InputGroup>
+ 
+     {{#if this.isEnabled}}
+diff --git a/addon/components/ai-header-tray-button.hbs b/addon/components/ai-header-tray-button.hbs
+index 2d6a8fd52a66069a1483d50ae3878dddabeb8c49..c4a597de58e4262c86d04ee18014b17586753703 100644
+--- a/addon/components/ai-header-tray-button.hbs
++++ b/addon/components/ai-header-tray-button.hbs
+@@ -3,7 +3,7 @@
+         <button
+             type="button"
+             class="fleetbase-ai-header-tray-button-trigger {{if (media 'isMobile') 'is-mobile'}}"
+-            aria-label="Open Fleetbase AI"
++            aria-label="Open Elite AI"
+             {{on "click" this.togglePrompt}}
+         >
+             <span class="next-org-button-trigger fleetbase-ai-header-tray-button-icon flex-shrink-0">
+@@ -11,7 +11,7 @@
+             </span>
+         </button>
+         <Attach::Tooltip @class="clean" @animation="scale" @placement="bottom">
+-            <InputInfo @text="Open Fleetbase AI" />
++            <InputInfo @text="Open Elite AI" />
+         </Attach::Tooltip>
+     </div>
+ {{/if}}
+diff --git a/addon/components/ai-prompt.hbs b/addon/components/ai-prompt.hbs
+index ecd9a40f28338fbb1089e24b50f04ed5c7284dad..e3f3a9367a34423602663ac6142198f7a82c34a0 100644
+--- a/addon/components/ai-prompt.hbs
++++ b/addon/components/ai-prompt.hbs
+@@ -1,6 +1,6 @@
+ {{#if this.ai.isOpen}}
+-    <div class="fleetbase-ai-backdrop" role="button" aria-label="Close Fleetbase AI" {{on "click" this.close}}></div>
+-    <div class="fleetbase-ai-overlay" role="dialog" aria-label="Fleetbase AI" {{on "click" this.close}}>
++    <div class="fleetbase-ai-backdrop" role="button" aria-label="Close Elite AI" {{on "click" this.close}}></div>
++    <div class="fleetbase-ai-overlay" role="dialog" aria-label="Elite AI" {{on "click" this.close}}>
+         <div class="fleetbase-ai-shell">
+             {{#if this.showHistory}}
+                 <div class="fleetbase-ai-history-overlay" {{on "click" this.stopPropagation}}>
+@@ -178,7 +178,7 @@
+                         <Textarea
+                             @value={{this.prompt}}
+                             rows="1"
+-                            placeholder="Ask Fleetbase AI..."
++                            placeholder="Ask Elite AI..."
+                             class="fleetbase-ai-input"
+                             {{on "keydown" this.handlePromptKeydown}}
+                             {{on "input" this.resizePromptTextarea}}
+diff --git a/addon/templates/home.hbs b/addon/templates/home.hbs
+index 31b36035efa9986522d3d74108ae9c226cddd26e..ae1d636a80e5822e9063181d2aac1c2ad82d18ac 100644
+--- a/addon/templates/home.hbs
++++ b/addon/templates/home.hbs
+@@ -1,7 +1,7 @@
+ <div class="p-4">
+-    <Layout::Section::Header @title="Fleetbase AI" />
++    <Layout::Section::Header @title="Elite AI" />
+     <Layout::Section::Body>
+-        <p class="text-sm text-gray-600 dark:text-gray-300">Fleetbase AI runs globally from the header button or keyboard shortcut.</p>
++        <p class="text-sm text-gray-600 dark:text-gray-300">Elite AI runs globally from the header button or keyboard shortcut.</p>
+     </Layout::Section::Body>
+ </div>
+ {{outlet}}

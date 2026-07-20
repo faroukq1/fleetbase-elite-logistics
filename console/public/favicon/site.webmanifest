@@ -1,7 +1,19 @@
 {
     "name": "Elite Logistics Console",
     "short_name": "Elite Logistics",
-    "theme_color": "#16a34a",
+    "theme_color": "#5dd62c",
     "background_color": "#ffffff",
-    "display": "standalone"
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/favicon/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/favicon/android-chrome-256x256.png",
+            "sizes": "256x256",
+            "type": "image/png"
+        }
+    ]
 }

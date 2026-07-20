@@ -1,5 +1,8 @@
 app:
   name: Elite Logistics
+theme-toggle:
+  switch-to-light: التبديل إلى الوضع الفاتح
+  switch-to-dark: التبديل إلى الوضع الداكن
 common:
   no-records-found: لا توجد سجلات
   upload-new: رفع جديد
@@ -940,7 +943,7 @@ nav-card-desc:
   api-keys-webhooks-socket-channels-event-logs-and-developer-tooling: "مفاتيح API وخطافات الويب وقنوات المقابس وسجلات الأحداث وأدوات المطورين."
   identity-and-access-management-users-roles-policies-and-permissions: "إدارة الهوية والوصول: المستخدمون والأدوار والسياسات والأذونات."
   invoicing-payments-accounting-and-real-time-financial-reporting: "الفوترة والمدفوعات والمحاسبة والتقارير المالية الفورية."
-  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "اكتشف وثبّت وانشر الامتدادات في سجل امتدادات Fleetbase."
+  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "اكتشف وثبّت وانشر الامتدادات في سجل الامتدادات."
   create-and-manage-api-keys-for-authenticating-your-integrations: "أنشئ وأدر مفاتيح API لمصادقة عمليات الدمج الخاصة بك."
   configure-webhook-endpoints-to-receive-real-time-event-notifications: "كوّن نقاط نهاية خطافات الويب لتلقي إشعارات الأحداث الفورية."
   monitor-active-websocket-channels-and-connected-clients: "راقب قنوات WebSocket النشطة والعملاء المتصلين."

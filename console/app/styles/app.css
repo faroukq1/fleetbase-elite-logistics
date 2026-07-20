@@ -387,12 +387,48 @@ body[data-theme='dark'] .table-wrapper table tbody {
     background-color: transparent !important;
     border-color: rgba(93, 214, 44, 0.15) !important;
 }
-body[data-theme='dark'] .next-table-wrapper table thead tr th,
-body[data-theme='dark'] .table-wrapper table thead tr th {
-    background-color: rgba(9, 30, 66, 0.6) !important;
-    border-color: rgba(93, 214, 44, 0.2) !important;
-    color: #9fb3c8 !important;
+/* ── ELITE SKIN: table headers — solid brand green ──────────────────────────
+   Client-specified exact color: rgb(126 227 82). Applied theme-independently
+   (like the sidebar's active pill and primary buttons elsewhere in this
+   file) so headers look the same in light and dark mode rather than the
+   vendor's navy/light-green tint that used to vary per theme. Text and sort
+   icons are dark, not white: at this background's luminance, white text
+   comes out under 2:1 contrast (fails WCAG AA); a dark near-black clears it
+   comfortably — this is the "or appropriate contrast" the brief allows for.
+   Covers both table implementations in this codebase (`.next-table-wrapper`
+   and the older `.table-wrapper`) plus sticky header cells (e.g. the pinned
+   driver-identity and row-actions columns), so no header cell is left
+   showing the old background. Sorting/sticky behavior is untouched — this
+   only changes colors. */
+.next-table-wrapper table thead tr th,
+.table-wrapper table thead tr th,
+.next-table-wrapper table thead th.is-sticky {
+    background-color: rgb(126 227 82) !important;
+    border-color: rgb(126 227 82 / 40%) !important;
+    color: #111827 !important;
 }
+.next-table-wrapper table thead tr th .sort-icon-wrapper,
+.table-wrapper table thead tr th .sort-icon-wrapper,
+.next-table-wrapper table thead tr th .sort-icon,
+.table-wrapper table thead tr th .sort-icon {
+    color: rgb(17 24 39 / 55%) !important;
+}
+.next-table-wrapper table thead tr th:hover .sort-icon,
+.table-wrapper table thead tr th:hover .sort-icon {
+    color: rgb(17 24 39 / 75%) !important;
+}
+.next-table-wrapper table thead tr th .sort-icon.is-ascending,
+.next-table-wrapper table thead tr th .sort-icon.is-descending,
+.table-wrapper table thead tr th .sort-icon.is-ascending,
+.table-wrapper table thead tr th .sort-icon.is-descending {
+    color: #111827 !important;
+}
+.next-table-wrapper table thead tr th .sort-icon-wrapper > .sort-priority-badge,
+.table-wrapper table thead tr th .sort-icon-wrapper > .sort-priority-badge {
+    color: #111827 !important;
+    background-color: rgb(17 24 39 / 12%) !important;
+}
+
 body[data-theme='dark'] .next-table-wrapper table tbody tr td,
 body[data-theme='dark'] .table-wrapper table tbody tr td {
     background-color: transparent !important;
@@ -493,12 +529,6 @@ body:not([data-theme='dark']) .content-panel > .content-panel-header {
 body:not([data-theme='dark']) .next-content-panel > .next-content-panel-header.next-content-panel-is-closed {
     border-bottom: none !important;
 }
-body:not([data-theme='dark']) .next-table-wrapper table thead tr th,
-body:not([data-theme='dark']) .table-wrapper table thead tr th {
-    background-color: rgba(93, 214, 44, 0.07) !important;
-    border-color: rgba(93, 214, 44, 0.2) !important;
-}
-
 /* ── Smooth light/dark theme toggle ────────────────────────────────────── */
 /* Transition surfaces/borders/text when [data-theme] flips on <html>. Scoped
    to common containers to avoid janking every element on the page. */
@@ -729,6 +759,241 @@ body:not([data-theme='dark']) .next-sidebar .next-content-panel {
     transform: translate(0);
 }
 
+/* ── ELITE SKIN: green scrollbars everywhere ────────────────────────────────
+   ember-ui's reset.css already drives the default `::-webkit-scrollbar` off
+   `--sb-*` custom properties on `body` — redeclaring them here (same
+   selector, later in the cascade) is enough to reskin every plain
+   overflow container in the app, including the Firefox `scrollbar-color`
+   fallback that already reads the same variables. A few components
+   (data tables, the kanban board) hard-code their own gray scrollbar rules
+   with `@apply`/literal colors instead of the shared variables, so those
+   get matching explicit overrides below. Thumb color = the same green used
+   by primary buttons/active nav (#5dd62c / hover #47a821). */
+body {
+    --sb-track-color: #eef1f4;
+    --sb-thumb-color: #5dd62c;
+    --sb-thumb-hover-color: #47a821;
+    --sb-size: 10px;
+}
+body[data-theme='dark'] {
+    --sb-track-color: #141414;
+    --sb-thumb-color: #5dd62c;
+    --sb-thumb-hover-color: #7ee352;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    transition: background-color 0.15s ease;
+}
+@supports not selector(::-webkit-scrollbar) {
+    * {
+        scrollbar-width: auto;
+    }
+}
+
+/* data table horizontal scrollbar */
+.next-table-wrapper::-webkit-scrollbar {
+    height: 10px !important;
+}
+.next-table-wrapper::-webkit-scrollbar-track {
+    background: #eef1f4 !important;
+    border-radius: 999px !important;
+}
+.next-table-wrapper::-webkit-scrollbar-thumb {
+    background: #5dd62c !important;
+    border-radius: 999px !important;
+    transition: background-color 0.15s ease;
+}
+.next-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #47a821 !important;
+}
+.next-table-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #5dd62c #eef1f4;
+}
+body[data-theme='dark'] .next-table-wrapper::-webkit-scrollbar-track {
+    background: #141414 !important;
+}
+body[data-theme='dark'] .next-table-wrapper::-webkit-scrollbar-thumb {
+    background: #5dd62c !important;
+}
+body[data-theme='dark'] .next-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #7ee352 !important;
+}
+body[data-theme='dark'] .next-table-wrapper {
+    scrollbar-color: #5dd62c #141414;
+}
+
+/* kanban board horizontal scrollbar */
+.kanban-board .kanban-columns-container::-webkit-scrollbar {
+    height: 10px;
+}
+.kanban-board .kanban-columns-container::-webkit-scrollbar-thumb {
+    background: #5dd62c !important;
+    background-clip: content-box;
+    border-radius: 999px;
+    transition: background-color 0.15s ease;
+}
+.kanban-board .kanban-columns-container::-webkit-scrollbar-thumb:hover {
+    background: #47a821 !important;
+    background-clip: content-box;
+}
+body[data-theme='dark'] .kanban-board .kanban-columns-container::-webkit-scrollbar-thumb {
+    background: #5dd62c !important;
+    background-clip: content-box;
+}
+body[data-theme='dark'] .kanban-board .kanban-columns-container::-webkit-scrollbar-thumb:hover {
+    background: #7ee352 !important;
+    background-clip: content-box;
+}
+
+/* ── RTL: pagination direction arrows ───────────────────────────────────────
+   The prev/next chevrons in ember-ui's pagination component are raw inline
+   SVG paths (not an icon font class or CSS background), so postcss-rtlcss
+   can't flip them automatically — it only rewrites CSS declarations. Flex
+   already re-orders these buttons visually in RTL for free (`row` reverses
+   with the writing direction), but each button's arrow shape stays fixed,
+   so "backward" keeps pointing left even after it lands on the right side —
+   the wrong way round for RTL's "back points toward where you came from"
+   convention. Mirror both horizontally in RTL so the shapes match where
+   flex actually put them. */
+[dir='rtl'] #fleetbase-pagination-backward-button svg,
+[dir='rtl'] #fleetbase-pagination-forward-button svg {
+    transform: scaleX(-1);
+}
+
+/* Same problem, same fix, for the sidebar navigator's drill-down chevrons:
+   the "go back to parent menu" icon and the "this item has children, open
+   it" caret are both fixed-direction FontAwesome SVGs (chevron-left /
+   chevron-right) that don't know about `dir`. */
+[dir='rtl'] .next-sidebar-navigator-back-icon svg,
+[dir='rtl'] .next-sidebar-navigator-item-caret svg {
+    transform: scaleX(-1);
+}
+
+/* ── ELITE SKIN: header theme toggle ────────────────────────────────────────
+   Layout::Header::ThemeToggleButton (app/components/layout/header/
+   theme-toggle-button.*) sits in the header tray next to the language
+   selector — it reuses the same `.next-user-button` / `.next-org-button-trigger`
+   sizing ember-ui already applies to every tray icon (LocaleSelectorTray,
+   NotificationTray, ChatTray), so no layout CSS is needed here, just a
+   small hover/transition touch consistent with the rest of the app. */
+.theme-toggle-trigger svg {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.theme-toggle-trigger:hover svg {
+    transform: rotate(24deg);
+}
+.theme-toggle-trigger.is-dark:hover svg {
+    transform: rotate(-24deg);
+}
+
+/* ── ELITE SKIN: icon-only collapsed sidebar rail ──────────────────────────
+   `.sidebar-minimized` is the vendor state class used by both the desktop
+   header collapse-toggle button and drag-to-collapse — the ember-ui patch
+   (services/sidebar.js `toggleCollapsed`, components/layout/sidebar.js
+   `stopResize`/`minimize`) stops those two paths from calling hide() (which
+   slid the whole sidebar off-canvas) and routes them through minimize()
+   instead, per the client requirement: collapsing must never make the
+   sidebar disappear. This turns that state into a proper icon rail: fixed
+   narrow width, centered icons, labels/search hidden, smooth transition.
+   Native `title` tooltips are wired in app/instance-initializers/
+   sidebar-collapse-tooltips.js so hovering a bare icon still shows its
+   label — no vendor template changes needed for that part. */
+
+.next-sidebar {
+    transition:
+        margin-right 260ms cubic-bezier(0.4, 0, 0.2, 1),
+        transform 260ms cubic-bezier(0.4, 0, 0.2, 1),
+        width 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.next-sidebar.sidebar-minimized {
+    width: 4.25rem !important;
+    min-width: 4.25rem !important;
+    max-width: 4.25rem !important;
+    transform: none !important;
+}
+
+.next-sidebar.sidebar-is-resizing.sidebar-minimized,
+.next-sidebar.sidebar-resizing-to-collapse {
+    transition: none !important;
+}
+
+/* logo: swap the full wordmark for a small square badge */
+.next-sidebar.sidebar-minimized .elite-sidebar-logo {
+    position: relative;
+    padding: 0.65rem 0.5rem 0.35rem;
+}
+.next-sidebar.sidebar-minimized .elite-sidebar-logo img {
+    visibility: hidden;
+}
+.next-sidebar.sidebar-minimized .elite-sidebar-logo::after {
+    content: '';
+    position: absolute;
+    inset: 0.65rem 0.85rem 0.35rem;
+    background-image: url('/favicon/favicon-32x32.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 0.4rem;
+}
+
+/* classic accordion nav items (.next-nav-item, e.g. the Settings sidebar) */
+.next-sidebar.sidebar-minimized .next-nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+.next-sidebar.sidebar-minimized .next-nav-item .truncate,
+.next-sidebar.sidebar-minimized .next-nav-item .next-nav-item-right-side {
+    display: none;
+}
+
+/* search + drill-down navigator items (.next-sidebar-navigator-item) */
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-primary-action span,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-search-wrap,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-item-content,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-item-badge,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-item-caret,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-back > span:not(.next-sidebar-navigator-back-icon),
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-nested-header > span:not(.next-sidebar-navigator-back-icon) {
+    display: none;
+}
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-item,
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-primary-action {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+.next-sidebar.sidebar-minimized .next-sidebar-navigator-back-icon {
+    position: static;
+}
+
+/* accordion group headers (Layout::Sidebar::Panel) inside the sidebar */
+.next-sidebar.sidebar-minimized .next-sidebar-panel-container .next-content-panel-title-container,
+.next-sidebar.sidebar-minimized .next-sidebar-panel-container .next-content-panel-header-right {
+    display: none;
+}
+.next-sidebar.sidebar-minimized .next-sidebar-panel-container .next-content-panel-header-left {
+    justify-content: center;
+}
+
+/* footer attribution: hide in the narrow rail, keep it tidy */
+.next-sidebar.sidebar-minimized .next-sidebar-footer {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    text-align: center;
+}
+.next-sidebar.sidebar-minimized .fleetbase-attribution,
+.next-sidebar.sidebar-minimized .fleetbase-attribution-notice {
+    display: none;
+}
+
+/* collapse-toggle button: subtle affordance while collapsed */
+.sidebar-toggle-button-wrapper.sidebar-is-collapsed .sidebar-toggle-button {
+    opacity: 0.85;
+}
+
 /* Respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
     body,
@@ -747,7 +1012,8 @@ body:not([data-theme='dark']) .next-sidebar .next-content-panel {
     button,
     [class*='bg-gray-'],
     [class*='bg-white'],
-    [class*='border-gray-'] {
+    [class*='border-gray-'],
+    .next-sidebar {
         transition: none;
     }
 }

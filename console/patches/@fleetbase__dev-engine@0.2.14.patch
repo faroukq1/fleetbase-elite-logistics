@@ -203,9 +203,18 @@ index 31c604a5ffa5107824e95ccb8534e651f2275bb9..679282bcfb38a0d005b8c5d5293d0c39
 -<Widget::DevelopersChart @endpoint="webhook-delivery" @title={{t "developers.component.widget.dashboard.webhook-delivery.title"}} @subtitle={{t "developers.component.widget.dashboard.webhook-delivery.subtitle"}} />
 +<Widget::DevelopersChart @endpoint="webhook-delivery" @titleKey="developers.component.widget.dashboard.webhook-delivery.title" @subtitleKey="developers.component.widget.dashboard.webhook-delivery.subtitle" />
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
-index 2f15983dca7b389ebe834716c3e29517a17a3553..f28f1e3998a1768f038e170a1e4da6cc9d85235b 100644
+index 2f15983dca7b389ebe834716c3e29517a17a3553..0672ef50877d33830f4010bc93b58d56dd9653d8 100644
 --- a/translations/ar-ae.yaml
 +++ b/translations/ar-ae.yaml
+@@ -97,7 +97,7 @@ developers:
+           بك
+       webhook-form:
+         endpoint-url: رابط نقطة النهاية
+-        endpoint-url-help-text: الرابط الذي يجب على Fleetbase إرسال ردود الأحداث إليه.
++        endpoint-url-help-text: الرابط الذي يجب على النظام إرسال ردود الأحداث إليه.
+         endpoint-url-placeholder: https://
+         description-label: الوصف
+         description-help-text: يمكنك إضافة وصف اختياري لنقطة نهاية الويب هوك.
 @@ -149,38 +149,41 @@ developers:
          date-created: تاريخ الإنشاء
      widget:
@@ -274,9 +283,18 @@ index 2f15983dca7b389ebe834716c3e29517a17a3553..f28f1e3998a1768f038e170a1e4da6cc
          title: المراقبة
          api-requests: طلبات API
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index 505aed40b9aab25b52ec6ecc56c72a9a07a9eb66..5fcbe7fcada7b71d2e772817657c4e366a8ab656 100644
+index 505aed40b9aab25b52ec6ecc56c72a9a07a9eb66..bac6592b18f103aa51352382a3141426f07375e3 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
+@@ -93,7 +93,7 @@ developers:
+         user-password-placeholder: Authenticate request using your password
+       webhook-form:
+         endpoint-url: Endpoint URL
+-        endpoint-url-help-text: The URL Fleetbase should send event callbacks to.
++        endpoint-url-help-text: The URL the platform should send event callbacks to.
+         endpoint-url-placeholder: https://
+         description-label: Description
+         description-help-text: Optionally add a description for the webhook endpoint.
 @@ -142,6 +142,9 @@ developers:
          name: Developers Dashboard
          period: 30d
@@ -287,3 +305,17 @@ index 505aed40b9aab25b52ec6ecc56c72a9a07a9eb66..5fcbe7fcada7b71d2e772817657c4e36
          kpi:
            api-requests: API Requests
            api-error-rate: API Error Rate
+@@ -260,11 +263,11 @@ developers:
+     view:
+       webhook-deleted-success-message: Webhook endpoint deleted.
+       disable-webhook-title: Disable a webhook endpoint
+-      disable-webhook-body: This webhook endpoint may be temporarily disabled so that it will not receive notifications until it is enabled again. Fleetbase will not retry any notifications that are generated while the endpoint is disabled.
++      disable-webhook-body: This webhook endpoint may be temporarily disabled so that it will not receive notifications until it is enabled again. The platform will not retry any notifications that are generated while the endpoint is disabled.
+       disable-webhook-button-text: Disable webhook endpoint
+       disable-webhook-success-message: Webhook disabled.
+       enable-webhook-title: Enable a webhook endpoint
+-      enable-webhook-body: This webhook is disabled and no longer receives notifications. This may have been done automatically because we detected an extended period of failures. If you've corrected the issue, you can re-enable the webhook endpoint here. Fleetbase will not retry any notifications that were generated in the intervening period, and if we continue to detect failures on this endpoint, we will disable the endpoint again.
++      enable-webhook-body: This webhook is disabled and no longer receives notifications. This may have been done automatically because we detected an extended period of failures. If you've corrected the issue, you can re-enable the webhook endpoint here. The platform will not retry any notifications that were generated in the intervening period, and if we continue to detect failures on this endpoint, we will disable the endpoint again.
+       enable-webhook-button-text: Enable webhook endpoint
+       enable-webhook-success-message: Webhook enabled.
+       update-endpoint-button-text: Update endpoint

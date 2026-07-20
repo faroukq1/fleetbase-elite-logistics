@@ -61,6 +61,19 @@ index 7ee3bf5fb2e4710bb6bc433cdb61c099ecb3d72a..1393ab1a15eed790576506ed3450e7f2
 +        return null;
 +    }
  }
+diff --git a/addon/components/docs-panel.hbs b/addon/components/docs-panel.hbs
+index 4f7f2614a34b34004ba98f19c33522ce6695abc2..bbc35a7dd4d30a379bae853a7e93341f55b496d4 100644
+--- a/addon/components/docs-panel.hbs
++++ b/addon/components/docs-panel.hbs
+@@ -39,7 +39,7 @@
+                         <FaIcon @icon="book-open" />
+                     </div>
+                     <div>
+-                        <div class="text-sm font-bold text-gray-900 dark:text-gray-100">Open Fleetbase documentation</div>
++                        <div class="text-sm font-bold text-gray-900 dark:text-gray-100">Open documentation</div>
+                         <div class="mt-1 max-w-sm text-xs text-gray-500 dark:text-gray-400">
+                             This page cannot be embedded here, but you can open it in a new tab.
+                         </div>
 diff --git a/addon/components/layout/header/dark-mode-toggle.hbs b/addon/components/layout/header/dark-mode-toggle.hbs
 index a49999fc60210ce40e6b7447a8477a21d89ba608..b70d12f9735b1b0d30ec6a7c71fbdf1ada65f584 100644
 --- a/addon/components/layout/header/dark-mode-toggle.hbs
@@ -189,6 +202,44 @@ index af903427e7a772a6cc3fffd0d474ad24f059e813..22f97fe11a8959060977dd55d5ff740d
 +        return calculateTrayPosition(trigger, content);
      }
  }
+diff --git a/addon/components/layout/header/sidebar-toggle.hbs b/addon/components/layout/header/sidebar-toggle.hbs
+index 002b6cbf28fc5eee48c9e6710c4e541a7746e73d..274fdd0edbdcffbf8b7b1c1e0bd371c8859d62ec 100644
+--- a/addon/components/layout/header/sidebar-toggle.hbs
++++ b/addon/components/layout/header/sidebar-toggle.hbs
+@@ -1,7 +1,15 @@
+-<div class="sidebar-toggle-button-wrapper flex-shrink-0 {{if this.isDisabled 'disabled opacity-50'}} {{if this.sidebar.isVisible 'sidebar-is-visible'}}" ...attributes>
+-    <button type="button" disabled={{this.isDisabled}} {{on "click" this.toggleSidebar}} class="sidebar-toggle-button next-org-button-trigger">
++<div class="sidebar-toggle-button-wrapper flex-shrink-0 {{if this.isDisabled 'disabled opacity-50'}} {{if this.sidebar.isVisible 'sidebar-is-visible'}} {{if this.sidebar.isCollapsed 'sidebar-is-collapsed'}}" ...attributes>
++    <button
++        type="button"
++        disabled={{this.isDisabled}}
++        {{on "click" this.toggleSidebar}}
++        class="sidebar-toggle-button next-org-button-trigger"
++        title={{if this.sidebar.isCollapsed "Expand sidebar" "Collapse sidebar"}}
++        aria-label={{if this.sidebar.isCollapsed "Expand sidebar" "Collapse sidebar"}}
++        aria-pressed={{if this.sidebar.isCollapsed "true" "false"}}
++    >
+         <svg id="sidebar-toggle-icon" data-name="sidebar-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 392 340">
+-            <rect x="0" y="0" width="150" height="340" fill={{if this.sidebar.isVisible "white" "transparent"}} rx="40" ry="40"></rect>
++            <rect x="0" y="0" width="150" height="340" fill={{unless this.sidebar.isCollapsed "white" "transparent"}} rx="40" ry="40"></rect>
+             <path
+                 class="cls-1"
+                 d="M484.25,220.5A27.76,27.76,0,0,1,512,248.23V496.77a27.76,27.76,0,0,1-27.73,27.73H183.71A27.76,27.76,0,0,1,156,496.77V248.23a27.76,27.76,0,0,1,27.73-27.73H484.25m0-18H183.71A45.73,45.73,0,0,0,138,248.23V496.77a45.72,45.72,0,0,0,45.73,45.73H484.25A45.72,45.72,0,0,0,530,496.77V248.23a45.73,45.73,0,0,0-45.73-45.73Z"
+diff --git a/addon/components/layout/header/sidebar-toggle.js b/addon/components/layout/header/sidebar-toggle.js
+index 30f356897fd65d69fe3107006f4c458fb7630263..6ca43e5ee01e52cf02edcc1693205709e5492947 100644
+--- a/addon/components/layout/header/sidebar-toggle.js
++++ b/addon/components/layout/header/sidebar-toggle.js
+@@ -12,7 +12,9 @@ export default class LayoutHeaderSidebarToggleComponent extends Component {
+     @action toggleSidebar() {
+         if (this.isDisabled) return;
+ 
+-        this.sidebar.toggle();
++        // Elite Logistics: collapse to the icon-only rail instead of
++        // hiding the sidebar entirely — it should always stay visible.
++        this.sidebar.toggleCollapsed();
+         if (typeof this.args.onToggle === 'function') {
+             this.args.onToggle(this.sidebar, this.sidebar.isVisible);
+         }
 diff --git a/addon/components/layout/header/smart-nav-menu/customizer.hbs b/addon/components/layout/header/smart-nav-menu/customizer.hbs
 index b11e316a42e6b6ddfeceee77f92e5c74dedc7a4c..917ac3484a8f16d86da619bb512697f567c73cc6 100644
 --- a/addon/components/layout/header/smart-nav-menu/customizer.hbs
@@ -581,7 +632,7 @@ index 94c81b20462ead270707a8d6ea5327e1f539fa7e..005b9e27d8b3f03251f626b5eb61274e
          >
              <FaIcon @icon="sliders" @size="sm" />
 diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
-index 0f85afe5db0501d86c41bb4762982d326a140d20..8c210d38d3140f53c92aec407fad44b9a69de034 100644
+index 0f85afe5db0501d86c41bb4762982d326a140d20..0e60ec32fc47d473a7af065087efb09ac207b867 100644
 --- a/addon/components/layout/header.hbs
 +++ b/addon/components/layout/header.hbs
 @@ -1,8 +1,5 @@
@@ -593,8 +644,16 @@ index 0f85afe5db0501d86c41bb4762982d326a140d20..8c210d38d3140f53c92aec407fad44b9
          {{#if (and @showSidebarToggle (not (media "isMobile")))}}
              <Layout::Header::SidebarToggle class="mr-2" @onToggle={{@onSidebarToggle}} @disabled={{eq @sidebarToggleEnabled false}} />
          {{/if}}
+@@ -32,6 +29,7 @@
+                 <RegistryYield @registry="header-tray-items" as |RegistryComponent|>
+                     <RegistryComponent @header={{this}} />
+                 </RegistryYield>
++                <Layout::Header::ThemeToggleButton />
+                 <LocaleSelectorTray />
+                 <NotificationTray @registerAPI={{@registerNotificationTrayApi}} @onClickNotification={{@onClickNotification}} />
+                 <ChatTray />
 diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
-index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff6615fd6e79e 100644
+index f4d693a5b0175c8afb04386335b8001de1163faf..b0107238d1e601c36a0a00e656479d6b53d57b38 100644
 --- a/addon/components/layout/header.js
 +++ b/addon/components/layout/header.js
 @@ -22,6 +22,7 @@ export default class LayoutHeaderComponent extends Component {
@@ -680,7 +739,21 @@ index f4d693a5b0175c8afb04386335b8001de1163faf..4c441a7d9fe385a5c078e99e5bbff661
                  icon: 'book-open',
                  onClick: () => this.docsPanel.open('https://www.fleetbase.io/docs', { title: 'Fleetbase Documentation', source: 'user-menu' }),
              },
-@@ -279,7 +280,7 @@ export default class LayoutHeaderComponent extends Component {
+@@ -270,16 +271,18 @@ export default class LayoutHeaderComponent extends Component {
+         menuItems.pushObjects(userMenuItems);
+ 
+         // Create immutable static menu items
++        // Elite Logistics: the dark/light toggle used to live here
++        // (`layout/header/dark-mode-toggle`) — moved to the header tray next
++        // to the language selector (see Layout::Header::ThemeToggleButton in
++        // header.hbs) so it's reachable from every page in one click, not
++        // buried in this dropdown.
+         menuItems.pushObjects([
+-            {
+-                component: 'layout/header/dark-mode-toggle',
+-            },
+             {
+                 seperator: true,
              },
              {
                  href: 'javascript:;',
@@ -728,6 +801,33 @@ index 8f14b034e83caa8a4ceb52d8d4719c72f132fbb0..20b5f3cae51742e5cbc608f4f359bc01
          <div class="next-sidebar-content-inner">
              <div role="menu" id="sidebar-menu-items">
                  {{yield
+diff --git a/addon/components/layout/sidebar.js b/addon/components/layout/sidebar.js
+index 151c21b84605b8057af2b48c03df0b1524555331..221f254525082b512ff0a689773cd9ec912d5322 100644
+--- a/addon/components/layout/sidebar.js
++++ b/addon/components/layout/sidebar.js
+@@ -148,7 +148,9 @@ export default class LayoutSidebarComponent extends Component {
+         const currentWidth = sidebarNode?.getBoundingClientRect?.().width ?? 0;
+ 
+         if (rawWidth <= collapseBelowWidth) {
+-            this.hide(sidebarNode, false, { restoreWidthAfterHide: true });
++            // Elite Logistics: dragging the sidebar very narrow collapses it
++            // to the icon-only rail instead of making it disappear.
++            this.minimize(sidebarNode);
+         } else {
+             this.clearResizeCollapseState(sidebarNode);
+ 
+@@ -357,6 +359,11 @@ export default class LayoutSidebarComponent extends Component {
+         sidebarNode = sidebarNode ?? this.sidebarNode;
+         this.cancelHideTimer();
+         this.syncTransitionWidth(sidebarNode);
++        this.clearResizeCollapseState(sidebarNode);
++        // Elite Logistics: the icon rail width is fixed by CSS
++        // (.sidebar-minimized) — clear any inline width left over from a
++        // manual resize-drag so that width takes effect.
++        sidebarNode.style.removeProperty('width');
+         sidebarNode.classList.remove('sidebar-hidden', 'sidebar-hide');
+         sidebarNode.classList.add('sidebar-minimized');
+         this.syncState('minimized');
 diff --git a/addon/components/locale-selector-tray.hbs b/addon/components/locale-selector-tray.hbs
 index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9aef08d88bd 100644
 --- a/addon/components/locale-selector-tray.hbs
@@ -934,6 +1034,102 @@ index 23e3b19c94c206168ef0fb791002d457757257c3..cc40ae0169ac61d3a750078bc6aa71f8
                  {{smart-humanize (or @value "-")}}
              {{else}}
                  {{or @value "-"}}
+diff --git a/addon/components/table/cell/dropdown.js b/addon/components/table/cell/dropdown.js
+index 1456a62027ae85ba37a9e85dfe130c2b31677be2..cf4eef942d7f0e488e05586fd82fc453e18cd0f8 100644
+--- a/addon/components/table/cell/dropdown.js
++++ b/addon/components/table/cell/dropdown.js
+@@ -2,6 +2,10 @@ import Component from '@glimmer/component';
+ import { tracked } from '@glimmer/tracking';
+ import { action, computed } from '@ember/object';
+ 
++function isDocumentRtl() {
++    return (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
++}
++
+ export default class TableCellDropdownComponent extends Component {
+     @tracked tableCellNode;
+     defaultButtonText = 'Actions';
+@@ -82,11 +86,24 @@ export default class TableCellDropdownComponent extends Component {
+         const triggerRect = trigger.getBoundingClientRect();
+         const contentRect = content?.getBoundingClientRect?.();
+         const contentWidth = contentRect?.width || 224;
++        const margin = 8;
++
++        // This is a row-actions "..." menu, typically in a table column
++        // sticky-pinned to the table's trailing edge (see
++        // resolve-sticky-side.js) — right in LTR, left in RTL. Opening
++        // toward the trigger's own left edge only fits on-screen when
++        // the trigger sits near the physical right (LTR); in RTL the
++        // trigger sits near the physical left instead, so opening
++        // leftward there runs the menu off-screen. Open toward whichever
++        // side has room, then clamp to the viewport as a final safety net.
++        const isRtl = isDocumentRtl();
++        let left = isRtl ? triggerRect.right + 3 : triggerRect.left - contentWidth - 3;
++        left = Math.max(margin, Math.min(left, window.innerWidth - contentWidth - margin));
+ 
+         const style = {
+             position: 'fixed',
+             marginTop: '0px',
+-            left: triggerRect.left - contentWidth - 3,
++            left,
+             top: triggerRect.top,
+         };
+ 
+diff --git a/addon/components/table/td.js b/addon/components/table/td.js
+index e476962af9ffdb73fd9d57b28840f1334f62ce30..bff9f3a77259ab5e01b96cd0d8c9c96f0e49ff57 100644
+--- a/addon/components/table/td.js
++++ b/addon/components/table/td.js
+@@ -1,5 +1,6 @@
+ import TableCellComponent from './cell';
+ import { action } from '@ember/object';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class TableTdComponent extends TableCellComponent {
+     get isSticky() {
+@@ -13,11 +14,12 @@ export default class TableTdComponent extends TableCellComponent {
+ 
+     get stickyPosition() {
+         const { column, sticky } = this.args;
+-        // Checkbox column defaults to left
++        // Checkbox column defaults to the leading edge
+         if (sticky && !column) {
+-            return 'left';
++            return resolveStickySide('left');
+         }
+-        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        return resolveStickySide(logicalSide);
+     }
+ 
+     get stickyOffset() {
+diff --git a/addon/components/table/th.js b/addon/components/table/th.js
+index 406a8b148ec3df3afc8dfd05130faa73d4cbed49..d61a2812e8e6463a916204e8828956066bbcfcce 100644
+--- a/addon/components/table/th.js
++++ b/addon/components/table/th.js
+@@ -1,6 +1,7 @@
+ import TableCellComponent from './cell';
+ import { action } from '@ember/object';
+ import { inject as service } from '@ember/service';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class TableThComponent extends TableCellComponent {
+     @service tableContext;
+@@ -50,11 +51,12 @@ export default class TableThComponent extends TableCellComponent {
+ 
+     get stickyPosition() {
+         const { column, sticky } = this.args;
+-        // Checkbox column defaults to left
++        // Checkbox column defaults to the leading edge
+         if (sticky && !column) {
+-            return 'left';
++            return resolveStickySide('left');
+         }
+-        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        return resolveStickySide(logicalSide);
+     }
+ 
+     get stickyOffset() {
 diff --git a/addon/components/table.hbs b/addon/components/table.hbs
 index 3dcbfdf5fcda68492e4f540495608b92275e1c0f..e2e11f2689ca499ac56190fe4ea8e1d7a08412e7 100644
 --- a/addon/components/table.hbs
@@ -947,6 +1143,52 @@ index 3dcbfdf5fcda68492e4f540495608b92275e1c0f..e2e11f2689ca499ac56190fe4ea8e1d7
                                      {{#if @emptyStateDescription}}
                                          <div class="next-table-empty-state-description">{{@emptyStateDescription}}</div>
                                      {{/if}}
+diff --git a/addon/components/table.js b/addon/components/table.js
+index 9deab0b43f423b14d50271450b279f4508db5ce4..2599671159ea2f9f36ce06910f8349b488bd5093 100644
+--- a/addon/components/table.js
++++ b/addon/components/table.js
+@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
+ import { isArray } from '@ember/array';
+ import { later } from '@ember/runloop';
+ import { filter, alias } from '@ember/object/computed';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class TableComponent extends Component {
+     @service tableContext;
+@@ -251,13 +252,13 @@ export default class TableComponent extends Component {
+                 th.style.top = '0';
+ 
+                 if (!columnId) {
+-                    // Checkbox column - always at left: 0
+-                    th.style.left = '0px';
++                    // Checkbox column - always at the leading edge
++                    th.style[resolveStickySide('left')] = '0px';
+                 } else {
+                     // Find the column object
+                     const column = this.visibleColumns.find((c) => c.valuePath === columnId);
+                     if (column && column._stickyOffset !== undefined) {
+-                        const position = column._stickyPosition || 'left';
++                        const position = resolveStickySide(column._stickyPosition || 'left');
+                         const offset = column._stickyOffset;
+                         th.style[position] = `${offset}px`;
+                     }
+@@ -272,13 +273,13 @@ export default class TableComponent extends Component {
+ 
+             if (td.classList.contains('is-sticky')) {
+                 if (!columnId) {
+-                    // Checkbox column - always at left: 0
+-                    td.style.left = '0px';
++                    // Checkbox column - always at the leading edge
++                    td.style[resolveStickySide('left')] = '0px';
+                 } else {
+                     // Find the column object
+                     const column = this.visibleColumns.find((c) => c.valuePath === columnId);
+                     if (column && column._stickyOffset !== undefined) {
+-                        const position = column._stickyPosition || 'left';
++                        const position = resolveStickySide(column._stickyPosition || 'left');
+                         const offset = column._stickyOffset;
+                         td.style[position] = `${offset}px`;
+                     }
 diff --git a/addon/components/upload-button.hbs b/addon/components/upload-button.hbs
 index d006adfc3c2ce6a8d127195da0e2393a3615dc9e..f1a9cd60a7488db2da40d98ab9e00eefe2d524af 100644
 --- a/addon/components/upload-button.hbs
@@ -1040,6 +1282,49 @@ index 0000000000000000000000000000000000000000..b64d9642273c51b6ade6ecac9aa0028d
 +        return value;
 +    }
 +}
+diff --git a/addon/services/sidebar.js b/addon/services/sidebar.js
+index 22807dc2aec0c22af597f830e6bcd78037576db4..0df0d5ea4207d68e3c24cfc605dfe0870ee0c878 100644
+--- a/addon/services/sidebar.js
++++ b/addon/services/sidebar.js
+@@ -20,6 +20,14 @@ export default class SidebarService extends Service {
+         return this.state === 'minimized';
+     }
+ 
++    /**
++     * Elite Logistics: alias used by the icon-rail collapse toggle so call
++     * sites don't need to know about the internal 'minimized' state name.
++     */
++    get isCollapsed() {
++        return this.state === 'minimized';
++    }
++
+     get isEnabled() {
+         return this.enabled === true;
+     }
+@@ -129,6 +137,23 @@ export default class SidebarService extends Service {
+         return this.show();
+     }
+ 
++    /**
++     * Elite Logistics: toggle between fully-visible and the icon-only
++     * collapsed rail (never fully hides the sidebar). Used by the desktop
++     * header collapse button, replacing the old show/hide toggle() there.
++     */
++    @action toggleCollapsed() {
++        if (this.isDisabled) {
++            return;
++        }
++
++        if (this.state === 'minimized') {
++            return this.show();
++        }
++
++        return this.minimize();
++    }
++
+     getComponent() {
+         return this.context?.component;
+     }
 diff --git a/addon/styles/addon.css b/addon/styles/addon.css
 index dec859727ca1976d2d55450e93795126144b6c34..a07335637e4a7563dd403de5cf00e3178feb66ee 100644
 --- a/addon/styles/addon.css
@@ -2792,6 +3077,43 @@ index 0000000000000000000000000000000000000000..60cc274b106118408689a599635efa36
 +            top: Math.round(rect.bottom + 6),
 +        },
 +    };
++}
+diff --git a/addon/utils/resolve-sticky-side.js b/addon/utils/resolve-sticky-side.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..2a7bd0dc2bae87fcda76ff63fe3925a7d4df33a1
+--- /dev/null
++++ b/addon/utils/resolve-sticky-side.js
+@@ -0,0 +1,31 @@
++/**
++ * Resolve a table sticky column's logical side to a physical CSS side.
++ *
++ * `column.sticky` is authored as a logical side: `true`/`'left'` means
++ * "stick to the leading edge" (e.g. the driver identity column, meant to
++ * stay visible as the first-read column) and `'right'` means "stick to the
++ * trailing edge" (e.g. the row-actions column). That mapping is only
++ * correct in LTR, where leading = left and trailing = right.
++ *
++ * table/td.js, table/th.js, and table.js's updateStickyCellStyles() all
++ * apply this as a literal `element.style.left` / `element.style.right`
++ * inline style, set at runtime — which never passes through postcss-rtlcss
++ * (that only rewrites static stylesheet declarations, not JS-injected
++ * inline styles). Without this, in RTL the leading column stays glued to
++ * the physical left and the trailing (actions) column stays glued to the
++ * physical right — both on the wrong edge — so as the table scrolls the
++ * actions column drifts out from under its row instead of tracking it.
++ *
++ * @param {String} logicalSide 'left' (leading) or 'right' (trailing)
++ * @return {String} 'left' or 'right' — the physical side to apply
++ */
++export default function resolveStickySide(logicalSide) {
++    const isRtl = (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
++    const isLeading = logicalSide !== 'right';
++
++    if (!isRtl) {
++        return isLeading ? 'left' : 'right';
++    }
++
++    return isLeading ? 'right' : 'left';
 +}
 diff --git a/app/helpers/localize-label.js b/app/helpers/localize-label.js
 new file mode 100644

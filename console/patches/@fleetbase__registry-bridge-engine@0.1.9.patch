@@ -60,7 +60,7 @@ index fa8e531962359fca6a8d5733f5cb198c61700ee2..f58f61d42655fd601100364dc1ef0d91
      {{/if}}
      <Spacer @height="200px" />
 diff --git a/translations/ar-ae.yml b/translations/ar-ae.yml
-index 006b650c0b4616dd7fbbc2ce07eba6b9dcad5675..bf475f88209ad9021e5196d1432f169ee4fd23e4 100644
+index 006b650c0b4616dd7fbbc2ce07eba6b9dcad5675..0310db6ad0e9993e98fe140aa70a3faf2d8091f2 100644
 --- a/translations/ar-ae.yml
 +++ b/translations/ar-ae.yml
 @@ -1,11 +1,22 @@
@@ -102,7 +102,7 @@ index 006b650c0b4616dd7fbbc2ce07eba6b9dcad5675..bf475f88209ad9021e5196d1432f169e
 -      self-managed: مُدار ذاتيًا
 -      self-managed-help-text: الامتداد المُدار ذاتيًا مصمم للمستخدمين الذين يستضيفون Fleetbase على خوادمهم الخاصة، خارج بيئة السحابة/SaaS. تتطلب هذه الامتدادات التثبيت والتكوين اليدوي. إذا كنت تستخدم Fleetbase كنسخة مستضافة ذاتيًا، يمكنك استخدام هذه الامتدادات لإضافة ميزات إضافية. ومع ذلك، فهي غير متاحة لمستخدمي السحابة/SaaS.
 +      self-managed: إدارة ذاتية
-+      self-managed-help-text: الامتداد ذاتي الإدارة مصمم للمستخدمين الذين يستضيفون Fleetbase على خوادمهم الخاصة، خارج بيئة السحابة/SaaS. تتطلب هذه الامتدادات تثبيتًا وتكوينًا يدويًا.
++      self-managed-help-text: الامتداد ذاتي الإدارة مصمم للمستخدمين الذين يستضيفون النظام على خوادمهم الخاصة، خارج بيئة السحابة/SaaS. تتطلب هذه الامتدادات تثبيتًا وتكوينًا يدويًا.
 +      self-hosted-install: تثبيت الاستضافة الذاتية
 +      self-hosted-install-help-text: عرض تعليمات التثبيت للاستضافة الذاتية.
      extension-pending-publish-viewer:
@@ -255,7 +255,7 @@ index 006b650c0b4616dd7fbbc2ce07eba6b9dcad5675..bf475f88209ad9021e5196d1432f169e
 +        self-managed: إدارة ذاتية
 +        self-managed-help-text: قم بتمكين هذا الخيار إذا كانت وحدتك مخصصة للاستضافة الذاتية فقط.
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index 397b482d4ea37750ae994548b0558f3aa8cdea92..f6d87942ad54aaca6fc28a67ce76e18e17045485 100644
+index 397b482d4ea37750ae994548b0558f3aa8cdea92..745a1466788aa78d53e2444ff7e7a66635be2ccd 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
 @@ -1,5 +1,15 @@
@@ -274,3 +274,19 @@ index 397b482d4ea37750ae994548b0558f3aa8cdea92..f6d87942ad54aaca6fc28a67ce76e18e
    common:
      install: Install
      uninstall: Uninstall
+@@ -20,7 +30,7 @@ registry-bridge:
+       updated: Updated
+       website: Website
+       self-managed: Self Managed
+-      self-managed-help-text: A self-managed extension is designed for users who host Fleetbase on their own servers, outside of the cloud/SaaS environment. These extensions require manual installation and configuration. If you are using Fleetbase as a self-hosted instance, you can use these extensions to add additional features. However, they are not available for cloud/SaaS users.
++      self-managed-help-text: A self-managed extension is designed for users who self-host the platform on their own servers, outside of the cloud/SaaS environment. These extensions require manual installation and configuration. If you are using a self-hosted instance, you can use these extensions to add additional features. However, they are not available for cloud/SaaS users.
+       self-hosted-install: Self Hosted Install
+       self-hosted-install-help-text: View self-hosted install instructions.
+     extension-pending-publish-viewer:
+@@ -140,4 +150,4 @@ registry-bridge:
+         bundles: Bundles
+         upload-new-bundle: Upload new Bundle
+         self-managed: Self Managed
+-        self-managed-help-text: Enable this option if your module is intended for self-hosted instances only. By selecting this, the module will not be available for installation on the cloud/SaaS version of Fleetbase and must be manually installed by the user on their own server.
+\ No newline at end of file
++        self-managed-help-text: Enable this option if your module is intended for self-hosted instances only. By selecting this, the module will not be available for installation on the cloud/SaaS version of the platform and must be manually installed by the user on their own server.

@@ -790,7 +790,7 @@ index b19c5612e48501ff79e2a53c3872b0870fce026d..949d2f9b291b5c1beb331d62a94058c4
 +      q3: الربع الثالث {year}
 +      q4: الربع الرابع {year}
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..2a6ebfa1ce501120731f242149d6db12a7ac4638 100644
+index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..dcafe2de9932892e1887c6de0708eed235fe301c 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
 @@ -1,4 +1,13 @@
@@ -815,6 +815,15 @@ index e5bc11bcec3a6bb8e885718021b6be8d09ad88b6..2a6ebfa1ce501120731f242149d6db12
    component:
      storefront-order-summary:
        order-summary-title: Storefront Order Summary
+@@ -100,7 +110,7 @@ storefront:
+         placeholder-driver: Select Driver to Assign
+       create-first-store:
+         title: Welcome to Storefront!
+-        message: Storefront allows you to quickly setup a headless and dynamic on-demand shop powered by Fleetbase.
++        message: Storefront allows you to quickly setup a headless and dynamic on-demand shop.
+         submit-message: Submit the form below to create your first store.
+         storefront-name: Storefront name
+         enter-name: Enter the name of your store
 @@ -690,3 +700,80 @@ storefront:
        validation-customers-required: Please select at least one customer to send the notification to
        notification-sent-success: Push notification sent successfully to selected customers

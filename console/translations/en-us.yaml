@@ -1,6 +1,10 @@
 app:
   name: Elite Logistics
 
+theme-toggle:
+  switch-to-light: Switch to light mode
+  switch-to-dark: Switch to dark mode
+
 common:
   no-records-found: No records found
   upload-new: Upload new
@@ -971,7 +975,7 @@ nav-card-desc:
   api-keys-webhooks-socket-channels-event-logs-and-developer-tooling: "API keys, webhooks, socket channels, event logs, and developer tooling."
   identity-and-access-management-users-roles-policies-and-permissions: "Identity and access management: users, roles, policies, and permissions."
   invoicing-payments-accounting-and-real-time-financial-reporting: "Invoicing, payments, accounting, and real-time financial reporting."
-  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "Discover, install, and publish extensions to the Fleetbase extension registry."
+  discover-install-and-publish-extensions-to-the-fleetbase-extension-registry: "Discover, install, and publish extensions to the extension registry."
   create-and-manage-api-keys-for-authenticating-your-integrations: "Create and manage API keys for authenticating your integrations."
   configure-webhook-endpoints-to-receive-real-time-event-notifications: "Configure webhook endpoints to receive real-time event notifications."
   monitor-active-websocket-channels-and-connected-clients: "Monitor active WebSocket channels and connected clients."
@@ -1067,7 +1071,7 @@ iam:
           policy-surface:
             total: Total
             org-managed: Org managed
-            fleetbase: Fleetbase
+            fleetbase: System
           privileged-access:
             admin-roles: Admin roles
             wildcard-policies: Wildcard policies
