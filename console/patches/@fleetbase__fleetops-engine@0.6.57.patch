@@ -293,6 +293,124 @@ index 7e20db4fccade48fb73e4c002f4d29050324432a..92aa8dd3c859f0ceaf272f1fded264cf
              top: '0px',
          };
  
+diff --git a/addon/components/widget/kpi-active-orders.hbs b/addon/components/widget/kpi-active-orders.hbs
+index c5fc1b9df4dfd88366a9f501786bab160ee81b0d..196060f308411faf9063d6064bf0446be3762231 100644
+--- a/addon/components/widget/kpi-active-orders.hbs
++++ b/addon/components/widget/kpi-active-orders.hbs
+@@ -2,6 +2,7 @@
+     @slug="active_live_orders"
+     @title={{t "widget.kpi-active-orders.title"}}
+     @icon="bolt"
++    @iconAccent="blue"
+     @format="count"
+     @period="30d"
+     @showDelta={{false}}
+diff --git a/addon/components/widget/kpi-aov.hbs b/addon/components/widget/kpi-aov.hbs
+index b9b1b6650e97a4ef0bd60aa55b6624eab89c500b..263a1caf7db8b76b37ecce215da5d103d63c7888 100644
+--- a/addon/components/widget/kpi-aov.hbs
++++ b/addon/components/widget/kpi-aov.hbs
+@@ -2,6 +2,7 @@
+     @slug="avg_order_value"
+     @title={{t "widget.kpi-aov.title"}}
+     @icon="receipt"
++    @iconAccent="green"
+     @format="money"
+     @period="30d"
+     @showDelta={{true}}
+diff --git a/addon/components/widget/kpi-distance.hbs b/addon/components/widget/kpi-distance.hbs
+index 8581e071d25cebde350b555710efda18774abef0..744c2dd0355a591e3fc9624e1f6bc04ec7769731 100644
+--- a/addon/components/widget/kpi-distance.hbs
++++ b/addon/components/widget/kpi-distance.hbs
+@@ -2,6 +2,7 @@
+     @slug="total_distance_traveled"
+     @title={{t "widget.kpi-distance.title"}}
+     @icon="route"
++    @iconAccent="teal"
+     @format="meters"
+     @period="30d"
+     @showDelta={{true}}
+diff --git a/addon/components/widget/kpi-drivers-online.hbs b/addon/components/widget/kpi-drivers-online.hbs
+index a0bf638f77db9b009c5aa95221c0bff371745f01..21024f6ba0c28389cb77d4821c08587ce41d42ed 100644
+--- a/addon/components/widget/kpi-drivers-online.hbs
++++ b/addon/components/widget/kpi-drivers-online.hbs
+@@ -2,6 +2,7 @@
+     @slug="drivers_online"
+     @title={{t "widget.kpi-drivers-online.title"}}
+     @icon="id-card"
++    @iconAccent="blue"
+     @format="count"
+     @period="30d"
+     @showDelta={{false}}
+diff --git a/addon/components/widget/kpi-earnings.hbs b/addon/components/widget/kpi-earnings.hbs
+index ee8fd48d06abf88014fce57d499f29a424445010..f918cec83b279a899220d138a7ec565eadf161d7 100644
+--- a/addon/components/widget/kpi-earnings.hbs
++++ b/addon/components/widget/kpi-earnings.hbs
+@@ -2,6 +2,7 @@
+     @slug="earnings"
+     @title={{t "widget.kpi-earnings.title"}}
+     @icon="sack-dollar"
++    @iconAccent="green"
+     @format="money"
+     @period="30d"
+     @showDelta={{true}}
+diff --git a/addon/components/widget/kpi-open-issues.hbs b/addon/components/widget/kpi-open-issues.hbs
+index f9eb8815a78bf3665dd279aa5a757568a87fc67c..19b730b7445f385cdf8e0090446b6a3bd2362d54 100644
+--- a/addon/components/widget/kpi-open-issues.hbs
++++ b/addon/components/widget/kpi-open-issues.hbs
+@@ -2,6 +2,7 @@
+     @slug="open_issues"
+     @title={{t "widget.kpi-open-issues.title"}}
+     @icon="triangle-exclamation"
++    @iconAccent="rose"
+     @format="count"
+     @period="30d"
+     @showDelta={{true}}
+diff --git a/addon/components/widget/kpi-tile.hbs b/addon/components/widget/kpi-tile.hbs
+index af7903519a6e836242b62d690965eb1459dc1069..8dcda964ff57b7fda4c26dba01ea7a273fc72b17 100644
+--- a/addon/components/widget/kpi-tile.hbs
++++ b/addon/components/widget/kpi-tile.hbs
+@@ -13,7 +13,7 @@
+             {{@title}}
+         </span>
+         {{#if @icon}}
+-            <FaIcon @icon={{@icon}} @prefix={{or @iconPrefix "fas"}} class="kpi-tile-icon text-gray-400 dark:text-gray-500 text-[11px]" />
++            <FaIcon @icon={{@icon}} @prefix={{or @iconPrefix "fas"}} class="kpi-tile-icon {{this.iconAccentClass}} text-[14px]" />
+         {{/if}}
+     </div>
+ 
+diff --git a/addon/components/widget/kpi-tile.js b/addon/components/widget/kpi-tile.js
+index 1b1cb8737619fb7aa6d460a8a3de877321f17001..da92a041d225e34b45ae4147eaecd159d173b480 100644
+--- a/addon/components/widget/kpi-tile.js
++++ b/addon/components/widget/kpi-tile.js
+@@ -22,6 +22,15 @@ export default class WidgetKpiTileComponent extends Component {
+         return this.args.period ?? '30d';
+     }
+ 
++    /**
++     * Elite Logistics: a static, semantic icon color independent of the
++     * trend-based accents above (e.g. money metrics green, distance teal,
++     * warnings amber) — pass `@iconAccent="green"` etc. per tile.
++     */
++    get iconAccentClass() {
++        return `kpi-tile-icon-accent-${this.args.iconAccent ?? 'slate'}`;
++    }
++
+     get showDelta() {
+         return this.args.showDelta ?? true;
+     }
+diff --git a/addon/components/widget/operations-pulse.hbs b/addon/components/widget/operations-pulse.hbs
+index 24afd2e4114cf427094316e70f9377c2e54fd790..01e640da79cd34e2f5091f2ff7c36da03b1f9ff8 100644
+--- a/addon/components/widget/operations-pulse.hbs
++++ b/addon/components/widget/operations-pulse.hbs
+@@ -26,7 +26,7 @@
+                             <span class="text-[9px] uppercase tracking-wider text-gray-600 dark:text-gray-300 font-bold truncate">{{tile.title}}</span>
+                             {{#if tile.meta.icon}}
+                                 <div class="fleet-ops-pulse-icon flex-shrink-0">
+-                                    <FaIcon @icon={{tile.meta.icon}} class="text-[10px]" />
++                                    <FaIcon @icon={{tile.meta.icon}} class="text-[13px]" />
+                                 </div>
+                             {{/if}}
+                         </div>
 diff --git a/addon/controllers/management/contacts.js b/addon/controllers/management/contacts.js
 index 44cabb06d4bfaac489a133bcecd8fab1fd8e5ced..67dc45aba54c2b0458947392e71717b3e8997aef 100644
 --- a/addon/controllers/management/contacts.js
@@ -496,6 +614,163 @@ index 3d9caa682350c1a1d26f6b634b50063636432623..2abe92ab9b34a3561f03c09f078d5800
              acceptButtonIcon: 'rotate-left',
              confirm: async (modal) => {
                  modal.startLoading();
+diff --git a/addon/styles/fleetops-engine.css b/addon/styles/fleetops-engine.css
+index 3e05fd5cdbf909b3cad61257334c411a72575aff..d496210607d1a7e3d83e0beaf43a2d7052159845 100644
+--- a/addon/styles/fleetops-engine.css
++++ b/addon/styles/fleetops-engine.css
+@@ -3306,8 +3306,9 @@ body[data-theme='dark'] .fleet-ops-hub-panel-title {
+     position: absolute;
+     top: 0.875rem;
+     right: 0.875rem;
+-    width: 2.25rem;
+-    height: 2.25rem;
++    width: 2.8125rem;
++    height: 2.8125rem;
++    font-size: 1.25rem;
+ }
+ 
+ .fleet-ops-control-hub-grid {
+@@ -8535,3 +8536,140 @@ body[data-theme='dark'] .fleetbase-ai-create-order-preview__cancelled {
+         animation: none;
+     }
+ }
++
++/* Elite Logistics: static semantic color for each fleet-ops KPI tile's
++   icon, independent of the tile's trend-based accent (see kpi-tile.js
++   cardAccentClass) — money metrics green, order counts blue, distance
++   teal, warnings amber/rose, so tiles read at a glance by color. */
++.kpi-tile-icon-accent-green {
++    color: #059669 !important;
++}
++.kpi-tile-icon-accent-blue {
++    color: #2563eb !important;
++}
++.kpi-tile-icon-accent-amber {
++    color: #d97706 !important;
++}
++.kpi-tile-icon-accent-rose {
++    color: #e11d48 !important;
++}
++.kpi-tile-icon-accent-teal {
++    color: #0d9488 !important;
++}
++.kpi-tile-icon-accent-indigo {
++    color: #4f46e5 !important;
++}
++.kpi-tile-icon-accent-slate {
++    color: #64748b !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-green {
++    color: #6ee7b7 !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-blue {
++    color: #93c5fd !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-amber {
++    color: #fcd34d !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-rose {
++    color: #fda4af !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-teal {
++    color: #5eead4 !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-indigo {
++    color: #a5b4fc !important;
++}
++body[data-theme='dark'] .kpi-tile-icon-accent-slate {
++    color: #cbd5e1 !important;
++}
++
++/* Elite Logistics: the operations-pulse widget's tiles ship with
++   `pulse-accent-*` / `.fleet-ops-pulse-stripe` / `.fleet-ops-pulse-icon`
++   classes already wired up per-metric in operations-pulse.js, but no CSS
++   ever backed them — tiles rendered with no stripe, no tint, and a flat
++   dark-gray icon regardless of metric. Filling that in here: a colored
++   left-edge stripe, a subtle tinted tile background, and a matching icon
++   color per accent, so active/completed/drivers/vehicles/issues read at a
++   glance instead of only by their label. */
++.fleet-ops-pulse-stripe {
++    width: 3px;
++}
++
++.fleet-ops-pulse-icon {
++    color: #64748b;
++}
++
++.pulse-accent-blue {
++    background-image: linear-gradient(135deg, rgb(59 130 246 / 8%) 0%, rgb(59 130 246 / 0%) 64%);
++    border-color: rgb(59 130 246 / 24%);
++}
++.pulse-accent-blue .fleet-ops-pulse-stripe {
++    background-color: #2563eb;
++}
++.pulse-accent-blue .fleet-ops-pulse-icon {
++    color: #2563eb;
++}
++
++.pulse-accent-green {
++    background-image: linear-gradient(135deg, rgb(16 185 129 / 8%) 0%, rgb(16 185 129 / 0%) 64%);
++    border-color: rgb(16 185 129 / 24%);
++}
++.pulse-accent-green .fleet-ops-pulse-stripe {
++    background-color: #059669;
++}
++.pulse-accent-green .fleet-ops-pulse-icon {
++    color: #059669;
++}
++
++.pulse-accent-sky {
++    background-image: linear-gradient(135deg, rgb(14 165 233 / 8%) 0%, rgb(14 165 233 / 0%) 64%);
++    border-color: rgb(14 165 233 / 24%);
++}
++.pulse-accent-sky .fleet-ops-pulse-stripe {
++    background-color: #0284c7;
++}
++.pulse-accent-sky .fleet-ops-pulse-icon {
++    color: #0284c7;
++}
++
++.pulse-accent-indigo {
++    background-image: linear-gradient(135deg, rgb(79 70 229 / 8%) 0%, rgb(79 70 229 / 0%) 64%);
++    border-color: rgb(79 70 229 / 24%);
++}
++.pulse-accent-indigo .fleet-ops-pulse-stripe {
++    background-color: #4f46e5;
++}
++.pulse-accent-indigo .fleet-ops-pulse-icon {
++    color: #4f46e5;
++}
++
++.pulse-accent-amber {
++    background-image: linear-gradient(135deg, rgb(245 158 11 / 10%) 0%, rgb(245 158 11 / 0%) 64%);
++    border-color: rgb(245 158 11 / 28%);
++}
++.pulse-accent-amber .fleet-ops-pulse-stripe {
++    background-color: #d97706;
++}
++.pulse-accent-amber .fleet-ops-pulse-icon {
++    color: #d97706;
++}
++
++body[data-theme='dark'] .fleet-ops-pulse-icon {
++    color: #cbd5e1;
++}
++body[data-theme='dark'] .pulse-accent-blue .fleet-ops-pulse-icon {
++    color: #93c5fd;
++}
++body[data-theme='dark'] .pulse-accent-green .fleet-ops-pulse-icon {
++    color: #6ee7b7;
++}
++body[data-theme='dark'] .pulse-accent-sky .fleet-ops-pulse-icon {
++    color: #7dd3fc;
++}
++body[data-theme='dark'] .pulse-accent-indigo .fleet-ops-pulse-icon {
++    color: #a5b4fc;
++}
++body[data-theme='dark'] .pulse-accent-amber .fleet-ops-pulse-icon {
++    color: #fcd34d;
++}
 diff --git a/addon/templates/maintenance/index.hbs b/addon/templates/maintenance/index.hbs
 index f4264ac9ecc3808335aba232eae2d59b140005d5..1cf2c1e31e3d035faf94a33a520b5457e817fcf5 100644
 --- a/addon/templates/maintenance/index.hbs

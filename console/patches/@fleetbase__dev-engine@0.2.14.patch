@@ -202,6 +202,95 @@ index 31c604a5ffa5107824e95ccb8534e651f2275bb9..679282bcfb38a0d005b8c5d5293d0c39
 @@ -1 +1 @@
 -<Widget::DevelopersChart @endpoint="webhook-delivery" @title={{t "developers.component.widget.dashboard.webhook-delivery.title"}} @subtitle={{t "developers.component.widget.dashboard.webhook-delivery.subtitle"}} />
 +<Widget::DevelopersChart @endpoint="webhook-delivery" @titleKey="developers.component.widget.dashboard.webhook-delivery.title" @subtitleKey="developers.component.widget.dashboard.webhook-delivery.subtitle" />
+diff --git a/addon/styles/dev-engine.css b/addon/styles/dev-engine.css
+index 4a665992b19fd79c55ff826fed2a220d11a92384..1e9a9457dd718c770bfa2ff8a71f2a3c15e79edc 100644
+--- a/addon/styles/dev-engine.css
++++ b/addon/styles/dev-engine.css
+@@ -165,12 +165,25 @@ body[data-theme='dark'] .developers-list-subtitle {
+ 
+ .developers-widget-icon-button,
+ .developers-kpi-icon {
+-    width: 1.75rem;
+-    height: 1.75rem;
+-    flex: 0 0 1.75rem;
++    width: 2.1875rem;
++    height: 2.1875rem;
++    flex: 0 0 2.1875rem;
++    font-size: 1.09375rem;
+     color: #64748b;
+ }
+ 
++/* Elite Logistics: give the KPI tile's own icon a tinted circular badge
++   matching its accent (the plain reload buttons on chart widgets, which
++   share the base size rule above, are left as flat icons — only the KPI
++   tile icon gets the badge treatment). */
++.developers-kpi-icon {
++    display: flex;
++    align-items: center;
++    justify-content: center;
++    border-radius: 0.5rem;
++    background-color: rgba(100, 116, 139, 12%);
++}
++
+ .developers-widget-icon-button:hover,
+ .developers-kpi-icon:hover {
+     color: #111827;
+@@ -232,6 +245,55 @@ body[data-theme='dark'] .developers-kpi-value {
+     background-image: linear-gradient(135deg, rgb(6 182 212 / 12%) 0%, rgb(6 182 212 / 0%) 64%);
+ }
+ 
++.developers-kpi-accent-blue .developers-kpi-icon {
++    color: #2563eb;
++    background-color: rgb(37 99 235 / 16%);
++}
++.developers-kpi-accent-rose .developers-kpi-icon {
++    color: #e11d48;
++    background-color: rgb(225 29 72 / 16%);
++}
++.developers-kpi-accent-amber .developers-kpi-icon {
++    color: #d97706;
++    background-color: rgb(245 158 11 / 18%);
++}
++.developers-kpi-accent-emerald .developers-kpi-icon {
++    color: #059669;
++    background-color: rgb(16 185 129 / 16%);
++}
++.developers-kpi-accent-indigo .developers-kpi-icon {
++    color: #4f46e5;
++    background-color: rgb(79 70 229 / 16%);
++}
++.developers-kpi-accent-cyan .developers-kpi-icon {
++    color: #0891b2;
++    background-color: rgb(6 182 212 / 16%);
++}
++body[data-theme='dark'] .developers-kpi-accent-blue .developers-kpi-icon {
++    color: #93c5fd;
++    background-color: rgb(37 99 235 / 22%);
++}
++body[data-theme='dark'] .developers-kpi-accent-rose .developers-kpi-icon {
++    color: #fda4af;
++    background-color: rgb(225 29 72 / 22%);
++}
++body[data-theme='dark'] .developers-kpi-accent-amber .developers-kpi-icon {
++    color: #fcd34d;
++    background-color: rgb(245 158 11 / 22%);
++}
++body[data-theme='dark'] .developers-kpi-accent-emerald .developers-kpi-icon {
++    color: #6ee7b7;
++    background-color: rgb(16 185 129 / 22%);
++}
++body[data-theme='dark'] .developers-kpi-accent-indigo .developers-kpi-icon {
++    color: #a5b4fc;
++    background-color: rgb(79 70 229 / 22%);
++}
++body[data-theme='dark'] .developers-kpi-accent-cyan .developers-kpi-icon {
++    color: #67e8f9;
++    background-color: rgb(6 182 212 / 22%);
++}
++
+ .developers-chart-widget {
+     overflow: hidden;
+ }
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
 index 2f15983dca7b389ebe834716c3e29517a17a3553..0672ef50877d33830f4010bc93b58d56dd9653d8 100644
 --- a/translations/ar-ae.yaml

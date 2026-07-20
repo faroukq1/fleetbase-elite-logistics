@@ -284,19 +284,19 @@ index f9268eb5a018605e717ab79efe96e17258a6a37f..cdbcf39242e8f7db6030d09dc4c0b40b
                      {{/each}}
                  </tbody>
 diff --git a/addon/components/widget/kpi-active-orders.hbs b/addon/components/widget/kpi-active-orders.hbs
-index 6d4f5ec38f3b9691e457de8940d245991166aac4..76afa34b04e1dbeb4c97800a47d41aa81d832d31 100644
+index 6d4f5ec38f3b9691e457de8940d245991166aac4..a7ceb5aec5450a59450d771bddd2a9e362e766e5 100644
 --- a/addon/components/widget/kpi-active-orders.hbs
 +++ b/addon/components/widget/kpi-active-orders.hbs
 @@ -1 +1 @@
 -<Widget::StorefrontKpiTile @metric="active_orders" @title="Active Orders" @icon="bolt" @accent="amber" ...attributes />
-+<Widget::StorefrontKpiTile @metric="active_orders" @titleKey="storefront.widget.kpi.active-orders" @icon="bolt" @accent="amber" ...attributes />
++<Widget::StorefrontKpiTile @metric="active_orders" @titleKey="storefront.widget.kpi.active-orders" @icon="bolt" @accent="amber" @colorizeTrend={{true}} ...attributes />
 diff --git a/addon/components/widget/kpi-aov.hbs b/addon/components/widget/kpi-aov.hbs
-index c2609f7f7e9b1dee8983a64fc83494bc9f426bb4..81c7761f3506a7e9bc73ebc434e4a12af53b7306 100644
+index c2609f7f7e9b1dee8983a64fc83494bc9f426bb4..1ac30af9cb44000a71f27453e8585713b916b8b4 100644
 --- a/addon/components/widget/kpi-aov.hbs
 +++ b/addon/components/widget/kpi-aov.hbs
 @@ -1 +1 @@
 -<Widget::StorefrontKpiTile @metric="average_order_value" @title="Average Order Value" @icon="receipt" @accent="slate" ...attributes />
-+<Widget::StorefrontKpiTile @metric="average_order_value" @titleKey="storefront.widget.kpi.aov" @icon="receipt" @accent="slate" ...attributes />
++<Widget::StorefrontKpiTile @metric="average_order_value" @titleKey="storefront.widget.kpi.aov" @icon="receipt" @accent="slate" @colorizeTrend={{true}} ...attributes />
 diff --git a/addon/components/widget/kpi-cancellation-rate.hbs b/addon/components/widget/kpi-cancellation-rate.hbs
 index 3924389514cf070746cc3e6006c21ca6e702184d..fc7d9638fb28f9d48da85ae18d9a648948f362af 100644
 --- a/addon/components/widget/kpi-cancellation-rate.hbs
@@ -312,12 +312,12 @@ index fd80a004a1606b0d7afe1f975bd4e535f1a7c249..b8803a8bbaeb29b2ad3471cc983ec4bf
 -<Widget::StorefrontKpiTile @metric="cart_conversion" @title="Cart Conversion" @icon="cart-shopping" @accent="green" ...attributes />
 +<Widget::StorefrontKpiTile @metric="cart_conversion" @titleKey="storefront.widget.kpi.cart-conversion" @icon="cart-shopping" @accent="green" ...attributes />
 diff --git a/addon/components/widget/kpi-completed-orders.hbs b/addon/components/widget/kpi-completed-orders.hbs
-index b644506778fd02fd69034ca172edf5fbcc2e5457..1958db1f86d1def3028b8e51cecdc1fb3cb63090 100644
+index b644506778fd02fd69034ca172edf5fbcc2e5457..4c4e01c45d2f4e27068f7ae6040e90cfe7e875bf 100644
 --- a/addon/components/widget/kpi-completed-orders.hbs
 +++ b/addon/components/widget/kpi-completed-orders.hbs
 @@ -1 +1 @@
 -<Widget::StorefrontKpiTile @metric="completed_orders" @title="Completed Orders" @icon="circle-check" @accent="green" ...attributes />
-+<Widget::StorefrontKpiTile @metric="completed_orders" @titleKey="storefront.widget.kpi.completed-orders" @icon="circle-check" @accent="green" ...attributes />
++<Widget::StorefrontKpiTile @metric="completed_orders" @titleKey="storefront.widget.kpi.completed-orders" @icon="circle-check" @accent="green" @colorizeTrend={{true}} ...attributes />
 diff --git a/addon/components/widget/kpi-customers.hbs b/addon/components/widget/kpi-customers.hbs
 index f12f292f7042734b1d6466e2bde797ffd585a26c..376187b751885b4d6812a2856ace452c440bc53a 100644
 --- a/addon/components/widget/kpi-customers.hbs
@@ -326,19 +326,19 @@ index f12f292f7042734b1d6466e2bde797ffd585a26c..376187b751885b4d6812a2856ace452c
 -<Widget::StorefrontKpiTile @metric="customers" @title="Customers" @icon="users" @accent="violet" ...attributes />
 +<Widget::StorefrontKpiTile @metric="customers" @titleKey="storefront.widget.kpi.customers" @icon="users" @accent="violet" ...attributes />
 diff --git a/addon/components/widget/kpi-orders.hbs b/addon/components/widget/kpi-orders.hbs
-index 919c51f20b5c304c4798f17dd1f8f3f5042c6258..13ef5764ca052697c75634ab6fcbb9805d5e0bea 100644
+index 919c51f20b5c304c4798f17dd1f8f3f5042c6258..af54e12836f68e93106472a88a614f5b781bc5df 100644
 --- a/addon/components/widget/kpi-orders.hbs
 +++ b/addon/components/widget/kpi-orders.hbs
 @@ -1 +1 @@
 -<Widget::StorefrontKpiTile @metric="orders" @title="Orders" @icon="bag-shopping" @accent="blue" ...attributes />
-+<Widget::StorefrontKpiTile @metric="orders" @titleKey="storefront.widget.kpi.orders" @icon="bag-shopping" @accent="blue" ...attributes />
++<Widget::StorefrontKpiTile @metric="orders" @titleKey="storefront.widget.kpi.orders" @icon="bag-shopping" @accent="blue" @colorizeTrend={{true}} ...attributes />
 diff --git a/addon/components/widget/kpi-revenue.hbs b/addon/components/widget/kpi-revenue.hbs
-index c019fb63d05b48dc9ad036f29e023a4c5ce811cb..d3d65a3e9634742bfb31b7875678c9387e0f87b8 100644
+index c019fb63d05b48dc9ad036f29e023a4c5ce811cb..72720e012ca8c625a586d152f8b7a6990ac4cb91 100644
 --- a/addon/components/widget/kpi-revenue.hbs
 +++ b/addon/components/widget/kpi-revenue.hbs
 @@ -1 +1 @@
 -<Widget::StorefrontKpiTile @metric="revenue" @title="Revenue" @icon="sack-dollar" @accent="green" ...attributes />
-+<Widget::StorefrontKpiTile @metric="revenue" @titleKey="storefront.widget.kpi.revenue" @icon="sack-dollar" @accent="green" ...attributes />
++<Widget::StorefrontKpiTile @metric="revenue" @titleKey="storefront.widget.kpi.revenue" @icon="sack-dollar" @accent="green" @colorizeTrend={{true}} ...attributes />
 diff --git a/addon/components/widget/orders-by-status.hbs b/addon/components/widget/orders-by-status.hbs
 index 7f4ba08b4f3466193c2a26b84f31c45c89613c0e..5d73b608960ddfeefb65e46122bcb078d5c551a4 100644
 --- a/addon/components/widget/orders-by-status.hbs
@@ -457,7 +457,7 @@ index 49efe5b693f62fcd7c921c15ffd80db849e56eb1..114b8989ca1ece1072e5a8eb7f3cc0be
                  <FaIcon @icon={{this.deltaIcon}} />
                  {{this.deltaText}}
 diff --git a/addon/components/widget/storefront-kpi-tile.js b/addon/components/widget/storefront-kpi-tile.js
-index 3dfcc3dcf04a565329f4d97e9ccda98a2b75ee12..f0d5c220ffe806ee862de8ae9688ae61e745533d 100644
+index 3dfcc3dcf04a565329f4d97e9ccda98a2b75ee12..f7b57efdddf4a6d802981e1897fa3d68c4d05b87 100644
 --- a/addon/components/widget/storefront-kpi-tile.js
 +++ b/addon/components/widget/storefront-kpi-tile.js
 @@ -7,6 +7,7 @@ import formatCurrency from '@fleetbase/ember-ui/utils/format-currency';
@@ -501,7 +501,25 @@ index 3dfcc3dcf04a565329f4d97e9ccda98a2b75ee12..f0d5c220ffe806ee862de8ae9688ae61
      }
  
      get formattedValue() {
-@@ -89,7 +97,7 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
+@@ -62,6 +70,17 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
+     }
+ 
+     get deltaDirection() {
++        // Elite Logistics: only color the trend red/down or green/up for
++        // order-count and money metrics (revenue, orders, AOV, active/
++        // completed orders) — opted in per-tile via @colorizeTrend. Rate
++        // metrics like cancellation rate or cart conversion stay neutral
++        // gray here, since "decrease is bad" doesn't hold for all of them
++        // and getting that inverse logic wrong per-metric is worse than no
++        // color at all.
++        if (!this.args.colorizeTrend) {
++            return 'neutral';
++        }
++
+         const delta = this.metric.delta_percent ?? 0;
+         if (delta === 0) {
+             return 'neutral';
+@@ -89,7 +108,7 @@ export default class WidgetStorefrontKpiTileComponent extends Component {
              this.data = yield this.fetch.get('analytics/overview', this.storefrontDashboard.withStore(this.storeId), { namespace: 'storefront/int/v1' });
              this.error = null;
          } catch (error) {
@@ -613,6 +631,81 @@ index d0fe2c6b89291f9c165fa62b7382e378c50301b6..61dccdeb31d3cf724527b0075e1b2cd0
              acceptButtonIcon: 'save',
              statusOptions: this.statusOptions,
              foodTruck,
+diff --git a/addon/styles/storefront-engine.css b/addon/styles/storefront-engine.css
+index 1b4350cb461e3faee01b17825ec019049bb3667c..e192c998379069a854333d6e49c8769f058aff81 100644
+--- a/addon/styles/storefront-engine.css
++++ b/addon/styles/storefront-engine.css
+@@ -1354,8 +1354,9 @@ body[data-theme='dark'] .storefront-kpi-value {
+ }
+ 
+ .storefront-kpi-icon {
+-    width: 2rem;
+-    height: 2rem;
++    width: 2.5rem;
++    height: 2.5rem;
++    font-size: 1.25rem;
+     color: #64748b;
+     background-color: rgba(100, 116, 139, 12%);
+ }
+@@ -1413,6 +1414,58 @@ body[data-theme='dark'] .storefront-kpi-accent-slate {
+     background-color: #1f2937;
+ }
+ 
++/* Elite Logistics: color each tile's icon to match its own accent instead
++   of the same flat slate gray on every tile, so revenue/orders/etc. read at
++   a glance by color, not just by the label text. */
++.storefront-kpi-accent-green .storefront-kpi-icon {
++    color: #059669;
++    background-color: rgba(16, 185, 129, 16%);
++}
++.storefront-kpi-accent-blue .storefront-kpi-icon {
++    color: #2563eb;
++    background-color: rgba(59, 130, 246, 16%);
++}
++.storefront-kpi-accent-amber .storefront-kpi-icon {
++    color: #d97706;
++    background-color: rgba(245, 158, 11, 18%);
++}
++.storefront-kpi-accent-violet .storefront-kpi-icon {
++    color: #7c3aed;
++    background-color: rgba(139, 92, 246, 16%);
++}
++.storefront-kpi-accent-rose .storefront-kpi-icon {
++    color: #e11d48;
++    background-color: rgba(244, 63, 94, 16%);
++}
++.storefront-kpi-accent-slate .storefront-kpi-icon {
++    color: #475569;
++    background-color: rgba(100, 116, 139, 14%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-green .storefront-kpi-icon {
++    color: #6ee7b7;
++    background-color: rgba(16, 185, 129, 20%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-blue .storefront-kpi-icon {
++    color: #93c5fd;
++    background-color: rgba(59, 130, 246, 20%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-amber .storefront-kpi-icon {
++    color: #fcd34d;
++    background-color: rgba(245, 158, 11, 22%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-violet .storefront-kpi-icon {
++    color: #c4b5fd;
++    background-color: rgba(139, 92, 246, 20%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-rose .storefront-kpi-icon {
++    color: #fda4af;
++    background-color: rgba(244, 63, 94, 20%);
++}
++body[data-theme='dark'] .storefront-kpi-accent-slate .storefront-kpi-icon {
++    color: #cbd5e1;
++    background-color: rgba(100, 116, 139, 18%);
++}
++
+ .storefront-widget-header {
+     display: flex;
+     min-height: 3.25rem;
 diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
 index 3d592ac3acdb3422ad2af63d776fb5dd3afb2b3c..83020a1dadb29fdbf238d1c28d592574ba4a400c 100644
 --- a/addon/templates/application.hbs

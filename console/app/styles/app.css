@@ -388,23 +388,25 @@ body[data-theme='dark'] .table-wrapper table tbody {
     border-color: rgba(93, 214, 44, 0.15) !important;
 }
 /* ── ELITE SKIN: table headers — solid brand green ──────────────────────────
-   Client-specified exact color: rgb(126 227 82). Applied theme-independently
-   (like the sidebar's active pill and primary buttons elsewhere in this
-   file) so headers look the same in light and dark mode rather than the
-   vendor's navy/light-green tint that used to vary per theme. Text and sort
-   icons are dark, not white: at this background's luminance, white text
-   comes out under 2:1 contrast (fails WCAG AA); a dark near-black clears it
-   comfortably — this is the "or appropriate contrast" the brief allows for.
-   Covers both table implementations in this codebase (`.next-table-wrapper`
-   and the older `.table-wrapper`) plus sticky header cells (e.g. the pinned
-   driver-identity and row-actions columns), so no header cell is left
-   showing the old background. Sorting/sticky behavior is untouched — this
-   only changes colors. */
+   Same green as the primary "+ New" buttons app-wide (Tailwind's `sky-500`,
+   remapped to the brand color #5dd62c — see tailwind.config.js) rather than
+   the lighter rgb(126 227 82) tried first, which didn't match. Applied
+   theme-independently (like the sidebar's active pill and primary buttons
+   elsewhere in this file) so headers look the same in light and dark mode
+   rather than the vendor's navy/light-green tint that used to vary per
+   theme. Text and sort icons are dark, not white: at this background's
+   luminance, white text comes out under 2:1 contrast (fails WCAG AA); a dark
+   near-black clears it comfortably — this is the "or appropriate contrast"
+   the brief allows for. Covers both table implementations in this codebase
+   (`.next-table-wrapper` and the older `.table-wrapper`) plus sticky header
+   cells (e.g. the pinned driver-identity and row-actions columns), so no
+   header cell is left showing the old background. Sorting/sticky behavior
+   is untouched — this only changes colors. */
 .next-table-wrapper table thead tr th,
 .table-wrapper table thead tr th,
 .next-table-wrapper table thead th.is-sticky {
-    background-color: rgb(126 227 82) !important;
-    border-color: rgb(126 227 82 / 40%) !important;
+    background-color: #5dd62c !important;
+    border-color: rgb(93 214 44 / 40%) !important;
     color: #111827 !important;
 }
 .next-table-wrapper table thead tr th .sort-icon-wrapper,
