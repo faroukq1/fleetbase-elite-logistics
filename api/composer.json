@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": ">=8.0 <=8.2.31",
+        "php": ">=8.0 <8.3.0",
         "appstract/laravel-opcache": "^4.0",
         "cweagans/composer-patches": "^1.7",
         "fleetbase/ai": "^0.0.2",
