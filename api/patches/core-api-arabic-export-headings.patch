@@ -1,0 +1,89 @@
+--- a/src/Exports/ApiCredentialExport.php
++++ b/src/Exports/ApiCredentialExport.php
+@@ -35,13 +35,13 @@
+     public function headings(): array
+     {
+         return [
+-            'Name',
+-            'Public Key',
+-            'Secret Key',
+-            'Environment',
+-            'Expiry Date',
+-            'Last Used',
+-            'Date Created',
++            __('Name'),
++            __('Public Key'),
++            __('Secret Key'),
++            __('Environment'),
++            __('Expiry Date'),
++            __('Last Used'),
++            __('Date Created'),
+         ];
+     }
+ 
+
+--- a/src/Exports/CompanyExport.php
++++ b/src/Exports/CompanyExport.php
+@@ -34,12 +34,12 @@
+     public function headings(): array
+     {
+         return [
+-            'Name',
+-            'Owner',
+-            'Email',
+-            'Phone',
+-            'Users Count',
+-            'Created',
++            __('Name'),
++            __('Owner'),
++            __('Email'),
++            __('Phone'),
++            __('Users Count'),
++            __('Created'),
+         ];
+     }
+ 
+
+--- a/src/Exports/GroupExport.php
++++ b/src/Exports/GroupExport.php
+@@ -30,8 +30,8 @@
+     public function headings(): array
+     {
+         return [
+-            'Name',
+-            'Date Created',
++            __('Name'),
++            __('Date Created'),
+         ];
+     }
+ 
+
+--- a/src/Exports/UserExport.php
++++ b/src/Exports/UserExport.php
+@@ -38,16 +38,16 @@
+     public function headings(): array
+     {
+         return [
+-            'Name',
+-            'Company',
+-            'Email',
+-            'Phone',
+-            'Country',
+-            'Timezone',
+-            'IP Address',
+-            'Last Login',
+-            'Email Verified At',
+-            'Date Created',
++            __('Name'),
++            __('Company'),
++            __('Email'),
++            __('Phone'),
++            __('Country'),
++            __('Timezone'),
++            __('IP Address'),
++            __('Last Login'),
++            __('Email Verified At'),
++            __('Date Created'),
+         ];
+     }
+ 

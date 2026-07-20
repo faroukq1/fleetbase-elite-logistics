@@ -1,0 +1,1113 @@
+--- a/server/src/Exports/ContactExport.php
++++ b/server/src/Exports/ContactExport.php
+@@ -38,16 +38,16 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Internal ID',
+-            'Name',
+-            'Title',
+-            'Type',
+-            'Address',
+-            'Email',
+-            'Phone',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Internal ID'),
++            __('Name'),
++            __('Title'),
++            __('Type'),
++            __('Address'),
++            __('Email'),
++            __('Phone'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/DeviceExport.php
++++ b/server/src/Exports/DeviceExport.php
+@@ -45,23 +45,23 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Provider ID / IMEI',
+-            'Connection Status',
+-            'Attached To',
+-            'Telematic Provider',
+-            'Sensors Count',
+-            'Last Seen',
+-            'Provider',
+-            'Type',
+-            'Serial Number',
+-            'IMEI',
+-            'Status',
+-            'Attachment State',
+-            'Online',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Provider ID / IMEI'),
++            __('Connection Status'),
++            __('Attached To'),
++            __('Telematic Provider'),
++            __('Sensors Count'),
++            __('Last Seen'),
++            __('Provider'),
++            __('Type'),
++            __('Serial Number'),
++            __('IMEI'),
++            __('Status'),
++            __('Attachment State'),
++            __('Online'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -87,6 +87,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/DriverExport.php
++++ b/server/src/Exports/DriverExport.php
+@@ -46,24 +46,24 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Internal ID',
+-            'Name',
+-            'Email',
+-            'Vendor',
+-            'Vehicle',
+-            'Phone',
+-            'License #',
+-            'License Expiry',
+-            'Country',
+-            'City',
+-            'Currency',
+-            'Online',
+-            'Status',
+-            'Assigned Orders Count',
+-            'Current Order',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Internal ID'),
++            __('Name'),
++            __('Email'),
++            __('Vendor'),
++            __('Vehicle'),
++            __('Phone'),
++            __('License #'),
++            __('License Expiry'),
++            __('Country'),
++            __('City'),
++            __('Currency'),
++            __('Online'),
++            __('Status'),
++            __('Assigned Orders Count'),
++            __('Current Order'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -79,7 +79,7 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ 
+     /**
+
+--- a/server/src/Exports/EquipmentExport.php
++++ b/server/src/Exports/EquipmentExport.php
+@@ -46,24 +46,24 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Code',
+-            'Type',
+-            'Status',
+-            'Serial Number',
+-            'Manufacturer',
+-            'Model',
+-            'Equipped To',
+-            'Is Equipped',
+-            'Warranty',
+-            'Purchased At',
+-            'Purchase Price',
+-            'Currency',
+-            'Age In Days',
+-            'Depreciated Value',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Code'),
++            __('Type'),
++            __('Status'),
++            __('Serial Number'),
++            __('Manufacturer'),
++            __('Model'),
++            __('Equipped To'),
++            __('Is Equipped'),
++            __('Warranty'),
++            __('Purchased At'),
++            __('Purchase Price'),
++            __('Currency'),
++            __('Age In Days'),
++            __('Depreciated Value'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -89,6 +89,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/FleetExport.php
++++ b/server/src/Exports/FleetExport.php
+@@ -42,20 +42,20 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Service Area',
+-            'Parent Fleet',
+-            'Vendor',
+-            'Zone',
+-            'Drivers Count',
+-            'Drivers Online Count',
+-            'Vehicles Count',
+-            'Vehicles Online Count',
+-            'Task',
+-            'Status',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Service Area'),
++            __('Parent Fleet'),
++            __('Vendor'),
++            __('Zone'),
++            __('Drivers Count'),
++            __('Drivers Online Count'),
++            __('Vehicles Count'),
++            __('Vehicles Online Count'),
++            __('Task'),
++            __('Status'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/FuelReportExport.php
++++ b/server/src/Exports/FuelReportExport.php
+@@ -43,21 +43,21 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Reporter',
+-            'Driver',
+-            'Vehicle',
+-            'Status',
+-            'Amount',
+-            'Currency',
+-            'Volume',
+-            'Metric Unit',
+-            'Odometer',
+-            'Type',
+-            'Source',
+-            'Provider',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Reporter'),
++            __('Driver'),
++            __('Vehicle'),
++            __('Status'),
++            __('Amount'),
++            __('Currency'),
++            __('Volume'),
++            __('Metric Unit'),
++            __('Odometer'),
++            __('Type'),
++            __('Source'),
++            __('Provider'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/IssueExport.php
++++ b/server/src/Exports/IssueExport.php
+@@ -48,26 +48,26 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Issue ID',
+-            'Title',
+-            'Report',
+-            'Priority',
+-            'Type',
+-            'Category',
+-            'Tags',
+-            'Reporter',
+-            'Reporter ID',
+-            'Assignee',
+-            'Assignee ID',
+-            'Driver',
+-            'Vehicle',
+-            'Vehicle ID',
+-            'Linked Order',
+-            'Status',
+-            'Resolved At',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Issue ID'),
++            __('Title'),
++            __('Report'),
++            __('Priority'),
++            __('Type'),
++            __('Category'),
++            __('Tags'),
++            __('Reporter'),
++            __('Reporter ID'),
++            __('Assignee'),
++            __('Assignee ID'),
++            __('Driver'),
++            __('Vehicle'),
++            __('Vehicle ID'),
++            __('Linked Order'),
++            __('Status'),
++            __('Resolved At'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/MaintenanceExport.php
++++ b/server/src/Exports/MaintenanceExport.php
+@@ -51,29 +51,29 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Summary',
+-            'Asset',
+-            'Performed By',
+-            'Work Order',
+-            'Type',
+-            'Status',
+-            'Priority',
+-            'Odometer',
+-            'Engine Hours',
+-            'Scheduled At',
+-            'Started At',
+-            'Completed At',
+-            'Labor Cost',
+-            'Parts Cost',
+-            'Tax',
+-            'Total Cost',
+-            'Currency',
+-            'Duration Hours',
+-            'Overdue',
+-            'Days Until Due',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Summary'),
++            __('Asset'),
++            __('Performed By'),
++            __('Work Order'),
++            __('Type'),
++            __('Status'),
++            __('Priority'),
++            __('Odometer'),
++            __('Engine Hours'),
++            __('Scheduled At'),
++            __('Started At'),
++            __('Completed At'),
++            __('Labor Cost'),
++            __('Parts Cost'),
++            __('Tax'),
++            __('Total Cost'),
++            __('Currency'),
++            __('Duration Hours'),
++            __('Overdue'),
++            __('Days Until Due'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -101,6 +101,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/MaintenanceScheduleExport.php
++++ b/server/src/Exports/MaintenanceScheduleExport.php
+@@ -50,28 +50,28 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Subject',
+-            'Type',
+-            'Status',
+-            'Interval Method',
+-            'Interval Type',
+-            'Interval Value',
+-            'Interval Unit',
+-            'Interval Distance',
+-            'Interval Engine Hours',
+-            'Last Service Odometer',
+-            'Last Service Engine Hours',
+-            'Last Service Date',
+-            'Next Due Date',
+-            'Next Due Odometer',
+-            'Next Due Engine Hours',
+-            'Default Priority',
+-            'Default Assignee',
+-            'Last Triggered At',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Subject'),
++            __('Type'),
++            __('Status'),
++            __('Interval Method'),
++            __('Interval Type'),
++            __('Interval Value'),
++            __('Interval Unit'),
++            __('Interval Distance'),
++            __('Interval Engine Hours'),
++            __('Last Service Odometer'),
++            __('Last Service Engine Hours'),
++            __('Last Service Date'),
++            __('Next Due Date'),
++            __('Next Due Odometer'),
++            __('Next Due Engine Hours'),
++            __('Default Priority'),
++            __('Default Assignee'),
++            __('Last Triggered At'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/OrderExport.php
++++ b/server/src/Exports/OrderExport.php
+@@ -57,29 +57,29 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Tracking Number',
+-            'Internal ID',
+-            'Payload ID',
+-            'Driver',
+-            'Vehicle',
+-            'Customer',
+-            'Facilitator',
+-            'SKU',
+-            'Item Count',
+-            'Transaction Amount',
+-            'Transaction Currency',
+-            'Pick Up',
+-            'Drop Off',
+-            'Return',
+-            'Waypoints',
+-            'Date Scheduled',
+-            'Type',
+-            'Status',
+-            'Created By',
+-            'Updated By',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Tracking Number'),
++            __('Internal ID'),
++            __('Payload ID'),
++            __('Driver'),
++            __('Vehicle'),
++            __('Customer'),
++            __('Facilitator'),
++            __('SKU'),
++            __('Item Count'),
++            __('Transaction Amount'),
++            __('Transaction Currency'),
++            __('Pick Up'),
++            __('Drop Off'),
++            __('Return'),
++            __('Waypoints'),
++            __('Date Scheduled'),
++            __('Type'),
++            __('Status'),
++            __('Created By'),
++            __('Updated By'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/PartExport.php
++++ b/server/src/Exports/PartExport.php
+@@ -49,27 +49,27 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Part Number',
+-            'Type',
+-            'Status',
+-            'Quantity On Hand',
+-            'Unit Cost',
+-            'MSRP',
+-            'Currency',
+-            'Manufacturer',
+-            'Model',
+-            'Serial Number',
+-            'Barcode',
+-            'Vendor',
+-            'Asset',
+-            'Warranty',
+-            'Total Value',
+-            'In Stock',
+-            'Low Stock',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Part Number'),
++            __('Type'),
++            __('Status'),
++            __('Quantity On Hand'),
++            __('Unit Cost'),
++            __('MSRP'),
++            __('Currency'),
++            __('Manufacturer'),
++            __('Model'),
++            __('Serial Number'),
++            __('Barcode'),
++            __('Vendor'),
++            __('Asset'),
++            __('Warranty'),
++            __('Total Value'),
++            __('In Stock'),
++            __('Low Stock'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -94,6 +94,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/PlaceExport.php
++++ b/server/src/Exports/PlaceExport.php
+@@ -46,24 +46,24 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Phone',
+-            'Address',
+-            'Street 1',
+-            'Street 2',
+-            'City',
+-            'Province',
+-            'Postal Code',
+-            'Neighborhood',
+-            'District',
+-            'Building',
+-            'Security Access Code',
+-            'Country',
+-            'Owner',
+-            'Type',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Phone'),
++            __('Address'),
++            __('Street 1'),
++            __('Street 2'),
++            __('City'),
++            __('Province'),
++            __('Postal Code'),
++            __('Neighborhood'),
++            __('District'),
++            __('Building'),
++            __('Security Access Code'),
++            __('Country'),
++            __('Owner'),
++            __('Type'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/SensorExport.php
++++ b/server/src/Exports/SensorExport.php
+@@ -46,24 +46,24 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Telematic',
+-            'Device',
+-            'Type',
+-            'Last Value',
+-            'Unit',
+-            'Status',
+-            'Threshold Status',
+-            'Min Threshold',
+-            'Max Threshold',
+-            'Serial Number',
+-            'IMEI',
+-            'Last Reading',
+-            'Attached To',
+-            'Active',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Telematic'),
++            __('Device'),
++            __('Type'),
++            __('Last Value'),
++            __('Unit'),
++            __('Status'),
++            __('Threshold Status'),
++            __('Min Threshold'),
++            __('Max Threshold'),
++            __('Serial Number'),
++            __('IMEI'),
++            __('Last Reading'),
++            __('Attached To'),
++            __('Active'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -89,6 +89,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/ServiceAreaExport.php
++++ b/server/src/Exports/ServiceAreaExport.php
+@@ -45,20 +45,20 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Type',
+-            'Zones',
+-            'Country',
+-            'Color',
+-            'Stroke Color',
+-            'Trigger On Entry',
+-            'Trigger On Exit',
+-            'Dwell Threshold Minutes',
+-            'Speed Limit KMH',
+-            'Status',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Type'),
++            __('Zones'),
++            __('Country'),
++            __('Color'),
++            __('Stroke Color'),
++            __('Trigger On Entry'),
++            __('Trigger On Exit'),
++            __('Dwell Threshold Minutes'),
++            __('Speed Limit KMH'),
++            __('Status'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -72,7 +72,7 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ 
+     /**
+
+--- a/server/src/Exports/ServiceRateExport.php
++++ b/server/src/Exports/ServiceRateExport.php
+@@ -56,32 +56,32 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Service',
+-            'Type',
+-            'Base Fee',
+-            'Calculation Method',
+-            'Service Area',
+-            'Zone',
+-            'Per Meter Flat Rate Fee',
+-            'Per Meter Unit',
+-            'Max Distance',
+-            'Max Distance Unit',
+-            'Has COD Fee',
+-            'COD Calculation Method',
+-            'COD Flat Fee',
+-            'COD Percent',
+-            'Has Peak Hours Fee',
+-            'Peak Hours Calculation Method',
+-            'Peak Hours Flat Fee',
+-            'Peak Hours Percent',
+-            'Peak Hours Start',
+-            'Peak Hours End',
+-            'Currency',
+-            'Duration Terms',
+-            'Estimated Days',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Service'),
++            __('Type'),
++            __('Base Fee'),
++            __('Calculation Method'),
++            __('Service Area'),
++            __('Zone'),
++            __('Per Meter Flat Rate Fee'),
++            __('Per Meter Unit'),
++            __('Max Distance'),
++            __('Max Distance Unit'),
++            __('Has COD Fee'),
++            __('COD Calculation Method'),
++            __('COD Flat Fee'),
++            __('COD Percent'),
++            __('Has Peak Hours Fee'),
++            __('Peak Hours Calculation Method'),
++            __('Peak Hours Flat Fee'),
++            __('Peak Hours Percent'),
++            __('Peak Hours Start'),
++            __('Peak Hours End'),
++            __('Currency'),
++            __('Duration Terms'),
++            __('Estimated Days'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -95,7 +95,7 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ 
+     /**
+
+--- a/server/src/Exports/TelematicExport.php
++++ b/server/src/Exports/TelematicExport.php
+@@ -44,22 +44,22 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Name',
+-            'Provider',
+-            'Status',
+-            'Model',
+-            'Serial Number',
+-            'IMEI',
+-            'ICCID',
+-            'IMSI',
+-            'MSISDN',
+-            'Last Seen',
+-            'Warranty',
+-            'Online',
+-            'Signal Strength',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Name'),
++            __('Provider'),
++            __('Status'),
++            __('Model'),
++            __('Serial Number'),
++            __('IMEI'),
++            __('ICCID'),
++            __('IMSI'),
++            __('MSISDN'),
++            __('Last Seen'),
++            __('Warranty'),
++            __('Online'),
++            __('Signal Strength'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -85,6 +85,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }
+
+--- a/server/src/Exports/VehicleExport.php
++++ b/server/src/Exports/VehicleExport.php
+@@ -134,100 +134,100 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Internal ID',
+-            'Name',
+-            'Description',
+-            'Plate Number',
+-            'VIN',
+-            'Make',
+-            'Model',
+-            'Year',
+-            'Trim',
+-            'Color',
+-            'Serial Number',
+-            'Fuel Card Number',
+-            'Class',
+-            'Type',
+-            'Driver',
+-            'Vendor',
+-            'Status',
+-            'Online',
+-            'Call Sign',
+-            'Latitude',
+-            'Longitude',
+-            'Heading',
+-            'Altitude',
+-            'Speed',
+-            'Measurement System',
+-            'Fuel Volume Unit',
+-            'Odometer',
+-            'Odometer Unit',
+-            'Odometer At Purchase',
+-            'Body Type',
+-            'Body Sub Type',
+-            'Usage Type',
+-            'Ownership Type',
+-            'Fuel Type',
+-            'Transmission',
+-            'Engine Number',
+-            'Engine Make',
+-            'Engine Model',
+-            'Engine Family',
+-            'Engine Configuration',
+-            'Cylinder Arrangement',
+-            'Number Of Cylinders',
+-            'Engine Size (L)',
+-            'Engine Displacement (cc)',
+-            'Horsepower (hp)',
+-            'Horsepower RPM',
+-            'Torque (Nm)',
+-            'Torque RPM',
+-            'Fuel Capacity (L)',
+-            'Payload Capacity (kg)',
+-            'Towing Capacity (kg)',
+-            'Seating Capacity',
+-            'Weight (kg)',
+-            'Length (cm)',
+-            'Width (cm)',
+-            'Height (cm)',
+-            'Cargo Volume (L)',
+-            'Payload Volume (m3)',
+-            'Payload Pallets',
+-            'Payload Parcels',
+-            'Passenger Volume (L)',
+-            'Interior Volume (L)',
+-            'Ground Clearance (cm)',
+-            'Bed Length (cm)',
+-            'Emission Standard',
+-            'DPF Equipped',
+-            'SCR Equipped',
+-            'GVWR (kg)',
+-            'GCWR (kg)',
+-            'Currency',
+-            'Acquisition Cost',
+-            'Current Value',
+-            'Insurance Value',
+-            'Depreciation Rate',
+-            'Estimated Service Life Distance',
+-            'Estimated Service Life Distance Unit',
+-            'Estimated Service Life Months',
+-            'Purchased At',
+-            'Lease Expires At',
+-            'Financing Status',
+-            'Loan Amount',
+-            'Loan Number Of Payments',
+-            'Loan First Payment',
+-            'Vehicle Skills',
+-            'Time Window Start',
+-            'Time Window End',
+-            'Max Tasks',
+-            'Return To Depot',
+-            'Assigned Order Count',
+-            'Current Order Reference',
+-            'Notes',
+-            'Created At',
+-            'Updated At',
++            __('ID'),
++            __('Internal ID'),
++            __('Name'),
++            __('Description'),
++            __('Plate Number'),
++            __('VIN'),
++            __('Make'),
++            __('Model'),
++            __('Year'),
++            __('Trim'),
++            __('Color'),
++            __('Serial Number'),
++            __('Fuel Card Number'),
++            __('Class'),
++            __('Type'),
++            __('Driver'),
++            __('Vendor'),
++            __('Status'),
++            __('Online'),
++            __('Call Sign'),
++            __('Latitude'),
++            __('Longitude'),
++            __('Heading'),
++            __('Altitude'),
++            __('Speed'),
++            __('Measurement System'),
++            __('Fuel Volume Unit'),
++            __('Odometer'),
++            __('Odometer Unit'),
++            __('Odometer At Purchase'),
++            __('Body Type'),
++            __('Body Sub Type'),
++            __('Usage Type'),
++            __('Ownership Type'),
++            __('Fuel Type'),
++            __('Transmission'),
++            __('Engine Number'),
++            __('Engine Make'),
++            __('Engine Model'),
++            __('Engine Family'),
++            __('Engine Configuration'),
++            __('Cylinder Arrangement'),
++            __('Number Of Cylinders'),
++            __('Engine Size (L)'),
++            __('Engine Displacement (cc)'),
++            __('Horsepower (hp)'),
++            __('Horsepower RPM'),
++            __('Torque (Nm)'),
++            __('Torque RPM'),
++            __('Fuel Capacity (L)'),
++            __('Payload Capacity (kg)'),
++            __('Towing Capacity (kg)'),
++            __('Seating Capacity'),
++            __('Weight (kg)'),
++            __('Length (cm)'),
++            __('Width (cm)'),
++            __('Height (cm)'),
++            __('Cargo Volume (L)'),
++            __('Payload Volume (m3)'),
++            __('Payload Pallets'),
++            __('Payload Parcels'),
++            __('Passenger Volume (L)'),
++            __('Interior Volume (L)'),
++            __('Ground Clearance (cm)'),
++            __('Bed Length (cm)'),
++            __('Emission Standard'),
++            __('DPF Equipped'),
++            __('SCR Equipped'),
++            __('GVWR (kg)'),
++            __('GCWR (kg)'),
++            __('Currency'),
++            __('Acquisition Cost'),
++            __('Current Value'),
++            __('Insurance Value'),
++            __('Depreciation Rate'),
++            __('Estimated Service Life Distance'),
++            __('Estimated Service Life Distance Unit'),
++            __('Estimated Service Life Months'),
++            __('Purchased At'),
++            __('Lease Expires At'),
++            __('Financing Status'),
++            __('Loan Amount'),
++            __('Loan Number Of Payments'),
++            __('Loan First Payment'),
++            __('Vehicle Skills'),
++            __('Time Window Start'),
++            __('Time Window End'),
++            __('Max Tasks'),
++            __('Return To Depot'),
++            __('Assigned Order Count'),
++            __('Current Order Reference'),
++            __('Notes'),
++            __('Created At'),
++            __('Updated At'),
+         ];
+     }
+ 
+@@ -264,7 +264,7 @@
+             return null;
+         }
+ 
+-        return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'Yes' : 'No';
++        return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? __('Yes') : __('No');
+     }
+ 
+     protected function joinSkills($skills): ?string
+
+--- a/server/src/Exports/VendorExport.php
++++ b/server/src/Exports/VendorExport.php
+@@ -41,19 +41,19 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Internal ID',
+-            'Name',
+-            'Business ID',
+-            'Address',
+-            'Email',
+-            'Website URL',
+-            'Phone',
+-            'Type',
+-            'Country',
+-            'Status',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Internal ID'),
++            __('Name'),
++            __('Business ID'),
++            __('Address'),
++            __('Email'),
++            __('Website URL'),
++            __('Phone'),
++            __('Type'),
++            __('Country'),
++            __('Status'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+
+--- a/server/src/Exports/WorkOrderExport.php
++++ b/server/src/Exports/WorkOrderExport.php
+@@ -44,22 +44,22 @@
+     public function headings(): array
+     {
+         return [
+-            'ID',
+-            'Code',
+-            'Subject',
+-            'Category',
+-            'Status',
+-            'Priority',
+-            'Target',
+-            'Assignee',
+-            'Opened At',
+-            'Due At',
+-            'Closed At',
+-            'Completion Percentage',
+-            'Overdue',
+-            'Days Until Due',
+-            'Date Created',
+-            'Date Updated',
++            __('ID'),
++            __('Code'),
++            __('Subject'),
++            __('Category'),
++            __('Status'),
++            __('Priority'),
++            __('Target'),
++            __('Assignee'),
++            __('Opened At'),
++            __('Due At'),
++            __('Closed At'),
++            __('Completion Percentage'),
++            __('Overdue'),
++            __('Days Until Due'),
++            __('Date Created'),
++            __('Date Updated'),
+         ];
+     }
+ 
+@@ -87,6 +87,6 @@
+ 
+     protected function yesNo($value): string
+     {
+-        return $value ? 'Yes' : 'No';
++        return $value ? __('Yes') : __('No');
+     }
+ }

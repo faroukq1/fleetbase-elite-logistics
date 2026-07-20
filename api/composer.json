@@ -20,13 +20,14 @@
     "require": {
         "php": ">=8.0 <=8.2.31",
         "appstract/laravel-opcache": "^4.0",
-        "fleetbase/core-api": "^1.6.53",
+        "cweagans/composer-patches": "^1.7",
         "fleetbase/ai": "^0.0.2",
-        "fleetbase/fleetops-api": "^0.6.57",
-        "fleetbase/registry-bridge": "^0.1.9",
+        "fleetbase/core-api": "^1.6.53",
         "fleetbase/customer-portal-api": "^0.0.12",
-        "fleetbase/storefront-api": "^0.4.16",
+        "fleetbase/fleetops-api": "^0.6.57",
         "fleetbase/ledger-api": "^0.0.7",
+        "fleetbase/registry-bridge": "^0.1.9",
+        "fleetbase/storefront-api": "^0.4.16",
         "fleetbase/valhalla-api": "^0.0.4",
         "fleetbase/vroom-api": "^0.0.4",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -110,6 +111,14 @@
     "extra": {
         "laravel": {
             "dont-discover": []
+        },
+        "patches": {
+            "fleetbase/core-api": {
+                "Arabic-localize spreadsheet export column headings": "patches/core-api-arabic-export-headings.patch"
+            },
+            "fleetbase/fleetops-api": {
+                "Arabic-localize spreadsheet export column headings": "patches/fleetops-api-arabic-export-headings.patch"
+            }
         }
     },
     "config": {
@@ -118,7 +127,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "cweagans/composer-patches": true
         }
     },
     "minimum-stability": "dev",
