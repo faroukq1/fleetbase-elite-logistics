@@ -4,7 +4,7 @@ return [
     'api' => [
         'version' => 'v1',
         'routing' => [
-            'prefix' => 'api',
+            'prefix' => '',
             'internal_prefix' => 'int'
         ]
     ],
