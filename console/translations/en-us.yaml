@@ -1099,6 +1099,12 @@ ledger:
 
 status-label:
   active: Active
+  sent: Sent
+  viewed: Viewed
+  partial: Partial
+  paid: Paid
+  overdue: Overdue
+  void: Void
   inactive: Inactive
   frozen: Frozen
   suspended: Suspended
@@ -1133,3 +1139,202 @@ status-label:
   disabled: Disabled
   created: Created
   dispatched: Dispatched
+
+template-builder:
+  tabs:
+    layers: Layers
+    queries: Queries
+  element:
+    text: Text
+    image: Image
+    table: Table
+    line: Line
+    shape: Shape
+    qr-code: QR Code
+    barcode: Barcode
+    element: Element
+  toolbar:
+    close: Close
+    add: Add
+    zoom-in: Zoom in
+    zoom-out: Zoom out
+    zoom-reset: Reset zoom
+    rotate-left: Rotate left 90°
+    rotate-right: Rotate right 90°
+    undo: Undo
+    redo: Redo
+    preview: Preview
+    preview-template: Preview template
+    save: Save
+  layers:
+    title: Layers
+    rename-hint: Double-click to rename
+    hide-element: Hide element
+    show-element: Show element
+    move-up: Move layer up
+    move-down: Move layer down
+    delete-element: Delete element
+    no-elements: No elements yet.
+    no-elements-hint: Use the toolbar to add elements.
+  queries:
+    title: Queries
+    add: Add
+    add-query: Add query
+    edit-query: Edit query
+    delete-query: Delete query
+    unsaved: unsaved
+    no-queries: No queries yet.
+    no-queries-hint: Queries load data from the system models at render time and are saved with the template.
+  properties:
+    element-properties: "{type} Properties"
+    position: Position
+    x: X
+    y: Y
+    rotation: Rotation
+    z-index: Z-Index
+    opacity: Opacity
+    size: Size
+    width: Width
+    height: Height
+    content: Content
+    content-placeholder: Enter text or use '{'variable.name'}' syntax...
+    insert-variable-or-formula: Insert variable or formula
+    image-source: Image Source
+    change-variable: Change variable
+    replace-image: Replace image
+    click-to-upload: Click to upload image
+    or: or
+    use-variable: Use variable (e.g. '{'company.logo'}')
+    alt-text: Alt Text
+    object-fit: Object Fit
+    columns: Columns
+    column-label: Column label
+    remove-column: Remove column
+    no-columns: No columns defined. Add one below.
+    add-column: Add column
+    data-source: Data Source
+    variable: Variable
+    manual: Manual
+    data-variable: Data Variable
+    data-variable-hint: The variable must resolve to an array of objects. Each object's keys should match the column keys defined above.
+    row: Row
+    remove-row: Remove row
+    define-columns-first: Define columns first.
+    no-rows: No rows yet.
+    add-row: Add row
+    table-style: Table Style
+    header-bg: Header BG
+    header-text: Header Text
+    border-color: Border Color
+    cell-padding: Cell Padding
+    row-alt-color: Row Alt Color
+    value: Value
+    format: Format
+    fill-color: Fill Color
+    font-family: Font Family
+    size-px: Size (px)
+    weight: Weight
+    line-height: Line Height
+    letter-spacing: Letter Spacing
+    alignment: Alignment
+    background: Background
+    padding-px: Padding (px)
+    border: Border
+    radius-px: Radius (px)
+    canvas-settings: Canvas Settings
+    template-name: Template Name
+    paper-size: Paper Size
+    orientation: Orientation
+    background-color: Background Color
+    description: Description
+    color: Color
+    width-px: Width (px)
+    style: Style
+    border-radius: Border Radius
+    clear: Clear
+    insert-variable: Insert variable
+    uploading: Uploading...
+  options:
+    font-weight:
+      light: Light
+      regular: Regular
+      medium: Medium
+      semi-bold: Semi Bold
+      bold: Bold
+      extra-bold: Extra Bold
+      black: Black
+    line-style:
+      solid: Solid
+      dashed: Dashed
+      dotted: Dotted
+    object-fit:
+      cover: Cover
+      contain: Contain
+      fill: Fill
+      none: None
+    shape:
+      rectangle: Rectangle
+      circle: Circle
+    paper-size:
+      custom: Custom
+    orientation:
+      portrait: Portrait
+      landscape: Landscape
+  resource:
+    order: Order
+    driver: Driver
+    place: Place
+    vendor: Vendor
+    contact: Contact
+    issue: Issue
+    vehicle: Vehicle
+    fuel-report: Fuel Report
+    purchase-rate: Purchase Rate
+  query-form:
+    new-query: New Query
+    edit-query: Edit Query
+    basic-info: Basic Info
+    label: Label
+    label-placeholder: e.g. Recent Orders
+    label-required: Label is required.
+    resource-type-required: Please select a resource type.
+    variable-name: Variable Name
+    variable-name-hint: Auto-derived from label if left blank.
+    description: Description
+    description-placeholder: Optional description
+    resource-type: Resource Type
+    resource-type-hint: Select the model this query runs against.
+    filter-conditions: Filter Conditions
+    add-condition: Add condition
+    remove-condition: Remove condition
+    no-conditions: No conditions — all records will be returned.
+    sort: Sort
+    add-sort: Add sort
+    remove-sort: Remove sort
+    ascending: Ascending
+    descending: Descending
+    no-sort: No sort — default model order will be used.
+    limit: Limit
+    no-limit: No limit
+    limit-hint: Max number of rows to return.
+    eager-load: Eager Load (with)
+    eager-load-hint: Comma-separated relationship names to eager-load.
+    cancel: Cancel
+    save-changes: Save Changes
+    create-query: Create Query
+  variable-picker:
+    title: Insert Variable or Formula
+    variables: Variables
+    formula: Formula
+    search-placeholder: Search variables...
+    global: Global
+    always-available: Always available
+    variables-count: "{count} variables"
+    no-match: No variables match "{query}"
+    formula-syntax: Formula Syntax
+    use-variables-hint: "Use variables inside the expression:"
+    supported: Supported
+    expression: Expression
+    quick-insert: Quick-insert variable
+    insert-formula: Insert Formula
+    unbalanced-braces: Unbalanced curly braces in formula.

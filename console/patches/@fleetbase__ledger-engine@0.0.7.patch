@@ -1,5 +1,217 @@
+diff --git a/addon/components/invoice/form.hbs b/addon/components/invoice/form.hbs
+index d9ce3a0..5afea30 100644
+--- a/addon/components/invoice/form.hbs
++++ b/addon/components/invoice/form.hbs
+@@ -1,48 +1,48 @@
+ <div class="invoice-form" ...attributes>
+ 
+     {{! ── INVOICE DETAILS ─────────────────────────────────────────────────── }}
+-    <ContentPanel @title="Invoice Details" @open={{true}} @wrapperClass="bordered-top">
++    <ContentPanel @title={{t "ledger.invoice-form.invoice-details"}} @open={{true}} @wrapperClass="bordered-top">
+         <div class="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-2 no-input-group-padding text-xs">
+ 
+             {{! Invoice Number — auto-generated on create; read-only on edit }}
+-            <InputGroup @name="Invoice Number">
++            <InputGroup @name={{t "ledger.invoice-form.invoice-number"}}>
+                 <Input
+                     @value={{@resource.number}}
+                     @type="text"
+                     class="w-full form-input"
+-                    placeholder="Auto-generated if left blank"
++                    placeholder={{t "ledger.invoice-form.auto-generated"}}
+                     disabled={{or (cannot-write @resource) (not @resource.isNew)}}
+                 />
+             </InputGroup>
+ 
+             {{! Status }}
+-            <InputGroup @name="Status">
++            <InputGroup @name={{t "column.status"}}>
+                 <div class="fleetbase-model-select fleetbase-power-select ember-model-select">
+                     <PowerSelect
+                         @options={{array "draft" "sent" "viewed" "partial" "paid" "overdue" "cancelled"}}
+                         @selected={{@resource.status}}
+                         @onChange={{fn (mut @resource.status)}}
+-                        @placeholder="Select status"
++                        @placeholder={{t "ledger.invoice-form.select-status"}}
+                         @triggerClass="form-select form-input"
+                         @disabled={{cannot-write @resource}}
+                         as |option|
+                     >
+-                        <div class="capitalize text-sm">{{option}}</div>
++                        <div class="text-sm">{{t (concat "status-label." option)}}</div>
+                     </PowerSelect>
+                 </div>
+             </InputGroup>
+ 
+             {{! Currency }}
+-            <InputGroup @name="Currency">
++            <InputGroup @name={{t "column.currency"}}>
+                 <CurrencySelect @currency={{this.currency}} @onCurrencyChange={{this.onCurrencyChange}} @triggerClass="w-full form-select form-input" @disabled={{cannot-write @resource}} />
+             </InputGroup>
+ 
+             {{! Template }}
+-            <InputGroup @name="Invoice Template">
++            <InputGroup @name={{t "resource.invoice-template"}}>
+                 <ModelSelect
+                     @modelName="template"
+                     @selectedModel={{@resource.template}}
+-                    @placeholder="Select a template (optional)"
++                    @placeholder={{t "ledger.invoice-form.select-template"}}
+                     @triggerClass="form-select form-input"
+                     @infiniteScroll={{false}}
+                     @renderInPlace={{true}}
+@@ -62,14 +62,14 @@
+     </ContentPanel>
+ 
+     {{! ── CUSTOMER ────────────────────────────────────────────────────────── }}
+-    <ContentPanel @title="Customer" @open={{true}} @wrapperClass="bordered-top">
++    <ContentPanel @title={{t "column.customer"}} @open={{true}} @wrapperClass="bordered-top">
+         <div class="grid grid-cols-1 gap-2 no-input-group-padding text-xs">
+ 
+-            <InputGroup @name="Customer">
++            <InputGroup @name={{t "column.customer"}}>
+                 <ModelSelect
+                     @modelName="customer"
+                     @selectedModel={{@resource.customer}}
+-                    @placeholder="Search contacts or vendors…"
++                    @placeholder={{t "ledger.invoice-form.search-contacts"}}
+                     @triggerClass="form-select form-input"
+                     @infiniteScroll={{false}}
+                     @renderInPlace={{true}}
+@@ -89,10 +89,10 @@
+     </ContentPanel>
+ 
+     {{! ── DATES ───────────────────────────────────────────────────────────── }}
+-    <ContentPanel @title="Dates" @open={{true}} @wrapperClass="bordered-top">
++    <ContentPanel @title={{t "ledger.invoice-form.dates"}} @open={{true}} @wrapperClass="bordered-top">
+         <div class="grid grid-cols-1 gap-2 lg:grid-cols-2 lg:gap-2 no-input-group-padding text-xs">
+ 
+-            <InputGroup @name="Invoice Date">
++            <InputGroup @name={{t "column.invoice-date"}}>
+                 <DatePicker
+                     @value={{or (format-date-fns @resource.date "yyyy-MM-dd") null}}
+                     @onChange={{fn (mut @resource.date)}}
+@@ -102,7 +102,7 @@
+                 />
+             </InputGroup>
+ 
+-            <InputGroup @name="Due Date">
++            <InputGroup @name={{t "column.due-date"}}>
+                 <DatePicker
+                     @value={{or (format-date-fns @resource.due_date "yyyy-MM-dd") null}}
+                     @onChange={{fn (mut @resource.due_date)}}
+@@ -116,26 +116,26 @@
+     </ContentPanel>
+ 
+     {{! ── LINE ITEMS ──────────────────────────────────────────────────────── }}
+-    <ContentPanel @title="Line Items" @open={{true}} @wrapperClass="bordered-top">
++    <ContentPanel @title={{t "ledger.invoice-form.line-items"}} @open={{true}} @wrapperClass="bordered-top">
+         <Invoice::LineItems @items={{this.initialItems}} @invoice={{@resource}} @currency={{this.currency}} @disabled={{cannot-write @resource}} @registerRef={{this.registerLineItemsRef}} />
+     </ContentPanel>
+ 
+     {{! ── NOTES & TERMS ───────────────────────────────────────────────────── }}
+-    <ContentPanel @title="Notes & Terms" @open={{true}} @wrapperClass="bordered-top">
++    <ContentPanel @title={{t "ledger.invoice-form.notes-terms"}} @open={{true}} @wrapperClass="bordered-top">
+         <div class="grid grid-cols-1 gap-2 no-input-group-padding text-xs">
+ 
+-            <InputGroup @name="Notes">
++            <InputGroup @name={{t "ledger.invoice-form.notes"}}>
+                 <Textarea
+                     @value={{@resource.notes}}
+                     class="w-full form-input"
+                     rows="3"
+-                    placeholder="Add any notes or payment instructions for the customer…"
++                    placeholder={{t "ledger.invoice-form.notes-placeholder"}}
+                     disabled={{cannot-write @resource}}
+                 />
+             </InputGroup>
+ 
+-            <InputGroup @name="Terms">
+-                <Textarea @value={{@resource.terms}} class="w-full form-input" rows="3" placeholder="Payment terms, e.g. Net 30…" disabled={{cannot-write @resource}} />
++            <InputGroup @name={{t "ledger.invoice-form.terms"}}>
++                <Textarea @value={{@resource.terms}} class="w-full form-input" rows="3" placeholder={{t "ledger.invoice-form.terms-placeholder"}} disabled={{cannot-write @resource}} />
+             </InputGroup>
+ 
+         </div>
+diff --git a/addon/components/invoice/line-items.hbs b/addon/components/invoice/line-items.hbs
+index 55e5649..ded8b5a 100644
+--- a/addon/components/invoice/line-items.hbs
++++ b/addon/components/invoice/line-items.hbs
+@@ -3,11 +3,11 @@
+         <table class="w-full text-xs">
+             <thead>
+                 <tr class="border-b border-gray-200 dark:border-gray-700 text-[11px] uppercase tracking-wide text-gray-500 font-semibold">
+-                    <th class="py-2 pr-2 text-left">Description</th>
+-                    <th class="py-2 px-2 text-right w-16">Qty</th>
+-                    <th class="py-2 px-2 text-right w-44">Unit Price</th>
+-                    <th class="py-2 px-2 text-right w-24">Tax %</th>
+-                    <th class="py-2 pl-2 text-right w-36">Amount</th>
++                    <th class="py-2 pr-2 text-left">{{t "column.description"}}</th>
++                    <th class="py-2 px-2 text-right w-16">{{t "ledger.invoice-form.qty"}}</th>
++                    <th class="py-2 px-2 text-right w-44">{{t "ledger.invoice-form.unit-price"}}</th>
++                    <th class="py-2 px-2 text-right w-24">{{t "ledger.invoice-form.tax-percent"}}</th>
++                    <th class="py-2 pl-2 text-right w-36">{{t "column.amount"}}</th>
+                     {{#unless @disabled}}
+                         <th class="py-2 pl-2 w-8"></th>
+                     {{/unless}}
+@@ -17,7 +17,7 @@
+                 {{#each this.items as |item|}}
+                     <tr class="border-b border-gray-100 dark:border-gray-800">
+                         <td class="py-1 pr-2">
+-                            <Input @type="text" @value={{item.description}} placeholder="Item description" disabled={{@disabled}} class="w-full form-input text-xs" />
++                            <Input @type="text" @value={{item.description}} placeholder={{t "ledger.invoice-form.item-description"}} disabled={{@disabled}} class="w-full form-input text-xs" />
+                         </td>
+                         <td class="py-1 px-2">
+                             <input
+@@ -62,10 +62,10 @@
+                 {{#if (eq this.items.length 0)}}
+                     <tr>
+                         <td colspan={{if @disabled 5 6}} class="py-4 text-center text-gray-400 text-xs italic">
+-                            No line items yet.
++                            {{t "ledger.invoice-form.no-line-items"}}
+                             {{#unless @disabled}}
+                                 <button type="button" class="text-blue-500 hover:underline ml-1" {{on "click" this.addItem}}>
+-                                    Add one
++                                    {{t "ledger.invoice-form.add-one"}}
+                                 </button>
+                             {{/unless}}
+                         </td>
+@@ -75,21 +75,21 @@
+ 
+             <tfoot class="border-t border-gray-200 dark:border-gray-700">
+                 <tr class="text-xs text-gray-500">
+-                    <td colspan={{if @disabled 4 5}} class="pt-2 text-right pr-2 text-[11px] uppercase tracking-wide font-semibold">Subtotal</td>
++                    <td colspan={{if @disabled 4 5}} class="pt-2 text-right pr-2 text-[11px] uppercase tracking-wide font-semibold">{{t "ledger.invoice-form.subtotal"}}</td>
+                     <td class="pt-2 pl-2 text-right font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                         {{format-currency this.subtotal @currency}}
+                     </td>
+                     {{#unless @disabled}}<td></td>{{/unless}}
+                 </tr>
+                 <tr class="text-xs text-gray-500">
+-                    <td colspan={{if @disabled 4 5}} class="pt-1 text-right pr-2 text-[11px] uppercase tracking-wide font-semibold">Tax</td>
++                    <td colspan={{if @disabled 4 5}} class="pt-1 text-right pr-2 text-[11px] uppercase tracking-wide font-semibold">{{t "column.tax"}}</td>
+                     <td class="pt-1 pl-2 text-right font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                         {{format-currency this.tax @currency}}
+                     </td>
+                     {{#unless @disabled}}<td></td>{{/unless}}
+                 </tr>
+                 <tr class="text-xs">
+-                    <td colspan={{if @disabled 4 5}} class="pt-1 pb-2 text-right pr-2 text-[11px] uppercase tracking-wide font-bold text-gray-800 dark:text-gray-100">Total</td>
++                    <td colspan={{if @disabled 4 5}} class="pt-1 pb-2 text-right pr-2 text-[11px] uppercase tracking-wide font-bold text-gray-800 dark:text-gray-100">{{t "column.total"}}</td>
+                     <td class="pt-1 pb-2 pl-2 text-right font-bold text-gray-800 dark:text-gray-100 whitespace-nowrap">
+                         {{format-currency this.total @currency}}
+                     </td>
+@@ -103,7 +103,7 @@
+         <div class="mt-2">
+             <button type="button" class="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 transition-colors" {{on "click" this.addItem}}>
+                 <FaIcon @icon="plus" @size="xs" />
+-                Add line item
++                {{t "ledger.invoice-form.add-line-item"}}
+             </button>
+         </div>
+     {{/unless}}
 diff --git a/addon/components/widget/activity-feed.hbs b/addon/components/widget/activity-feed.hbs
-index f137dcf527818adf863220d4f0cd6840a426d415..7af430e24a58f5a73cc198eb67ce0992310a6e50 100644
+index f137dcf..7af430e 100644
 --- a/addon/components/widget/activity-feed.hbs
 +++ b/addon/components/widget/activity-feed.hbs
 @@ -1,8 +1,8 @@
@@ -23,7 +235,7 @@ index f137dcf527818adf863220d4f0cd6840a426d415..7af430e24a58f5a73cc198eb67ce0992
      </div>
  </div>
 diff --git a/addon/components/widget/ar-aging-summary.hbs b/addon/components/widget/ar-aging-summary.hbs
-index b5506e140c985492096d46623252b2fe5992f537..a45da2921406250784dc3307192f66e5ffb39889 100644
+index b5506e1..a45da29 100644
 --- a/addon/components/widget/ar-aging-summary.hbs
 +++ b/addon/components/widget/ar-aging-summary.hbs
 @@ -1,8 +1,8 @@
@@ -56,7 +268,7 @@ index b5506e140c985492096d46623252b2fe5992f537..a45da2921406250784dc3307192f66e5
      </div>
  </div>
 diff --git a/addon/components/widget/cash-flow-summary.hbs b/addon/components/widget/cash-flow-summary.hbs
-index 8931aa30ebb949b275f3e3ae394bdf03730f36ac..19552114d359c325fd3c384d2985b34d4d684fe7 100644
+index 8931aa3..1955211 100644
 --- a/addon/components/widget/cash-flow-summary.hbs
 +++ b/addon/components/widget/cash-flow-summary.hbs
 @@ -1,8 +1,8 @@
@@ -80,7 +292,7 @@ index 8931aa30ebb949b275f3e3ae394bdf03730f36ac..19552114d359c325fd3c384d2985b34d
      </div>
  </div>
 diff --git a/addon/components/widget/cash-flow-summary.js b/addon/components/widget/cash-flow-summary.js
-index 363d766ea19356e70098ec0fbeee5eb100714ded..25db078d2497f84661e49aed7f579d76cc351d20 100644
+index 363d766..25db078 100644
 --- a/addon/components/widget/cash-flow-summary.js
 +++ b/addon/components/widget/cash-flow-summary.js
 @@ -6,6 +6,7 @@ import formatCurrency from '@fleetbase/ember-ui/utils/format-currency';
@@ -108,7 +320,7 @@ index 363d766ea19356e70098ec0fbeee5eb100714ded..25db078d2497f84661e49aed7f579d76
                  backgroundColor: ['rgba(5, 150, 105, 0.72)', 'rgba(59, 130, 246, 0.72)', 'rgba(245, 158, 11, 0.72)'],
                  borderColor: ['#059669', '#2563eb', '#d97706'],
 diff --git a/addon/components/widget/invoice-status.hbs b/addon/components/widget/invoice-status.hbs
-index 253eeca95e2564f37a59931e186157eceaf3735c..3c41204538ab6db9872437263da654720ab8648b 100644
+index 253eeca..3c41204 100644
 --- a/addon/components/widget/invoice-status.hbs
 +++ b/addon/components/widget/invoice-status.hbs
 @@ -1,8 +1,8 @@
@@ -132,63 +344,63 @@ index 253eeca95e2564f37a59931e186157eceaf3735c..3c41204538ab6db9872437263da65472
      </div>
  </div>
 diff --git a/addon/components/widget/kpi-active-wallets.hbs b/addon/components/widget/kpi-active-wallets.hbs
-index 70463de6bc369f8d60bb2ffc09b2dff3363e1c51..87ec3773565a305e4b3c39688e33a4b327be5c7d 100644
+index 70463de..87ec377 100644
 --- a/addon/components/widget/kpi-active-wallets.hbs
 +++ b/addon/components/widget/kpi-active-wallets.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="active_wallets" @title="Active Wallets" @icon="wallet" @accent="blue" ...attributes />
 +<Widget::LedgerKpiTile @metric="active_wallets" @titleKey="ledger.widget.kpi.active-wallets" @icon="wallet" @accent="blue" ...attributes />
 diff --git a/addon/components/widget/kpi-expenses.hbs b/addon/components/widget/kpi-expenses.hbs
-index 7e3388209805d9fd199ad238c7e6b68e2ab7dbdd..b55ae69d39a2c4e8fb1eec64dbefd1d4e35aeece 100644
+index 7e33882..b55ae69 100644
 --- a/addon/components/widget/kpi-expenses.hbs
 +++ b/addon/components/widget/kpi-expenses.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="total_expenses" @title="Expenses" @icon="receipt" @accent="rose" ...attributes />
 +<Widget::LedgerKpiTile @metric="total_expenses" @titleKey="ledger.widget.kpi.expenses" @icon="receipt" @accent="rose" ...attributes />
 diff --git a/addon/components/widget/kpi-net-income.hbs b/addon/components/widget/kpi-net-income.hbs
-index d310853c22ae5d9b5e8862128b44e1f25ee6f0ff..d322f50d8160395f7a3a828006edaa7aa290e450 100644
+index d310853..d322f50 100644
 --- a/addon/components/widget/kpi-net-income.hbs
 +++ b/addon/components/widget/kpi-net-income.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="net_income" @title="Net Income" @icon="chart-line" @accent="blue" ...attributes />
 +<Widget::LedgerKpiTile @metric="net_income" @titleKey="ledger.widget.kpi.net-income" @icon="chart-line" @accent="blue" ...attributes />
 diff --git a/addon/components/widget/kpi-open-invoices.hbs b/addon/components/widget/kpi-open-invoices.hbs
-index 78f078d147ffee3943df1f84853ee3633883e756..0ec3fcab96efc2634623ef2be042ea3c9ec7d68a 100644
+index 78f078d..0ec3fca 100644
 --- a/addon/components/widget/kpi-open-invoices.hbs
 +++ b/addon/components/widget/kpi-open-invoices.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="open_invoices" @title="Open Invoices" @icon="file-circle-exclamation" @accent="amber" ...attributes />
 +<Widget::LedgerKpiTile @metric="open_invoices" @titleKey="ledger.widget.kpi.open-invoices" @icon="file-circle-exclamation" @accent="amber" ...attributes />
 diff --git a/addon/components/widget/kpi-outstanding-ar.hbs b/addon/components/widget/kpi-outstanding-ar.hbs
-index b76cc505a13011c358b836bf6dcda99c1259c833..1f8c30e5f8c1c99f2255c3b1605beff02caa65f2 100644
+index b76cc50..1f8c30e 100644
 --- a/addon/components/widget/kpi-outstanding-ar.hbs
 +++ b/addon/components/widget/kpi-outstanding-ar.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="outstanding_ar" @title="Outstanding AR" @icon="file-invoice-dollar" @accent="amber" ...attributes />
 +<Widget::LedgerKpiTile @metric="outstanding_ar" @titleKey="ledger.widget.kpi.outstanding-ar" @icon="file-invoice-dollar" @accent="amber" ...attributes />
 diff --git a/addon/components/widget/kpi-overdue-ar.hbs b/addon/components/widget/kpi-overdue-ar.hbs
-index 40a9a40e445300b162282ae6f2c713f80c47315b..2f4f6a2e445f9bc956f34ec0c5ca6daa4b2f9d4e 100644
+index 40a9a40..2f4f6a2 100644
 --- a/addon/components/widget/kpi-overdue-ar.hbs
 +++ b/addon/components/widget/kpi-overdue-ar.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="overdue_ar" @title="Overdue AR" @icon="clock" @accent="rose" ...attributes />
 +<Widget::LedgerKpiTile @metric="overdue_ar" @titleKey="ledger.widget.kpi.overdue-ar" @icon="clock" @accent="rose" ...attributes />
 diff --git a/addon/components/widget/kpi-revenue.hbs b/addon/components/widget/kpi-revenue.hbs
-index 17803744a65b76323cc8db8bbff0107caa57cb0e..a12684f3af12a60203142032df53364b2da5109e 100644
+index 1780374..a12684f 100644
 --- a/addon/components/widget/kpi-revenue.hbs
 +++ b/addon/components/widget/kpi-revenue.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="total_revenue" @title="Revenue" @icon="sack-dollar" @accent="green" ...attributes />
 +<Widget::LedgerKpiTile @metric="total_revenue" @titleKey="ledger.widget.kpi.revenue" @icon="sack-dollar" @accent="green" ...attributes />
 diff --git a/addon/components/widget/kpi-wallet-balance.hbs b/addon/components/widget/kpi-wallet-balance.hbs
-index 3d06ec239e8f4ce8e6b2ce40edfd131ee8a35548..e4729bff07f8b36d7c91750c17014ce648c0f867 100644
+index 3d06ec2..e4729bf 100644
 --- a/addon/components/widget/kpi-wallet-balance.hbs
 +++ b/addon/components/widget/kpi-wallet-balance.hbs
 @@ -1 +1 @@
 -<Widget::LedgerKpiTile @metric="wallet_balance" @title="Wallet Balance" @icon="wallet" @accent="violet" ...attributes />
 +<Widget::LedgerKpiTile @metric="wallet_balance" @titleKey="ledger.widget.kpi.wallet-balance" @icon="wallet" @accent="violet" ...attributes />
 diff --git a/addon/components/widget/ledger-kpi-tile.js b/addon/components/widget/ledger-kpi-tile.js
-index 28b465eead3c1c6ffcc1c30316de74ef11684760..36b37c37b2b53d4d78a49993a2aff5564b788254 100644
+index 28b465e..36b37c3 100644
 --- a/addon/components/widget/ledger-kpi-tile.js
 +++ b/addon/components/widget/ledger-kpi-tile.js
 @@ -6,6 +6,7 @@ import formatCurrency from '@fleetbase/ember-ui/utils/format-currency';
@@ -243,7 +455,7 @@ index 28b465eead3c1c6ffcc1c30316de74ef11684760..36b37c37b2b53d4d78a49993a2aff556
      }
  
 diff --git a/addon/components/widget/overview.hbs b/addon/components/widget/overview.hbs
-index 312004b6761d7113a87e9a3c9e1d678036dbeb8b..ceffa34f9bd7644ab5ac95614dd7cf870841aaf8 100644
+index 312004b..ceffa34 100644
 --- a/addon/components/widget/overview.hbs
 +++ b/addon/components/widget/overview.hbs
 @@ -1,6 +1,6 @@
@@ -282,7 +494,7 @@ index 312004b6761d7113a87e9a3c9e1d678036dbeb8b..ceffa34f9bd7644ab5ac95614dd7cf87
              {{#if this.loadData.isRunning}}
                  <span class="text-gray-300 dark:text-gray-600">—</span>
 diff --git a/addon/components/widget/report-shortcuts.hbs b/addon/components/widget/report-shortcuts.hbs
-index 8dc8e8b98a360ceace71f32c0b1081abfbd36249..c5bfaa49e8ba97211b2b3c185a6a591993c88db0 100644
+index 8dc8e8b..c5bfaa4 100644
 --- a/addon/components/widget/report-shortcuts.hbs
 +++ b/addon/components/widget/report-shortcuts.hbs
 @@ -1,8 +1,8 @@
@@ -326,7 +538,7 @@ index 8dc8e8b98a360ceace71f32c0b1081abfbd36249..c5bfaa49e8ba97211b2b3c185a6a5919
          </div>
      </div>
 diff --git a/addon/components/widget/revenue-trend.hbs b/addon/components/widget/revenue-trend.hbs
-index 1049319077b515c7731a54cda13ce21c53f6c886..4b15064c0574f2120c212e69d6da17e4c09ddb67 100644
+index 1049319..4b15064 100644
 --- a/addon/components/widget/revenue-trend.hbs
 +++ b/addon/components/widget/revenue-trend.hbs
 @@ -1,8 +1,8 @@
@@ -350,7 +562,7 @@ index 1049319077b515c7731a54cda13ce21c53f6c886..4b15064c0574f2120c212e69d6da17e4
      </div>
  </div>
 diff --git a/addon/components/widget/revenue-trend.js b/addon/components/widget/revenue-trend.js
-index 6c73d476f83d3bf3a0dc6da80cf3f6b393330814..2a7c86830578c77f0ce9df3527c33763c6cab9d3 100644
+index 6c73d47..2a7c868 100644
 --- a/addon/components/widget/revenue-trend.js
 +++ b/addon/components/widget/revenue-trend.js
 @@ -7,6 +7,7 @@ import getCurrency from '@fleetbase/ember-ui/utils/get-currency';
@@ -387,7 +599,7 @@ index 6c73d476f83d3bf3a0dc6da80cf3f6b393330814..2a7c86830578c77f0ce9df3527c33763
              })) ?? []
          );
 diff --git a/addon/components/widget/wallet-balances.hbs b/addon/components/widget/wallet-balances.hbs
-index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e2c054623 100644
+index 3fa50e6..e971953 100644
 --- a/addon/components/widget/wallet-balances.hbs
 +++ b/addon/components/widget/wallet-balances.hbs
 @@ -1,8 +1,8 @@
@@ -429,7 +641,7 @@ index 3fa50e6f0b6e0c7a1ebf31271d03646ca57cc4e4..e9719532200c454e99666a2dec94609e
      </div>
  </div>
 diff --git a/addon/controllers/accounting/accounts/index.js b/addon/controllers/accounting/accounts/index.js
-index fba37a649411f3d912d20c1e1bbe251366a8499c..162b1bd16ca079ad6cce19ed2c98b4eb8c8414b2 100644
+index fba37a6..162b1bd 100644
 --- a/addon/controllers/accounting/accounts/index.js
 +++ b/addon/controllers/accounting/accounts/index.js
 @@ -50,6 +50,8 @@ export default class AccountingAccountsIndexController extends Controller {
@@ -478,7 +690,7 @@ index fba37a649411f3d912d20c1e1bbe251366a8499c..162b1bd16ca079ad6cce19ed2c98b4eb
              },
          ];
 diff --git a/addon/controllers/accounting/general-ledger.js b/addon/controllers/accounting/general-ledger.js
-index 8607e44de909c4db645916012636b2512cfe8715..3621c4d5f18b417c2c99add6f7989c0631780088 100644
+index 8607e44..3621c4d 100644
 --- a/addon/controllers/accounting/general-ledger.js
 +++ b/addon/controllers/accounting/general-ledger.js
 @@ -5,17 +5,9 @@ import { inject as service } from '@ember/service';
@@ -522,7 +734,7 @@ index 8607e44de909c4db645916012636b2512cfe8715..3621c4d5f18b417c2c99add6f7989c06
  
      get allExpanded() {
 diff --git a/addon/controllers/application.js b/addon/controllers/application.js
-index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2066f52e1 100644
+index 4192a6c..ca531ab 100644
 --- a/addon/controllers/application.js
 +++ b/addon/controllers/application.js
 @@ -4,30 +4,31 @@ import { inject as service } from '@ember/service';
@@ -709,8 +921,58 @@ index 4192a6ca0c38f6113ba8c4567400b9455bcb4bea..ca531abc6ddfddead6d83582ec53d8e2
                          description: 'Configure accounting automation and posting behavior.',
                          icon: 'calculator',
                          route: 'console.ledger.settings.accounting',
+diff --git a/addon/controllers/billing/invoices/index.js b/addon/controllers/billing/invoices/index.js
+index 23198dc..f138eee 100644
+--- a/addon/controllers/billing/invoices/index.js
++++ b/addon/controllers/billing/invoices/index.js
+@@ -72,11 +72,11 @@ export default class BillingInvoicesIndexController extends Controller {
+                 filterable: true,
+                 filterParam: 'customer',
+                 filterComponent: 'filter/model',
+-                filterComponentPlaceholder: 'Select customer',
++                filterComponentPlaceholder: this.intl.t('ledger.invoice-form.select-customer'),
+                 model: 'customer',
+             },
+             {
+-                label: 'Order',
++                label: this.intl.t('column.order'),
+                 valuePath: 'orderTrackingLabel',
+                 cellComponent: 'table/cell/anchor',
+                 action: this.viewOrder,
+@@ -85,7 +85,7 @@ export default class BillingInvoicesIndexController extends Controller {
+                 filterable: true,
+                 filterParam: 'order',
+                 filterComponent: 'filter/model',
+-                filterComponentPlaceholder: 'Select order',
++                filterComponentPlaceholder: this.intl.t('ledger.invoice-form.select-order'),
+                 model: 'order',
+                 modelNamePath: 'tracking',
+             },
+@@ -99,14 +99,14 @@ export default class BillingInvoicesIndexController extends Controller {
+                 filterParam: 'status',
+                 filterComponent: 'filter/select',
+                 filterOptions: [
+-                    { label: 'Draft', value: 'draft' },
+-                    { label: 'Sent', value: 'sent' },
+-                    { label: 'Viewed', value: 'viewed' },
+-                    { label: 'Partial', value: 'partial' },
+-                    { label: 'Paid', value: 'paid' },
+-                    { label: 'Overdue', value: 'overdue' },
+-                    { label: 'Void', value: 'void' },
+-                    { label: 'Cancelled', value: 'cancelled' },
++                    { label: this.intl.t('status-label.draft'), value: 'draft' },
++                    { label: this.intl.t('status-label.sent'), value: 'sent' },
++                    { label: this.intl.t('status-label.viewed'), value: 'viewed' },
++                    { label: this.intl.t('status-label.partial'), value: 'partial' },
++                    { label: this.intl.t('status-label.paid'), value: 'paid' },
++                    { label: this.intl.t('status-label.overdue'), value: 'overdue' },
++                    { label: this.intl.t('status-label.void'), value: 'void' },
++                    { label: this.intl.t('status-label.cancelled'), value: 'cancelled' },
+                 ],
+             },
+             {
 diff --git a/addon/controllers/payments/wallets/index.js b/addon/controllers/payments/wallets/index.js
-index 2b398196f1569f5148f64a7c72e9a356e91ff673..8466cdaed2c3f6a477cf3f777e80ce8694e34fd0 100644
+index 2b39819..8466cda 100644
 --- a/addon/controllers/payments/wallets/index.js
 +++ b/addon/controllers/payments/wallets/index.js
 @@ -65,6 +65,7 @@ export default class PaymentsWalletsIndexController extends Controller {
@@ -760,7 +1022,7 @@ index 2b398196f1569f5148f64a7c72e9a356e91ff673..8466cdaed2c3f6a477cf3f777e80ce86
              },
              {
 diff --git a/addon/controllers/reports/ar-aging.js b/addon/controllers/reports/ar-aging.js
-index 47739fc36502cca1973852a3dfb60a01faab24c2..6cb42db1f34e9c9d086607d7a37efe4cee4404a4 100644
+index 47739fc..6cb42db 100644
 --- a/addon/controllers/reports/ar-aging.js
 +++ b/addon/controllers/reports/ar-aging.js
 @@ -8,6 +8,7 @@ import { task } from 'ember-concurrency';
@@ -798,7 +1060,7 @@ index 47739fc36502cca1973852a3dfb60a01faab24c2..6cb42db1f34e9c9d086607d7a37efe4c
  
      @task *loadReport() {
 diff --git a/addon/controllers/reports/index.js b/addon/controllers/reports/index.js
-index 719ace7fd6de5a43f928a6409eeee20da6af197f..eaecf7a6aaa52a5dc96e40b48aae979039f32248 100644
+index 719ace7..eaecf7a 100644
 --- a/addon/controllers/reports/index.js
 +++ b/addon/controllers/reports/index.js
 @@ -6,6 +6,7 @@ import { task } from 'ember-concurrency';
@@ -832,7 +1094,7 @@ index 719ace7fd6de5a43f928a6409eeee20da6af197f..eaecf7a6aaa52a5dc96e40b48aae9790
          this.isLoading = true;
 diff --git a/addon/helpers/translate-enum.js b/addon/helpers/translate-enum.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..40af135010915b5548e7d3b91195d8520639df61
+index 0000000..40af135
 --- /dev/null
 +++ b/addon/helpers/translate-enum.js
 @@ -0,0 +1,22 @@
@@ -858,8 +1120,28 @@ index 0000000000000000000000000000000000000000..40af135010915b5548e7d3b91195d852
 +        return this.intl.exists(key) ? this.intl.t(key) : fallbackValue;
 +    }
 +}
+diff --git a/addon/routes/billing/invoice-templates/index/new.js b/addon/routes/billing/invoice-templates/index/new.js
+index de8309c..580832f 100644
+--- a/addon/routes/billing/invoice-templates/index/new.js
++++ b/addon/routes/billing/invoice-templates/index/new.js
+@@ -45,13 +45,14 @@ function normaliseContextSchemas(response) {
+ export default class BillingInvoiceTemplatesIndexNewRoute extends Route {
+     @service store;
+     @service fetch;
++    @service intl;
+ 
+     async model() {
+         const [template, rawSchemas] = await Promise.all([
+             Promise.resolve(
+                 this.store.createRecord('template', {
+                     context_type: 'ledger-invoice',
+-                    name: 'New Invoice Template',
++                    name: this.intl.t('ledger.invoice-form.new-invoice-template'),
+                     orientation: 'portrait',
+                     unit: 'mm',
+                     width: 210,
 diff --git a/addon/templates/accounting/accounts/index/edit.hbs b/addon/templates/accounting/accounts/index/edit.hbs
-index d74c972e11afe151898ccfee8fa86821d2a5e04c..4ce3e83fc8d949026aa28bf9a579af8ddfd13d8c 100644
+index d74c972..4ce3e83 100644
 --- a/addon/templates/accounting/accounts/index/edit.hbs
 +++ b/addon/templates/accounting/accounts/index/edit.hbs
 @@ -1,7 +1,7 @@
@@ -872,7 +1154,7 @@ index d74c972e11afe151898ccfee8fa86821d2a5e04c..4ce3e83fc8d949026aa28bf9a579af8d
      @saveTask={{this.save}}
      @onPressCancel={{this.cancel}}
 diff --git a/addon/templates/accounting/accounts/index/new.hbs b/addon/templates/accounting/accounts/index/new.hbs
-index 7db6fb99902bdaee6281dccff367bc9fe98a2be1..625df9ee92959839dd7f93668422c2ef169ca843 100644
+index 7db6fb9..625df9e 100644
 --- a/addon/templates/accounting/accounts/index/new.hbs
 +++ b/addon/templates/accounting/accounts/index/new.hbs
 @@ -1,7 +1,7 @@
@@ -885,7 +1167,7 @@ index 7db6fb99902bdaee6281dccff367bc9fe98a2be1..625df9ee92959839dd7f93668422c2ef
      @saveTask={{this.save}}
      @onPressCancel={{transition-to "accounting.accounts.index"}}
 diff --git a/addon/templates/accounting/general-ledger.hbs b/addon/templates/accounting/general-ledger.hbs
-index f2393c123ab17395e849ca2d9a02cbc90e9561b8..595c3a43209ab7c3fdf89a08f990abe75167c22e 100644
+index f2393c1..595c3a4 100644
 --- a/addon/templates/accounting/general-ledger.hbs
 +++ b/addon/templates/accounting/general-ledger.hbs
 @@ -1,4 +1,4 @@
@@ -977,7 +1259,7 @@ index f2393c123ab17395e849ca2d9a02cbc90e9561b8..595c3a43209ab7c3fdf89a08f990abe7
          {{/if}}
      </div>
 diff --git a/addon/templates/accounting/journal/index/edit.hbs b/addon/templates/accounting/journal/index/edit.hbs
-index e2ce95df889e6b2a0b21dd10d023acc8dbb7ebfe..f131e71c0c0de02f9ee041e28491b28323303c6e 100644
+index e2ce95d..f131e71 100644
 --- a/addon/templates/accounting/journal/index/edit.hbs
 +++ b/addon/templates/accounting/journal/index/edit.hbs
 @@ -1,7 +1,7 @@
@@ -990,7 +1272,7 @@ index e2ce95df889e6b2a0b21dd10d023acc8dbb7ebfe..f131e71c0c0de02f9ee041e28491b283
      @saveTask={{this.save}}
      @onPressCancel={{this.cancel}}
 diff --git a/addon/templates/accounting/journal/index/new.hbs b/addon/templates/accounting/journal/index/new.hbs
-index f015621d59e84c860f20865f76e4f81788ee6c53..709804750c56043f2611b3492c5d6537954f8f0d 100644
+index f015621..7098047 100644
 --- a/addon/templates/accounting/journal/index/new.hbs
 +++ b/addon/templates/accounting/journal/index/new.hbs
 @@ -1,7 +1,7 @@
@@ -1003,7 +1285,7 @@ index f015621d59e84c860f20865f76e4f81788ee6c53..709804750c56043f2611b3492c5d6537
      @saveTask={{this.save}}
      @onPressCancel={{transition-to "accounting.journal.index"}}
 diff --git a/addon/templates/application.hbs b/addon/templates/application.hbs
-index 31f5e9a04ac20966a319aa459cd0c910478d4365..5a98fbaff47e9b7e0a88904f95396b3a74dd8e72 100644
+index 31f5e9a..5a98fba 100644
 --- a/addon/templates/application.hbs
 +++ b/addon/templates/application.hbs
 @@ -1,5 +1,5 @@
@@ -1013,8 +1295,36 @@ index 31f5e9a04ac20966a319aa459cd0c910478d4365..5a98fbaff47e9b7e0a88904f95396b3a
  </EmberWormhole>
  <Layout::Section::Container>
      {{outlet}}
+diff --git a/addon/templates/billing/invoices/index/edit.hbs b/addon/templates/billing/invoices/index/edit.hbs
+index b49e2f3..db80f13 100644
+--- a/addon/templates/billing/invoices/index/edit.hbs
++++ b/addon/templates/billing/invoices/index/edit.hbs
+@@ -1,7 +1,8 @@
+ <Layout::Resource::Panel
+     @resource={{@model}}
+     @controller={{this}}
+-    @headerTitle="Edit Invoice {{@model.number}}"
++    @headerTitle={{t "ledger.invoice-form.edit-invoice" number=@model.number}}
++    @saveButtonText={{t "common.save-changes"}}
+     @actionButtons={{this.actionButtons}}
+     @saveTask={{this.save}}
+     @onPressCancel={{this.cancel}}
+diff --git a/addon/templates/billing/invoices/index/new.hbs b/addon/templates/billing/invoices/index/new.hbs
+index 55ae7ed..53342e0 100644
+--- a/addon/templates/billing/invoices/index/new.hbs
++++ b/addon/templates/billing/invoices/index/new.hbs
+@@ -2,7 +2,8 @@
+     <Layout::Resource::Panel
+         @resource={{this.invoice}}
+         @controller={{this}}
+-        @headerTitle="Create New Invoice"
++        @headerTitle={{t "ledger.invoice-form.create-new-invoice"}}
++        @saveButtonText={{t "ledger.invoice-form.create-invoice"}}
+         @actionButtons={{this.actionButtons}}
+         @saveTask={{this.save}}
+         @onPressCancel={{transition-to "billing.invoices.index"}}
 diff --git a/addon/templates/reports/ar-aging.hbs b/addon/templates/reports/ar-aging.hbs
-index c269b722d2f39e9664d0d60740d8507b6c4d659d..3a137cf90fe5faa8da2803947c3f1e32d824d3bc 100644
+index c269b72..3a137cf 100644
 --- a/addon/templates/reports/ar-aging.hbs
 +++ b/addon/templates/reports/ar-aging.hbs
 @@ -1,7 +1,7 @@
@@ -1087,7 +1397,7 @@ index c269b722d2f39e9664d0d60740d8507b6c4d659d..3a137cf90fe5faa8da2803947c3f1e32
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/balance-sheet.hbs b/addon/templates/reports/balance-sheet.hbs
-index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..f95a76494336c8ed4fb7c6e7be43516c1e3e0bc6 100644
+index 55f1676..f95a764 100644
 --- a/addon/templates/reports/balance-sheet.hbs
 +++ b/addon/templates/reports/balance-sheet.hbs
 @@ -1,7 +1,7 @@
@@ -1164,7 +1474,7 @@ index 55f16768e6f5e703ed0b8cc5c3fe909c8b4c1c4c..f95a76494336c8ed4fb7c6e7be43516c
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/cash-flow.hbs b/addon/templates/reports/cash-flow.hbs
-index cfc7abecabf42021df677e0d6ce706c9b5114ed9..b344c67a2b0c040b659999a5a7012f5cdf73bb8f 100644
+index cfc7abe..b344c67 100644
 --- a/addon/templates/reports/cash-flow.hbs
 +++ b/addon/templates/reports/cash-flow.hbs
 @@ -1,4 +1,4 @@
@@ -1262,7 +1572,7 @@ index cfc7abecabf42021df677e0d6ce706c9b5114ed9..b344c67a2b0c040b659999a5a7012f5c
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/income-statement.hbs b/addon/templates/reports/income-statement.hbs
-index 7367443edea2715508a3b8185ea74b8cc65518a1..a8cefb1e944956a86edf042884feca539448a788 100644
+index 7367443..a8cefb1 100644
 --- a/addon/templates/reports/income-statement.hbs
 +++ b/addon/templates/reports/income-statement.hbs
 @@ -1,4 +1,4 @@
@@ -1372,7 +1682,7 @@ index 7367443edea2715508a3b8185ea74b8cc65518a1..a8cefb1e944956a86edf042884feca53
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/index.hbs b/addon/templates/reports/index.hbs
-index cada4ab4c6c573ae3ddcfcc8d6979d76b5126525..25a21fdf47fca545a9058f9462aaf9188d46cbf3 100644
+index cada4ab..25a21fd 100644
 --- a/addon/templates/reports/index.hbs
 +++ b/addon/templates/reports/index.hbs
 @@ -1,4 +1,4 @@
@@ -1400,7 +1710,7 @@ index cada4ab4c6c573ae3ddcfcc8d6979d76b5126525..25a21fdf47fca545a9058f9462aaf918
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/trial-balance.hbs b/addon/templates/reports/trial-balance.hbs
-index ff62cb91960966abd98f17e68afe6b5066722402..912b2a7644f18910dd1650240b225634a3d41a30 100644
+index ff62cb9..912b2a7 100644
 --- a/addon/templates/reports/trial-balance.hbs
 +++ b/addon/templates/reports/trial-balance.hbs
 @@ -1,7 +1,7 @@
@@ -1482,7 +1792,7 @@ index ff62cb91960966abd98f17e68afe6b5066722402..912b2a7644f18910dd1650240b225634
          {{/if}}
      </div>
 diff --git a/addon/templates/reports/wallet-summary.hbs b/addon/templates/reports/wallet-summary.hbs
-index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..6cff966e2d37705ca7133f6e2d41545b242cb4b3 100644
+index 2f053e9..6cff966 100644
 --- a/addon/templates/reports/wallet-summary.hbs
 +++ b/addon/templates/reports/wallet-summary.hbs
 @@ -1,4 +1,4 @@
@@ -1632,11 +1942,39 @@ index 2f053e9b6ebdcc3976d01fe59be3f1f595ea6265..6cff966e2d37705ca7133f6e2d41545b
      </div>
 diff --git a/translations/ar-ae.yaml b/translations/ar-ae.yaml
 new file mode 100644
-index 0000000000000000000000000000000000000000..040dc266cbac808e6e268575aef53b500a46b56c
+index 0000000..7df7a37
 --- /dev/null
 +++ b/translations/ar-ae.yaml
-@@ -0,0 +1,335 @@
+@@ -0,0 +1,364 @@
 +ledger:
++  invoice-form:
++    new-invoice-template: قالب فاتورة جديد
++    invoice-details: تفاصيل الفاتورة
++    invoice-number: رقم الفاتورة
++    auto-generated: يُنشأ تلقائيًا إذا تُرك فارغًا
++    select-status: اختر الحالة
++    select-template: اختر قالبًا (اختياري)
++    search-contacts: ابحث في جهات الاتصال أو الموردين…
++    dates: التواريخ
++    line-items: بنود الفاتورة
++    notes-terms: الملاحظات والشروط
++    notes: الملاحظات
++    notes-placeholder: أضف أي ملاحظات أو تعليمات دفع للعميل…
++    terms: الشروط
++    terms-placeholder: شروط الدفع، مثل صافي 30 يومًا…
++    qty: الكمية
++    unit-price: سعر الوحدة
++    tax-percent: الضريبة %
++    item-description: وصف البند
++    no-line-items: لا توجد بنود بعد.
++    add-one: أضف بندًا
++    add-line-item: إضافة بند
++    subtotal: المجموع الفرعي
++    create-new-invoice: إنشاء فاتورة جديدة
++    create-invoice: إنشاء الفاتورة
++    edit-invoice: "تعديل الفاتورة {number}"
++    select-customer: اختر العميل
++    select-order: اختر الطلب
 +  extension-name: دفتر الأستاذ
 +  sidebar:
 +    dashboard: لوحة التحكم
@@ -1891,6 +2229,7 @@ index 0000000000000000000000000000000000000000..040dc266cbac808e6e268575aef53b50
 +  wallet-transactions: معاملات المحفظة
 +
 +column:
++  order: الطلب
 +  id: المعرف
 +  number: الرقم
 +  name: الاسم
@@ -1972,11 +2311,39 @@ index 0000000000000000000000000000000000000000..040dc266cbac808e6e268575aef53b50
 +    void: إلغاء الفاتورة
 +    edit: تعديل الفاتورة
 diff --git a/translations/en-us.yaml b/translations/en-us.yaml
-index ab0883de2c82375e4085beba527d4d468f690c86..8939b2e3c3ca29c404ae1da7173ff0c284636fdb 100644
+index ab0883d..501274c 100644
 --- a/translations/en-us.yaml
 +++ b/translations/en-us.yaml
-@@ -1,5 +1,233 @@
+@@ -1,5 +1,261 @@
  ledger:
++  invoice-form:
++    new-invoice-template: New Invoice Template
++    invoice-details: Invoice Details
++    invoice-number: Invoice Number
++    auto-generated: Auto-generated if left blank
++    select-status: Select status
++    select-template: Select a template (optional)
++    search-contacts: Search contacts or vendors…
++    dates: Dates
++    line-items: Line Items
++    notes-terms: Notes & Terms
++    notes: Notes
++    notes-placeholder: Add any notes or payment instructions for the customer…
++    terms: Terms
++    terms-placeholder: Payment terms, e.g. Net 30…
++    qty: Qty
++    unit-price: Unit Price
++    tax-percent: Tax %
++    item-description: Item description
++    no-line-items: No line items yet.
++    add-one: Add one
++    add-line-item: Add line item
++    subtotal: Subtotal
++    create-new-invoice: Create New Invoice
++    create-invoice: Create Invoice
++    edit-invoice: "Edit Invoice {number}"
++    select-customer: Select customer
++    select-order: Select order
    extension-name: Ledger
 +  sidebar:
 +    dashboard: Dashboard
@@ -2209,3 +2576,11 @@ index ab0883de2c82375e4085beba527d4d468f690c86..8939b2e3c3ca29c404ae1da7173ff0c2
  
  common:
    ledger: Ledger
+@@ -25,6 +281,7 @@ resource:
+   wallet-transactions: Wallet Transactions
+ 
+ column:
++  order: Order
+   id: ID
+   number: Number
+   name: Name

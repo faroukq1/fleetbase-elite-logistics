@@ -66,6 +66,28 @@ export function applyRuntimeConfig(rawConfig = {}) {
 }
 
 /**
+ * Reject configs that point at localhost while the console itself is served
+ * from a real domain — a dev fleetbase.config.json deployed by mistake would
+ * otherwise get cached in localStorage and break the app for up to CACHE_TTL.
+ *
+ * @param {Object|null} runtimeConfig
+ * @returns {Boolean}
+ */
+function isSaneConfig(runtimeConfig) {
+    if (!runtimeConfig || typeof runtimeConfig !== 'object') {
+        return false;
+    }
+
+    const pageIsLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    if (pageIsLocal) {
+        return true;
+    }
+
+    const hosts = `${runtimeConfig.API_HOST ?? ''} ${runtimeConfig.SOCKETCLUSTER_HOST ?? ''}`;
+    return !/localhost|127\.0\.0\.1/.test(hosts);
+}
+
+/**
  * Get cached config from localStorage
  *
  * @returns {Object|null} Cached config or null
@@ -91,6 +113,12 @@ function getCachedConfig() {
         // Check if cache is still valid (within TTL)
         if (cacheAge > CACHE_TTL) {
             debug('[Runtime Config] Cache expired');
+            return null;
+        }
+
+        if (!isSaneConfig(cacheData.config)) {
+            debug('[Runtime Config] Cached config points at localhost on a non-local host — discarding');
+            clearRuntimeConfigCache();
             return null;
         }
 
@@ -179,6 +207,11 @@ export default async function loadRuntimeConfig() {
         const endTime = performance.now();
 
         debug(`[Runtime Config] Fetched from server in ${(endTime - startTime).toFixed(2)}ms`);
+
+        if (!isSaneConfig(runtimeConfig)) {
+            debug('[Runtime Config] Server config points at localhost on a non-local host — ignoring, using built-in defaults');
+            return;
+        }
 
         // Apply and cache
         applyRuntimeConfig(runtimeConfig);

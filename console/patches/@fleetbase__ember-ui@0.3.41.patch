@@ -1,5 +1,5 @@
 diff --git a/addon/components/badge.hbs b/addon/components/badge.hbs
-index 49fa85aa050de46d9767c594f5e16ac828c5e506..3011aeb79a942670f53a1f9258c112046931f875 100644
+index 49fa85a..3011aeb 100644
 --- a/addon/components/badge.hbs
 +++ b/addon/components/badge.hbs
 @@ -14,6 +14,8 @@
@@ -12,7 +12,7 @@ index 49fa85aa050de46d9767c594f5e16ac828c5e506..3011aeb79a942670f53a1f9258c11204
                      {{safe-humanize (or @text @status)}}
                  {{/if}}
 diff --git a/addon/components/badge.js b/addon/components/badge.js
-index 7ee3bf5fb2e4710bb6bc433cdb61c099ecb3d72a..1393ab1a15eed790576506ed3450e7f251333898 100644
+index 7ee3bf5..1393ab1 100644
 --- a/addon/components/badge.js
 +++ b/addon/components/badge.js
 @@ -1,4 +1,5 @@
@@ -62,7 +62,7 @@ index 7ee3bf5fb2e4710bb6bc433cdb61c099ecb3d72a..1393ab1a15eed790576506ed3450e7f2
 +    }
  }
 diff --git a/addon/components/docs-panel.hbs b/addon/components/docs-panel.hbs
-index 4f7f2614a34b34004ba98f19c33522ce6695abc2..bbc35a7dd4d30a379bae853a7e93341f55b496d4 100644
+index 4f7f261..bbc35a7 100644
 --- a/addon/components/docs-panel.hbs
 +++ b/addon/components/docs-panel.hbs
 @@ -39,7 +39,7 @@
@@ -74,8 +74,139 @@ index 4f7f2614a34b34004ba98f19c33522ce6695abc2..bbc35a7dd4d30a379bae853a7e93341f
                          <div class="mt-1 max-w-sm text-xs text-gray-500 dark:text-gray-400">
                              This page cannot be embedded here, but you can open it in a new tab.
                          </div>
+diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
+index 0f85afe..0e60ec3 100644
+--- a/addon/components/layout/header.hbs
++++ b/addon/components/layout/header.hbs
+@@ -1,8 +1,5 @@
+ <header class="next-view-header" ...attributes>
+     <div class="next-view-header-left">
+-        <LinkToExternal @route="console" class="logo navbar-logo mr-4">
+-            <LogoIcon @brand={{@brand}} @size="8" />
+-        </LinkToExternal>
+         {{#if (and @showSidebarToggle (not (media "isMobile")))}}
+             <Layout::Header::SidebarToggle class="mr-2" @onToggle={{@onSidebarToggle}} @disabled={{eq @sidebarToggleEnabled false}} />
+         {{/if}}
+@@ -32,6 +29,7 @@
+                 <RegistryYield @registry="header-tray-items" as |RegistryComponent|>
+                     <RegistryComponent @header={{this}} />
+                 </RegistryYield>
++                <Layout::Header::ThemeToggleButton />
+                 <LocaleSelectorTray />
+                 <NotificationTray @registerAPI={{@registerNotificationTrayApi}} @onClickNotification={{@onClickNotification}} />
+                 <ChatTray />
+diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
+index f4d693a..b010723 100644
+--- a/addon/components/layout/header.js
++++ b/addon/components/layout/header.js
+@@ -22,6 +22,7 @@ export default class LayoutHeaderComponent extends Component {
+     @service abilities;
+     @service fetch;
+     @service docsPanel;
++    @service intl;
+     @tracked company;
+     @tracked organizationMenuItems = [];
+     @tracked userMenuItems = [];
+@@ -81,19 +82,19 @@ export default class LayoutHeaderComponent extends Component {
+             {
+                 id: 'console-home',
+                 route: 'console.home',
+-                text: 'Home',
++                text: this.intl.t('user-menu.home'),
+                 icon: 'house',
+             },
+             {
+                 id: 'organization-settings',
+                 route: 'console.settings.index',
+-                text: 'Organization settings',
++                text: this.intl.t('user-menu.organization-settings'),
+                 icon: 'gear',
+             },
+             {
+                 id: 'create-or-join-organizations',
+                 href: 'javascript:;',
+-                text: 'Create or join organizations',
++                text: this.intl.t('user-menu.create-or-join'),
+                 action: 'createOrJoinOrg',
+                 icon: 'building',
+             },
+@@ -104,7 +105,7 @@ export default class LayoutHeaderComponent extends Component {
+             staticMenuItems.pushObject({
+                 id: 'explore-extensions',
+                 route: 'console.extensions',
+-                text: 'Explore extensions',
++                text: this.intl.t('user-menu.explore-extensions'),
+                 icon: 'puzzle-piece',
+             });
+         }
+@@ -149,7 +150,7 @@ export default class LayoutHeaderComponent extends Component {
+                 },
+                 {
+                     route: 'console.admin',
+-                    text: 'Admin',
++                    text: this.intl.t('user-menu.admin'),
+                     icon: 'toolbox',
+                 },
+             ]);
+@@ -162,7 +163,7 @@ export default class LayoutHeaderComponent extends Component {
+             },
+             {
+                 href: 'javascript:;',
+-                text: 'Logout',
++                text: this.intl.t('user-menu.logout'),
+                 action: 'invalidateSession',
+                 icon: 'person-running',
+             },
+@@ -229,7 +230,7 @@ export default class LayoutHeaderComponent extends Component {
+                 id: 'discord',
+                 href: 'https://discord.gg/MJQgxHwN',
+                 target: '_discord',
+-                text: 'Join Discord Community',
++                text: this.intl.t('user-menu.discord'),
+                 icon: 'arrow-up-right-from-square',
+             },
+             {
+@@ -237,13 +238,13 @@ export default class LayoutHeaderComponent extends Component {
+                 wrapperClass: 'support-user-nav-item',
+                 href: 'https://github.com/fleetbase/fleetbase/issues',
+                 target: '_support',
+-                text: 'Help & Support',
++                text: this.intl.t('user-menu.support'),
+                 icon: 'arrow-up-right-from-square',
+             },
+             {
+                 id: 'docs-user-nav-item',
+                 wrapperClass: 'docs-user-nav-item',
+-                text: 'Documentation',
++                text: this.intl.t('user-menu.documentation'),
+                 icon: 'book-open',
+                 onClick: () => this.docsPanel.open('https://www.fleetbase.io/docs', { title: 'Fleetbase Documentation', source: 'user-menu' }),
+             },
+@@ -270,16 +271,18 @@ export default class LayoutHeaderComponent extends Component {
+         menuItems.pushObjects(userMenuItems);
+ 
+         // Create immutable static menu items
++        // Elite Logistics: the dark/light toggle used to live here
++        // (`layout/header/dark-mode-toggle`) — moved to the header tray next
++        // to the language selector (see Layout::Header::ThemeToggleButton in
++        // header.hbs) so it's reachable from every page in one click, not
++        // buried in this dropdown.
+         menuItems.pushObjects([
+-            {
+-                component: 'layout/header/dark-mode-toggle',
+-            },
+             {
+                 seperator: true,
+             },
+             {
+                 href: 'javascript:;',
+-                text: 'Logout',
++                text: this.intl.t('user-menu.logout'),
+                 action: 'invalidateSession',
+                 icon: 'person-running',
+             },
 diff --git a/addon/components/layout/header/dark-mode-toggle.hbs b/addon/components/layout/header/dark-mode-toggle.hbs
-index a49999fc60210ce40e6b7447a8477a21d89ba608..b70d12f9735b1b0d30ec6a7c71fbdf1ada65f584 100644
+index a49999f..b70d12f 100644
 --- a/addon/components/layout/header/dark-mode-toggle.hbs
 +++ b/addon/components/layout/header/dark-mode-toggle.hbs
 @@ -1,6 +1,6 @@
@@ -87,8 +218,42 @@ index a49999fc60210ce40e6b7447a8477a21d89ba608..b70d12f9735b1b0d30ec6a7c71fbdf1a
      </span>
  </a>
 \ No newline at end of file
+diff --git a/addon/components/layout/header/dropdown.hbs b/addon/components/layout/header/dropdown.hbs
+index a0d17db..49a78da 100644
+--- a/addon/components/layout/header/dropdown.hbs
++++ b/addon/components/layout/header/dropdown.hbs
+@@ -6,7 +6,7 @@
+         @calculatePosition={{this.calculatePosition}}
+         @verticalPosition={{@verticalPosition}}
+         @horizontalPosition={{@horizontalPosition}}
+-        @renderInPlace={{or @renderInPlace (not (media "isMobile"))}}
++        @renderInPlace={{if @renderInPlace true false}}
+         @initiallyOpened={{@initiallyOpened}}
+         as |dd|
+     >
+diff --git a/addon/components/layout/header/dropdown.js b/addon/components/layout/header/dropdown.js
+index af90342..22f97fe 100644
+--- a/addon/components/layout/header/dropdown.js
++++ b/addon/components/layout/header/dropdown.js
+@@ -1,7 +1,7 @@
+ import Component from '@glimmer/component';
+ import { action } from '@ember/object';
+ import { inject as service } from '@ember/service';
+-import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
++import calculateTrayPosition from '../../../utils/calculate-tray-position';
+ 
+ export default class LayoutHeaderDropdownComponent extends Component {
+     @service media;
+@@ -36,6 +36,6 @@ export default class LayoutHeaderDropdownComponent extends Component {
+             return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
+         }
+ 
+-        return calculatePosition(...arguments);
++        return calculateTrayPosition(trigger, content);
+     }
+ }
 diff --git a/addon/components/layout/header/dropdown/item.hbs b/addon/components/layout/header/dropdown/item.hbs
-index a6f0b35cbe39a3ece89d996906a737028e9f2a11..3ee4187f77eb229788372a76297324f94b0c911d 100644
+index a6f0b35..3ee4187 100644
 --- a/addon/components/layout/header/dropdown/item.hbs
 +++ b/addon/components/layout/header/dropdown/item.hbs
 @@ -45,7 +45,7 @@
@@ -128,7 +293,7 @@ index a6f0b35cbe39a3ece89d996906a737028e9f2a11..3ee4187f77eb229788372a76297324f9
          </a>
      </div>
 diff --git a/addon/components/layout/header/dropdown/item.js b/addon/components/layout/header/dropdown/item.js
-index 87548c0ab2b2d0425b1a02c5f8d6797638201998..c666e8a7cf938092555da4c5c50cb83bd4163180 100644
+index 87548c0..c666e8a 100644
 --- a/addon/components/layout/header/dropdown/item.js
 +++ b/addon/components/layout/header/dropdown/item.js
 @@ -11,6 +11,36 @@ export default class LayoutHeaderDropdownItemComponent extends Component {
@@ -168,42 +333,8 @@ index 87548c0ab2b2d0425b1a02c5f8d6797638201998..c666e8a7cf938092555da4c5c50cb83b
  
      @bool('args.item.onClick') isInteractive;
      @bool('args.item.href') isAnchor;
-diff --git a/addon/components/layout/header/dropdown.hbs b/addon/components/layout/header/dropdown.hbs
-index a0d17db807c0410d085503c176dfd411757f380e..49a78da99088ecfe94cc88774f61485eb8479839 100644
---- a/addon/components/layout/header/dropdown.hbs
-+++ b/addon/components/layout/header/dropdown.hbs
-@@ -6,7 +6,7 @@
-         @calculatePosition={{this.calculatePosition}}
-         @verticalPosition={{@verticalPosition}}
-         @horizontalPosition={{@horizontalPosition}}
--        @renderInPlace={{or @renderInPlace (not (media "isMobile"))}}
-+        @renderInPlace={{if @renderInPlace true false}}
-         @initiallyOpened={{@initiallyOpened}}
-         as |dd|
-     >
-diff --git a/addon/components/layout/header/dropdown.js b/addon/components/layout/header/dropdown.js
-index af903427e7a772a6cc3fffd0d474ad24f059e813..22f97fe11a8959060977dd55d5ff740d82fd7cda 100644
---- a/addon/components/layout/header/dropdown.js
-+++ b/addon/components/layout/header/dropdown.js
-@@ -1,7 +1,7 @@
- import Component from '@glimmer/component';
- import { action } from '@ember/object';
- import { inject as service } from '@ember/service';
--import calculatePosition from 'ember-basic-dropdown/utils/calculate-position';
-+import calculateTrayPosition from '../../../utils/calculate-tray-position';
- 
- export default class LayoutHeaderDropdownComponent extends Component {
-     @service media;
-@@ -36,6 +36,6 @@ export default class LayoutHeaderDropdownComponent extends Component {
-             return { style: { left: '0px', right: '0px', top, padding: '0 0.5rem', width: '100%' } };
-         }
- 
--        return calculatePosition(...arguments);
-+        return calculateTrayPosition(trigger, content);
-     }
- }
 diff --git a/addon/components/layout/header/sidebar-toggle.hbs b/addon/components/layout/header/sidebar-toggle.hbs
-index 002b6cbf28fc5eee48c9e6710c4e541a7746e73d..274fdd0edbdcffbf8b7b1c1e0bd371c8859d62ec 100644
+index 002b6cb..274fdd0 100644
 --- a/addon/components/layout/header/sidebar-toggle.hbs
 +++ b/addon/components/layout/header/sidebar-toggle.hbs
 @@ -1,7 +1,15 @@
@@ -226,7 +357,7 @@ index 002b6cbf28fc5eee48c9e6710c4e541a7746e73d..274fdd0edbdcffbf8b7b1c1e0bd371c8
                  class="cls-1"
                  d="M484.25,220.5A27.76,27.76,0,0,1,512,248.23V496.77a27.76,27.76,0,0,1-27.73,27.73H183.71A27.76,27.76,0,0,1,156,496.77V248.23a27.76,27.76,0,0,1,27.73-27.73H484.25m0-18H183.71A45.73,45.73,0,0,0,138,248.23V496.77a45.72,45.72,0,0,0,45.73,45.73H484.25A45.72,45.72,0,0,0,530,496.77V248.23a45.73,45.73,0,0,0-45.73-45.73Z"
 diff --git a/addon/components/layout/header/sidebar-toggle.js b/addon/components/layout/header/sidebar-toggle.js
-index 30f356897fd65d69fe3107006f4c458fb7630263..6ca43e5ee01e52cf02edcc1693205709e5492947 100644
+index 30f3568..6ca43e5 100644
 --- a/addon/components/layout/header/sidebar-toggle.js
 +++ b/addon/components/layout/header/sidebar-toggle.js
 @@ -12,7 +12,9 @@ export default class LayoutHeaderSidebarToggleComponent extends Component {
@@ -240,8 +371,43 @@ index 30f356897fd65d69fe3107006f4c458fb7630263..6ca43e5ee01e52cf02edcc1693205709
          if (typeof this.args.onToggle === 'function') {
              this.args.onToggle(this.sidebar, this.sidebar.isVisible);
          }
+diff --git a/addon/components/layout/header/smart-nav-menu.hbs b/addon/components/layout/header/smart-nav-menu.hbs
+index 94c81b2..005b9e2 100644
+--- a/addon/components/layout/header/smart-nav-menu.hbs
++++ b/addon/components/layout/header/smart-nav-menu.hbs
+@@ -14,7 +14,7 @@
+ <div
+     class="snm-container flex items-center"
+     role="menubar"
+-    aria-label="Extension navigation"
++    aria-label={{t "smart-nav.dropdown.title"}}
+     {{did-insert this.setupContainer}}
+     ...attributes
+ >
+@@ -30,8 +30,8 @@
+             class="snm-more-btn next-view-header-item {{if this.isMoreOpen 'is-open'}}"
+             aria-haspopup="true"
+             aria-expanded={{if this.isMoreOpen "true" "false"}}
+-            aria-label="More extensions"
+-            title="More extensions"
++            aria-label={{t "smart-nav.more-extensions"}}
++            title={{t "smart-nav.more-extensions"}}
+             {{did-insert this.registerMoreBtn}}
+             {{on "click" this.toggleMore}}
+         >
+@@ -44,8 +44,8 @@
+         <button
+             type="button"
+             class="snm-customise-btn next-view-header-item ml-0.5"
+-            title="Customise navigation"
+-            aria-label="Customise navigation"
++            title={{t "smart-nav.customise-navigation"}}
++            aria-label={{t "smart-nav.customise-navigation"}}
+             {{on "click" this.openCustomizer}}
+         >
+             <FaIcon @icon="sliders" @size="sm" />
 diff --git a/addon/components/layout/header/smart-nav-menu/customizer.hbs b/addon/components/layout/header/smart-nav-menu/customizer.hbs
-index b11e316a42e6b6ddfeceee77f92e5c74dedc7a4c..917ac3484a8f16d86da619bb512697f567c73cc6 100644
+index b11e316..917ac34 100644
 --- a/addon/components/layout/header/smart-nav-menu/customizer.hbs
 +++ b/addon/components/layout/header/smart-nav-menu/customizer.hbs
 @@ -10,18 +10,18 @@
@@ -371,7 +537,7 @@ index b11e316a42e6b6ddfeceee77f92e5c74dedc7a4c..917ac3484a8f16d86da619bb512697f5
          </div>
      </div>
 diff --git a/addon/components/layout/header/smart-nav-menu/dropdown.hbs b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
-index 55e06f15789a1d7a9691037463cc873e0619ebca..3decc9597768e8b7e3024205c37d7f33462e16d0 100644
+index 55e06f1..3decc95 100644
 --- a/addon/components/layout/header/smart-nav-menu/dropdown.hbs
 +++ b/addon/components/layout/header/smart-nav-menu/dropdown.hbs
 @@ -28,15 +28,15 @@
@@ -537,7 +703,7 @@ index 55e06f15789a1d7a9691037463cc873e0619ebca..3decc9597768e8b7e3024205c37d7f33
      </div>
  </div>
 diff --git a/addon/components/layout/header/smart-nav-menu/item.hbs b/addon/components/layout/header/smart-nav-menu/item.hbs
-index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce082b74d2f4 100644
+index 5cadb8f..089a421 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.hbs
 +++ b/addon/components/layout/header/smart-nav-menu/item.hbs
 @@ -27,7 +27,7 @@
@@ -558,7 +724,7 @@ index 5cadb8f1277e03266a8f3f4c0cce4289f6c93004..089a4212aac6efaa03e6af07545bce08
      </LinkToExternal>
  {{/if}}
 diff --git a/addon/components/layout/header/smart-nav-menu/item.js b/addon/components/layout/header/smart-nav-menu/item.js
-index 0df254b34b13a5267950a778bc35671fd5e294f7..e369e075dc2faeaf5018ac8af619d28e6ab5c677 100644
+index 0df254b..e369e07 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.js
 +++ b/addon/components/layout/header/smart-nav-menu/item.js
 @@ -14,6 +14,34 @@ import { inject as service } from '@ember/service';
@@ -596,174 +762,8 @@ index 0df254b34b13a5267950a778bc35671fd5e294f7..e369e075dc2faeaf5018ac8af619d28e
  
      /**
       * Whether the item's route matches the current route, making it "active".
-diff --git a/addon/components/layout/header/smart-nav-menu.hbs b/addon/components/layout/header/smart-nav-menu.hbs
-index 94c81b20462ead270707a8d6ea5327e1f539fa7e..005b9e27d8b3f03251f626b5eb61274eb0a837b2 100644
---- a/addon/components/layout/header/smart-nav-menu.hbs
-+++ b/addon/components/layout/header/smart-nav-menu.hbs
-@@ -14,7 +14,7 @@
- <div
-     class="snm-container flex items-center"
-     role="menubar"
--    aria-label="Extension navigation"
-+    aria-label={{t "smart-nav.dropdown.title"}}
-     {{did-insert this.setupContainer}}
-     ...attributes
- >
-@@ -30,8 +30,8 @@
-             class="snm-more-btn next-view-header-item {{if this.isMoreOpen 'is-open'}}"
-             aria-haspopup="true"
-             aria-expanded={{if this.isMoreOpen "true" "false"}}
--            aria-label="More extensions"
--            title="More extensions"
-+            aria-label={{t "smart-nav.more-extensions"}}
-+            title={{t "smart-nav.more-extensions"}}
-             {{did-insert this.registerMoreBtn}}
-             {{on "click" this.toggleMore}}
-         >
-@@ -44,8 +44,8 @@
-         <button
-             type="button"
-             class="snm-customise-btn next-view-header-item ml-0.5"
--            title="Customise navigation"
--            aria-label="Customise navigation"
-+            title={{t "smart-nav.customise-navigation"}}
-+            aria-label={{t "smart-nav.customise-navigation"}}
-             {{on "click" this.openCustomizer}}
-         >
-             <FaIcon @icon="sliders" @size="sm" />
-diff --git a/addon/components/layout/header.hbs b/addon/components/layout/header.hbs
-index 0f85afe5db0501d86c41bb4762982d326a140d20..0e60ec32fc47d473a7af065087efb09ac207b867 100644
---- a/addon/components/layout/header.hbs
-+++ b/addon/components/layout/header.hbs
-@@ -1,8 +1,5 @@
- <header class="next-view-header" ...attributes>
-     <div class="next-view-header-left">
--        <LinkToExternal @route="console" class="logo navbar-logo mr-4">
--            <LogoIcon @brand={{@brand}} @size="8" />
--        </LinkToExternal>
-         {{#if (and @showSidebarToggle (not (media "isMobile")))}}
-             <Layout::Header::SidebarToggle class="mr-2" @onToggle={{@onSidebarToggle}} @disabled={{eq @sidebarToggleEnabled false}} />
-         {{/if}}
-@@ -32,6 +29,7 @@
-                 <RegistryYield @registry="header-tray-items" as |RegistryComponent|>
-                     <RegistryComponent @header={{this}} />
-                 </RegistryYield>
-+                <Layout::Header::ThemeToggleButton />
-                 <LocaleSelectorTray />
-                 <NotificationTray @registerAPI={{@registerNotificationTrayApi}} @onClickNotification={{@onClickNotification}} />
-                 <ChatTray />
-diff --git a/addon/components/layout/header.js b/addon/components/layout/header.js
-index f4d693a5b0175c8afb04386335b8001de1163faf..b0107238d1e601c36a0a00e656479d6b53d57b38 100644
---- a/addon/components/layout/header.js
-+++ b/addon/components/layout/header.js
-@@ -22,6 +22,7 @@ export default class LayoutHeaderComponent extends Component {
-     @service abilities;
-     @service fetch;
-     @service docsPanel;
-+    @service intl;
-     @tracked company;
-     @tracked organizationMenuItems = [];
-     @tracked userMenuItems = [];
-@@ -81,19 +82,19 @@ export default class LayoutHeaderComponent extends Component {
-             {
-                 id: 'console-home',
-                 route: 'console.home',
--                text: 'Home',
-+                text: this.intl.t('user-menu.home'),
-                 icon: 'house',
-             },
-             {
-                 id: 'organization-settings',
-                 route: 'console.settings.index',
--                text: 'Organization settings',
-+                text: this.intl.t('user-menu.organization-settings'),
-                 icon: 'gear',
-             },
-             {
-                 id: 'create-or-join-organizations',
-                 href: 'javascript:;',
--                text: 'Create or join organizations',
-+                text: this.intl.t('user-menu.create-or-join'),
-                 action: 'createOrJoinOrg',
-                 icon: 'building',
-             },
-@@ -104,7 +105,7 @@ export default class LayoutHeaderComponent extends Component {
-             staticMenuItems.pushObject({
-                 id: 'explore-extensions',
-                 route: 'console.extensions',
--                text: 'Explore extensions',
-+                text: this.intl.t('user-menu.explore-extensions'),
-                 icon: 'puzzle-piece',
-             });
-         }
-@@ -149,7 +150,7 @@ export default class LayoutHeaderComponent extends Component {
-                 },
-                 {
-                     route: 'console.admin',
--                    text: 'Admin',
-+                    text: this.intl.t('user-menu.admin'),
-                     icon: 'toolbox',
-                 },
-             ]);
-@@ -162,7 +163,7 @@ export default class LayoutHeaderComponent extends Component {
-             },
-             {
-                 href: 'javascript:;',
--                text: 'Logout',
-+                text: this.intl.t('user-menu.logout'),
-                 action: 'invalidateSession',
-                 icon: 'person-running',
-             },
-@@ -229,7 +230,7 @@ export default class LayoutHeaderComponent extends Component {
-                 id: 'discord',
-                 href: 'https://discord.gg/MJQgxHwN',
-                 target: '_discord',
--                text: 'Join Discord Community',
-+                text: this.intl.t('user-menu.discord'),
-                 icon: 'arrow-up-right-from-square',
-             },
-             {
-@@ -237,13 +238,13 @@ export default class LayoutHeaderComponent extends Component {
-                 wrapperClass: 'support-user-nav-item',
-                 href: 'https://github.com/fleetbase/fleetbase/issues',
-                 target: '_support',
--                text: 'Help & Support',
-+                text: this.intl.t('user-menu.support'),
-                 icon: 'arrow-up-right-from-square',
-             },
-             {
-                 id: 'docs-user-nav-item',
-                 wrapperClass: 'docs-user-nav-item',
--                text: 'Documentation',
-+                text: this.intl.t('user-menu.documentation'),
-                 icon: 'book-open',
-                 onClick: () => this.docsPanel.open('https://www.fleetbase.io/docs', { title: 'Fleetbase Documentation', source: 'user-menu' }),
-             },
-@@ -270,16 +271,18 @@ export default class LayoutHeaderComponent extends Component {
-         menuItems.pushObjects(userMenuItems);
- 
-         // Create immutable static menu items
-+        // Elite Logistics: the dark/light toggle used to live here
-+        // (`layout/header/dark-mode-toggle`) — moved to the header tray next
-+        // to the language selector (see Layout::Header::ThemeToggleButton in
-+        // header.hbs) so it's reachable from every page in one click, not
-+        // buried in this dropdown.
-         menuItems.pushObjects([
--            {
--                component: 'layout/header/dark-mode-toggle',
--            },
-             {
-                 seperator: true,
-             },
-             {
-                 href: 'javascript:;',
--                text: 'Logout',
-+                text: this.intl.t('user-menu.logout'),
-                 action: 'invalidateSession',
-                 icon: 'person-running',
-             },
 diff --git a/addon/components/layout/resource/tabular-actions.hbs b/addon/components/layout/resource/tabular-actions.hbs
-index 615c4c5b5ad4a7a36520d8da196c58533b24b4a8..87f4eb7eea12d83821142fc47e9eec2893c649b8 100644
+index 615c4c5..87f4eb7 100644
 --- a/addon/components/layout/resource/tabular-actions.hbs
 +++ b/addon/components/layout/resource/tabular-actions.hbs
 @@ -4,7 +4,7 @@
@@ -776,7 +776,7 @@ index 615c4c5b5ad4a7a36520d8da196c58533b24b4a8..87f4eb7eea12d83821142fc47e9eec28
          disabled={{@searchDisabled}}
          {{on "keyup" @onSearch}}
 diff --git a/addon/components/layout/section/header.hbs b/addon/components/layout/section/header.hbs
-index d52a85c1146138588638b6bf8d3cc6e1bdae9322..5ca14cef15167c5b8bd26f3fa1c0ea4813a2dd77 100644
+index d52a85c..5ca14ce 100644
 --- a/addon/components/layout/section/header.hbs
 +++ b/addon/components/layout/section/header.hbs
 @@ -36,7 +36,7 @@
@@ -789,7 +789,7 @@ index d52a85c1146138588638b6bf8d3cc6e1bdae9322..5ca14cef15167c5b8bd26f3fa1c0ea48
                          disabled={{@searchDisabled}}
                          {{on "keyup" @onSearch}}
 diff --git a/addon/components/layout/sidebar.hbs b/addon/components/layout/sidebar.hbs
-index 8f14b034e83caa8a4ceb52d8d4719c72f132fbb0..20b5f3cae51742e5cbc608f4f359bc0111f43c4c 100644
+index 8f14b03..20b5f3c 100644
 --- a/addon/components/layout/sidebar.hbs
 +++ b/addon/components/layout/sidebar.hbs
 @@ -1,5 +1,8 @@
@@ -802,7 +802,7 @@ index 8f14b034e83caa8a4ceb52d8d4719c72f132fbb0..20b5f3cae51742e5cbc608f4f359bc01
              <div role="menu" id="sidebar-menu-items">
                  {{yield
 diff --git a/addon/components/layout/sidebar.js b/addon/components/layout/sidebar.js
-index 151c21b84605b8057af2b48c03df0b1524555331..221f254525082b512ff0a689773cd9ec912d5322 100644
+index 151c21b..221f254 100644
 --- a/addon/components/layout/sidebar.js
 +++ b/addon/components/layout/sidebar.js
 @@ -148,7 +148,9 @@ export default class LayoutSidebarComponent extends Component {
@@ -829,7 +829,7 @@ index 151c21b84605b8057af2b48c03df0b1524555331..221f254525082b512ff0a689773cd9ec
          sidebarNode.classList.add('sidebar-minimized');
          this.syncState('minimized');
 diff --git a/addon/components/locale-selector-tray.hbs b/addon/components/locale-selector-tray.hbs
-index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9aef08d88bd 100644
+index 6ddea28..05fb557 100644
 --- a/addon/components/locale-selector-tray.hbs
 +++ b/addon/components/locale-selector-tray.hbs
 @@ -25,7 +25,7 @@
@@ -842,7 +842,7 @@ index 6ddea283729f9324ef32977e22db7881850f1256..05fb55754ea14ceae7828e977209f9ae
                                      {{#if (eq this.currentLocale key)}}
                                          <div>
 diff --git a/addon/components/locale-selector-tray.js b/addon/components/locale-selector-tray.js
-index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..3de93fbce271473d369044a170233bb63e847cf5 100644
+index 1fa192c..3de93fb 100644
 --- a/addon/components/locale-selector-tray.js
 +++ b/addon/components/locale-selector-tray.js
 @@ -3,10 +3,14 @@ import { tracked } from '@glimmer/tracking';
@@ -871,7 +871,7 @@ index 1fa192c5b5c5da85a8c37a4b8ee8540ceaef0ef9..3de93fbce271473d369044a170233bb6
  
      /**
 diff --git a/addon/components/modal/default.hbs b/addon/components/modal/default.hbs
-index e9ba500434fb2104b0d272a594930f22894a9f22..493b2f271e5a6c7520160c32efaf1cb8292f7c52 100644
+index e9ba500..493b2f2 100644
 --- a/addon/components/modal/default.hbs
 +++ b/addon/components/modal/default.hbs
 @@ -40,7 +40,7 @@
@@ -893,7 +893,7 @@ index e9ba500434fb2104b0d272a594930f22894a9f22..493b2f271e5a6c7520160c32efaf1cb8
                          @disabled={{or @options.acceptButtonDisabled @options.isLoading}}
                      />
 diff --git a/addon/components/modals/import-form.hbs b/addon/components/modals/import-form.hbs
-index f1f6575548281ce7b44e9b1250804a25627525d8..57f0ae326132655c1b4df0250271038d321d1a6c 100644
+index f1f6575..57f0ae3 100644
 --- a/addon/components/modals/import-form.hbs
 +++ b/addon/components/modals/import-form.hbs
 @@ -100,7 +100,7 @@
@@ -906,7 +906,7 @@ index f1f6575548281ce7b44e9b1250804a25627525d8..57f0ae326132655c1b4df0250271038d
          {{/if}}
      </div>
 diff --git a/addon/components/notification-tray.js b/addon/components/notification-tray.js
-index 9ddb2ee0a9ce88d8a30fca119f343b6b39c65870..98a74d7cf6fad55a643a39d27f3e20374603227d 100644
+index 9ddb2ee..98a74d7 100644
 --- a/addon/components/notification-tray.js
 +++ b/addon/components/notification-tray.js
 @@ -3,7 +3,7 @@ import { tracked } from '@glimmer/tracking';
@@ -928,7 +928,7 @@ index 9ddb2ee0a9ce88d8a30fca119f343b6b39c65870..98a74d7cf6fad55a643a39d27f3e2037
  
      /**
 diff --git a/addon/components/pagination.hbs b/addon/components/pagination.hbs
-index ba5c1e182766033fbc4d0a061bb5307be4572d58..cd3f866fd65d6daf259b94ad7d6c80e6cac5275d 100644
+index ba5c1e1..cd3f866 100644
 --- a/addon/components/pagination.hbs
 +++ b/addon/components/pagination.hbs
 @@ -6,38 +6,38 @@
@@ -979,7 +979,7 @@ index ba5c1e182766033fbc4d0a061bb5307be4572d58..cd3f866fd65d6daf259b94ad7d6c80e6
          </div>
  
 diff --git a/addon/components/select.hbs b/addon/components/select.hbs
-index 6ff70087d1454a782e012d02895fa6c8c82ff7ba..369ac07e185183b934db7cd8f33ac102b5145fdf 100644
+index 6ff7008..369ac07 100644
 --- a/addon/components/select.hbs
 +++ b/addon/components/select.hbs
 @@ -73,7 +73,7 @@
@@ -1000,138 +1000,8 @@ index 6ff70087d1454a782e012d02895fa6c8c82ff7ba..369ac07e185183b934db7cd8f33ac102
                      {{else}}
                          {{selectable}}
                      {{/if}}
-diff --git a/addon/components/table/cell/anchor.hbs b/addon/components/table/cell/anchor.hbs
-index 9c0da656c14a61f504b80cf4db1dae13f4171c64..f473e5579ceccd0ef43c93809b0634e477d1a9ce 100644
---- a/addon/components/table/cell/anchor.hbs
-+++ b/addon/components/table/cell/anchor.hbs
-@@ -15,6 +15,12 @@
-     {{#if (has-block)}}
-         {{yield}}
-     {{else}}
--        <span class={{@column.anchorSpanClass}}>{{or @value @column.anchorText "-"}}</span>
-+        <span class={{@column.anchorSpanClass}}>
-+            {{~#if @column.translationPrefix~}}
-+                {{translate-value (or @value @column.anchorText "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
-+            {{~else~}}
-+                {{or @value @column.anchorText "-"}}
-+            {{~/if~}}
-+        </span>
-     {{/if}}
- </a>
-\ No newline at end of file
-diff --git a/addon/components/table/cell/base.hbs b/addon/components/table/cell/base.hbs
-index 23e3b19c94c206168ef0fb791002d457757257c3..cc40ae0169ac61d3a750078bc6aa71f86d623115 100644
---- a/addon/components/table/cell/base.hbs
-+++ b/addon/components/table/cell/base.hbs
-@@ -3,7 +3,9 @@
-         {{#if (has-block)}}
-             {{yield}}
-         {{else}}
--            {{#if @column.humanize}}
-+            {{#if @column.translationPrefix}}
-+                {{translate-value (or @value "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
-+            {{else if @column.humanize}}
-                 {{smart-humanize (or @value "-")}}
-             {{else}}
-                 {{or @value "-"}}
-diff --git a/addon/components/table/cell/dropdown.js b/addon/components/table/cell/dropdown.js
-index 1456a62027ae85ba37a9e85dfe130c2b31677be2..cf4eef942d7f0e488e05586fd82fc453e18cd0f8 100644
---- a/addon/components/table/cell/dropdown.js
-+++ b/addon/components/table/cell/dropdown.js
-@@ -2,6 +2,10 @@ import Component from '@glimmer/component';
- import { tracked } from '@glimmer/tracking';
- import { action, computed } from '@ember/object';
- 
-+function isDocumentRtl() {
-+    return (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
-+}
-+
- export default class TableCellDropdownComponent extends Component {
-     @tracked tableCellNode;
-     defaultButtonText = 'Actions';
-@@ -82,11 +86,24 @@ export default class TableCellDropdownComponent extends Component {
-         const triggerRect = trigger.getBoundingClientRect();
-         const contentRect = content?.getBoundingClientRect?.();
-         const contentWidth = contentRect?.width || 224;
-+        const margin = 8;
-+
-+        // This is a row-actions "..." menu, typically in a table column
-+        // sticky-pinned to the table's trailing edge (see
-+        // resolve-sticky-side.js) — right in LTR, left in RTL. Opening
-+        // toward the trigger's own left edge only fits on-screen when
-+        // the trigger sits near the physical right (LTR); in RTL the
-+        // trigger sits near the physical left instead, so opening
-+        // leftward there runs the menu off-screen. Open toward whichever
-+        // side has room, then clamp to the viewport as a final safety net.
-+        const isRtl = isDocumentRtl();
-+        let left = isRtl ? triggerRect.right + 3 : triggerRect.left - contentWidth - 3;
-+        left = Math.max(margin, Math.min(left, window.innerWidth - contentWidth - margin));
- 
-         const style = {
-             position: 'fixed',
-             marginTop: '0px',
--            left: triggerRect.left - contentWidth - 3,
-+            left,
-             top: triggerRect.top,
-         };
- 
-diff --git a/addon/components/table/td.js b/addon/components/table/td.js
-index e476962af9ffdb73fd9d57b28840f1334f62ce30..bff9f3a77259ab5e01b96cd0d8c9c96f0e49ff57 100644
---- a/addon/components/table/td.js
-+++ b/addon/components/table/td.js
-@@ -1,5 +1,6 @@
- import TableCellComponent from './cell';
- import { action } from '@ember/object';
-+import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
- 
- export default class TableTdComponent extends TableCellComponent {
-     get isSticky() {
-@@ -13,11 +14,12 @@ export default class TableTdComponent extends TableCellComponent {
- 
-     get stickyPosition() {
-         const { column, sticky } = this.args;
--        // Checkbox column defaults to left
-+        // Checkbox column defaults to the leading edge
-         if (sticky && !column) {
--            return 'left';
-+            return resolveStickySide('left');
-         }
--        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
-+        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
-+        return resolveStickySide(logicalSide);
-     }
- 
-     get stickyOffset() {
-diff --git a/addon/components/table/th.js b/addon/components/table/th.js
-index 406a8b148ec3df3afc8dfd05130faa73d4cbed49..d61a2812e8e6463a916204e8828956066bbcfcce 100644
---- a/addon/components/table/th.js
-+++ b/addon/components/table/th.js
-@@ -1,6 +1,7 @@
- import TableCellComponent from './cell';
- import { action } from '@ember/object';
- import { inject as service } from '@ember/service';
-+import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
- 
- export default class TableThComponent extends TableCellComponent {
-     @service tableContext;
-@@ -50,11 +51,12 @@ export default class TableThComponent extends TableCellComponent {
- 
-     get stickyPosition() {
-         const { column, sticky } = this.args;
--        // Checkbox column defaults to left
-+        // Checkbox column defaults to the leading edge
-         if (sticky && !column) {
--            return 'left';
-+            return resolveStickySide('left');
-         }
--        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
-+        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
-+        return resolveStickySide(logicalSide);
-     }
- 
-     get stickyOffset() {
 diff --git a/addon/components/table.hbs b/addon/components/table.hbs
-index 3dcbfdf5fcda68492e4f540495608b92275e1c0f..e2e11f2689ca499ac56190fe4ea8e1d7a08412e7 100644
+index 3dcbfdf..e2e11f2 100644
 --- a/addon/components/table.hbs
 +++ b/addon/components/table.hbs
 @@ -78,7 +78,7 @@
@@ -1144,7 +1014,7 @@ index 3dcbfdf5fcda68492e4f540495608b92275e1c0f..e2e11f2689ca499ac56190fe4ea8e1d7
                                          <div class="next-table-empty-state-description">{{@emptyStateDescription}}</div>
                                      {{/if}}
 diff --git a/addon/components/table.js b/addon/components/table.js
-index 9deab0b43f423b14d50271450b279f4508db5ce4..2599671159ea2f9f36ce06910f8349b488bd5093 100644
+index 9deab0b..2599671 100644
 --- a/addon/components/table.js
 +++ b/addon/components/table.js
 @@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
@@ -1189,8 +1059,1567 @@ index 9deab0b43f423b14d50271450b279f4508db5ce4..2599671159ea2f9f36ce06910f8349b4
                          const offset = column._stickyOffset;
                          td.style[position] = `${offset}px`;
                      }
+diff --git a/addon/components/table/cell/anchor.hbs b/addon/components/table/cell/anchor.hbs
+index 9c0da65..f473e55 100644
+--- a/addon/components/table/cell/anchor.hbs
++++ b/addon/components/table/cell/anchor.hbs
+@@ -15,6 +15,12 @@
+     {{#if (has-block)}}
+         {{yield}}
+     {{else}}
+-        <span class={{@column.anchorSpanClass}}>{{or @value @column.anchorText "-"}}</span>
++        <span class={{@column.anchorSpanClass}}>
++            {{~#if @column.translationPrefix~}}
++                {{translate-value (or @value @column.anchorText "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
++            {{~else~}}
++                {{or @value @column.anchorText "-"}}
++            {{~/if~}}
++        </span>
+     {{/if}}
+ </a>
+\ No newline at end of file
+diff --git a/addon/components/table/cell/base.hbs b/addon/components/table/cell/base.hbs
+index 23e3b19..cc40ae0 100644
+--- a/addon/components/table/cell/base.hbs
++++ b/addon/components/table/cell/base.hbs
+@@ -3,7 +3,9 @@
+         {{#if (has-block)}}
+             {{yield}}
+         {{else}}
+-            {{#if @column.humanize}}
++            {{#if @column.translationPrefix}}
++                {{translate-value (or @value "-") @column.translationPrefix (if @column.translationKeyPath (get @row @column.translationKeyPath))}}
++            {{else if @column.humanize}}
+                 {{smart-humanize (or @value "-")}}
+             {{else}}
+                 {{or @value "-"}}
+diff --git a/addon/components/table/cell/dropdown.js b/addon/components/table/cell/dropdown.js
+index 1456a62..cf4eef9 100644
+--- a/addon/components/table/cell/dropdown.js
++++ b/addon/components/table/cell/dropdown.js
+@@ -2,6 +2,10 @@ import Component from '@glimmer/component';
+ import { tracked } from '@glimmer/tracking';
+ import { action, computed } from '@ember/object';
+ 
++function isDocumentRtl() {
++    return (document.documentElement.getAttribute('dir') || 'ltr') === 'rtl';
++}
++
+ export default class TableCellDropdownComponent extends Component {
+     @tracked tableCellNode;
+     defaultButtonText = 'Actions';
+@@ -82,11 +86,24 @@ export default class TableCellDropdownComponent extends Component {
+         const triggerRect = trigger.getBoundingClientRect();
+         const contentRect = content?.getBoundingClientRect?.();
+         const contentWidth = contentRect?.width || 224;
++        const margin = 8;
++
++        // This is a row-actions "..." menu, typically in a table column
++        // sticky-pinned to the table's trailing edge (see
++        // resolve-sticky-side.js) — right in LTR, left in RTL. Opening
++        // toward the trigger's own left edge only fits on-screen when
++        // the trigger sits near the physical right (LTR); in RTL the
++        // trigger sits near the physical left instead, so opening
++        // leftward there runs the menu off-screen. Open toward whichever
++        // side has room, then clamp to the viewport as a final safety net.
++        const isRtl = isDocumentRtl();
++        let left = isRtl ? triggerRect.right + 3 : triggerRect.left - contentWidth - 3;
++        left = Math.max(margin, Math.min(left, window.innerWidth - contentWidth - margin));
+ 
+         const style = {
+             position: 'fixed',
+             marginTop: '0px',
+-            left: triggerRect.left - contentWidth - 3,
++            left,
+             top: triggerRect.top,
+         };
+ 
+diff --git a/addon/components/table/td.js b/addon/components/table/td.js
+index e476962..bff9f3a 100644
+--- a/addon/components/table/td.js
++++ b/addon/components/table/td.js
+@@ -1,5 +1,6 @@
+ import TableCellComponent from './cell';
+ import { action } from '@ember/object';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class TableTdComponent extends TableCellComponent {
+     get isSticky() {
+@@ -13,11 +14,12 @@ export default class TableTdComponent extends TableCellComponent {
+ 
+     get stickyPosition() {
+         const { column, sticky } = this.args;
+-        // Checkbox column defaults to left
++        // Checkbox column defaults to the leading edge
+         if (sticky && !column) {
+-            return 'left';
++            return resolveStickySide('left');
+         }
+-        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        return resolveStickySide(logicalSide);
+     }
+ 
+     get stickyOffset() {
+diff --git a/addon/components/table/th.js b/addon/components/table/th.js
+index 406a8b1..d61a281 100644
+--- a/addon/components/table/th.js
++++ b/addon/components/table/th.js
+@@ -1,6 +1,7 @@
+ import TableCellComponent from './cell';
+ import { action } from '@ember/object';
+ import { inject as service } from '@ember/service';
++import resolveStickySide from '@fleetbase/ember-ui/utils/resolve-sticky-side';
+ 
+ export default class TableThComponent extends TableCellComponent {
+     @service tableContext;
+@@ -50,11 +51,12 @@ export default class TableThComponent extends TableCellComponent {
+ 
+     get stickyPosition() {
+         const { column, sticky } = this.args;
+-        // Checkbox column defaults to left
++        // Checkbox column defaults to the leading edge
+         if (sticky && !column) {
+-            return 'left';
++            return resolveStickySide('left');
+         }
+-        return column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        const logicalSide = column?._stickyPosition || (column?.sticky === 'right' ? 'right' : 'left');
++        return resolveStickySide(logicalSide);
+     }
+ 
+     get stickyOffset() {
+diff --git a/addon/components/template-builder.hbs b/addon/components/template-builder.hbs
+index 620ab01..d430b5f 100644
+--- a/addon/components/template-builder.hbs
++++ b/addon/components/template-builder.hbs
+@@ -43,7 +43,7 @@
+                     {{on "click" (fn this.setLeftPanelTab "layers")}}
+                 >
+                     <FaIcon @icon="layer-group" class="w-3 h-3" />
+-                    <span>Layers</span>
++                    <span>{{t "template-builder.tabs.layers"}}</span>
+                 </button>
+                 <button
+                     type="button"
+@@ -54,7 +54,7 @@
+                     {{on "click" (fn this.setLeftPanelTab "queries")}}
+                 >
+                     <FaIcon @icon="database" class="w-3 h-3" />
+-                    <span>Queries</span>
++                    <span>{{t "template-builder.tabs.queries"}}</span>
+                     {{#if this.queries.length}}
+                         <span class="ml-0.5 px-1 py-0 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs leading-4">{{this.queries.length}}</span>
+                     {{/if}}
+diff --git a/addon/components/template-builder.js b/addon/components/template-builder.js
+index 24027d9..7b58795 100644
+--- a/addon/components/template-builder.js
++++ b/addon/components/template-builder.js
+@@ -60,6 +60,8 @@ import { next } from '@ember/runloop';
+  * @argument {String}   [closeLabel]    - Text label beside the close icon (default: none — icon only)
+  */
+ export default class TemplateBuilderComponent extends Component {
++    @service intl;
++
+     @service fetch;
+     @service notifications;
+ 
+@@ -160,7 +162,7 @@ export default class TemplateBuilderComponent extends Component {
+ 
+         const queriesSchema = {
+             namespace: '__queries__',
+-            label: 'Queries',
++            label: this.intl.t('template-builder.tabs.queries'),
+             icon: 'database',
+             variables: this.queries.map((q) => ({
+                 path: q.variable_name,
+diff --git a/addon/components/template-builder/layers-panel.hbs b/addon/components/template-builder/layers-panel.hbs
+index e1f3f16..c204450 100644
+--- a/addon/components/template-builder/layers-panel.hbs
++++ b/addon/components/template-builder/layers-panel.hbs
+@@ -2,7 +2,7 @@
+ <div class="tb-layers-panel flex flex-col h-full" ...attributes>
+     {{! Header }}
+     <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+-        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Layers</span>
++        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "template-builder.layers.title"}}</span>
+         <span class="text-xs text-gray-400 dark:text-gray-500">{{this.sortedElements.length}}</span>
+     </div>
+ 
+@@ -37,7 +37,7 @@
+                             <span
+                                 class="block text-xs truncate {{if (this.isSelected element) 'text-blue-700 dark:text-blue-300 font-medium' 'text-gray-700 dark:text-gray-300'}} {{unless (this.isVisible element) 'opacity-40'}}"
+                                 {{on "dblclick" (fn this.startRename element)}}
+-                                title="Double-click to rename"
++                                title={{t "template-builder.layers.rename-hint"}}
+                             >
+                                 {{this.elementLabel element}}
+                             </span>
+@@ -50,7 +50,7 @@
+                         <button
+                             type="button"
+                             class="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+-                            title={{if (this.isVisible element) "Hide element" "Show element"}}
++                            title={{if (this.isVisible element) (t "template-builder.layers.hide-element") (t "template-builder.layers.show-element")}}
+                             {{on "click" (fn this.toggleVisibility element)}}
+                         >
+                             <FaIcon @icon={{if (this.isVisible element) "eye" "eye-slash"}} class="w-3 h-3" />
+@@ -60,7 +60,7 @@
+                         <button
+                             type="button"
+                             class="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+-                            title="Move layer up"
++                            title={{t "template-builder.layers.move-up"}}
+                             {{on "click" (fn this.moveUp element)}}
+                         >
+                             <FaIcon @icon="chevron-up" class="w-3 h-3" />
+@@ -70,7 +70,7 @@
+                         <button
+                             type="button"
+                             class="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+-                            title="Move layer down"
++                            title={{t "template-builder.layers.move-down"}}
+                             {{on "click" (fn this.moveDown element)}}
+                         >
+                             <FaIcon @icon="chevron-down" class="w-3 h-3" />
+@@ -80,7 +80,7 @@
+                         <button
+                             type="button"
+                             class="p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400"
+-                            title="Delete element"
++                            title={{t "template-builder.layers.delete-element"}}
+                             {{on "click" (fn this.deleteElement element)}}
+                         >
+                             <FaIcon @icon="trash" class="w-3 h-3" />
+@@ -91,8 +91,8 @@
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-8 px-4 text-center">
+                 <FaIcon @icon="layer-group" class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-2" />
+-                <p class="text-xs text-gray-400 dark:text-gray-500">No elements yet.</p>
+-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Use the toolbar to add elements.</p>
++                <p class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.layers.no-elements"}}</p>
++                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{t "template-builder.layers.no-elements-hint"}}</p>
+             </div>
+         {{/if}}
+     </div>
+diff --git a/addon/components/template-builder/layers-panel.js b/addon/components/template-builder/layers-panel.js
+index 06cd951..1a42e69 100644
+--- a/addon/components/template-builder/layers-panel.js
++++ b/addon/components/template-builder/layers-panel.js
+@@ -1,4 +1,5 @@
+ import Component from '@glimmer/component';
++import { inject as service } from '@ember/service';
+ import { tracked } from '@glimmer/tracking';
+ import { action } from '@ember/object';
+ 
+@@ -20,6 +21,8 @@ import { action } from '@ember/object';
+  * @argument {Function} onReorderElement - Called with (uuid, direction) — 'up' or 'down'
+  */
+ export default class TemplateBuilderLayersPanelComponent extends Component {
++    @service intl;
++
+     @tracked renamingUuid = null;
+     @tracked renameValue = '';
+ 
+@@ -46,16 +49,8 @@ export default class TemplateBuilderLayersPanelComponent extends Component {
+     @action
+     elementLabel(element) {
+         if (element.label) return element.label;
+-        const typeLabels = {
+-            text: 'Text',
+-            image: 'Image',
+-            table: 'Table',
+-            line: 'Line',
+-            shape: 'Shape',
+-            qr_code: 'QR Code',
+-            barcode: 'Barcode',
+-        };
+-        return typeLabels[element.type] ?? 'Element';
++        const key = `template-builder.element.${(element.type ?? '').replace(/_/g, '-')}`;
++        return this.intl.exists(key) ? this.intl.t(key) : this.intl.t('template-builder.element.element');
+     }
+ 
+     @action
+diff --git a/addon/components/template-builder/properties-panel.hbs b/addon/components/template-builder/properties-panel.hbs
+index 4d93963..8cfd48d 100644
+--- a/addon/components/template-builder/properties-panel.hbs
++++ b/addon/components/template-builder/properties-panel.hbs
+@@ -10,31 +10,31 @@
+         <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+             <div class="flex items-center space-x-2">
+                 <FaIcon @icon={{this.elementType}} class="w-3.5 h-3.5 text-blue-500" />
+-                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300 capitalize">{{this.elementType}} Properties</span>
++                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{t "template-builder.properties.element-properties" type=this.elementTypeLabel}}</span>
+             </div>
+         </div>
+ 
+         {{! POSITION SECTION }}
+         <TemplateBuilder::PropertiesPanel::Section
+-            @title="Position"
++            @title={{t "template-builder.properties.position"}}
+             @icon="arrows-up-down-left-right"
+             @isOpen={{this.isSectionOpen "position"}}
+             @onToggle={{fn this.toggleSection "position"}}
+         >
+             <div class="grid grid-cols-2 gap-2">
+-                <TemplateBuilder::PropertiesPanel::Field @label="X">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.x"}}>
+                     <input type="number" class="tb-input" value={{this.element.x}} {{on "change" (fn this.updateNumericProp "x")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+-                <TemplateBuilder::PropertiesPanel::Field @label="Y">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.y"}}>
+                     <input type="number" class="tb-input" value={{this.element.y}} {{on "change" (fn this.updateNumericProp "y")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+-                <TemplateBuilder::PropertiesPanel::Field @label="Rotation">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.rotation"}}>
+                     <input type="number" class="tb-input" value={{this.element.rotation}} min="-360" max="360" {{on "change" (fn this.updateNumericProp "rotation")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+-                <TemplateBuilder::PropertiesPanel::Field @label="Z-Index">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.z-index"}}>
+                     <input type="number" class="tb-input" value={{this.element.z_index}} min="1" {{on "change" (fn this.updateNumericProp "z_index")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+-                <TemplateBuilder::PropertiesPanel::Field @label="Opacity" @span="2">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.opacity"}} @span="2">
+                     <input type="range" class="w-full" value={{this.element.opacity}} min="0" max="1" step="0.05" {{on "input" (fn this.updateNumericProp "opacity")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+             </div>
+@@ -42,16 +42,16 @@
+ 
+         {{! SIZE SECTION }}
+         <TemplateBuilder::PropertiesPanel::Section
+-            @title="Size"
++            @title={{t "template-builder.properties.size"}}
+             @icon="ruler-combined"
+             @isOpen={{this.isSectionOpen "size"}}
+             @onToggle={{fn this.toggleSection "size"}}
+         >
+             <div class="grid grid-cols-2 gap-2">
+-                <TemplateBuilder::PropertiesPanel::Field @label="Width">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.width"}}>
+                     <input type="number" class="tb-input" value={{this.element.width}} min="1" {{on "change" (fn this.updateNumericProp "width")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+-                <TemplateBuilder::PropertiesPanel::Field @label="Height">
++                <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.height"}}>
+                     <input type="number" class="tb-input" value={{this.element.height}} min="1" {{on "change" (fn this.updateNumericProp "height")}} />
+                 </TemplateBuilder::PropertiesPanel::Field>
+             </div>
+@@ -60,7 +60,7 @@
+         {{! TEXT CONTENT SECTION (text elements only) }}
+         {{#if this.hasTextContent}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Content"
++                @title={{t "template-builder.properties.content"}}
+                 @icon="align-left"
+                 @isOpen={{this.isSectionOpen "content"}}
+                 @onToggle={{fn this.toggleSection "content"}}
+@@ -69,7 +69,7 @@
+                     <div class="relative">
+                         <textarea
+                             class="tb-input w-full min-h-20 resize-y font-mono text-xs"
+-                            placeholder="Enter text or use {variable.name} syntax..."
++                            placeholder={{t "template-builder.properties.content-placeholder"}}
+                             {{on "input" (fn this.updateProp "content" value="target.value")}}
+                         >{{this.element.content}}</textarea>
+                     </div>
+@@ -79,7 +79,7 @@
+                         {{on "click" (fn this.openVariablePicker "content")}}
+                     >
+                         <FaIcon @icon="code" class="w-3 h-3" />
+-                        <span>Insert variable or formula</span>
++                        <span>{{t "template-builder.properties.insert-variable-or-formula"}}</span>
+                     </button>
+                 </div>
+             </TemplateBuilder::PropertiesPanel::Section>
+@@ -88,7 +88,7 @@
+         {{! IMAGE SECTION }}
+         {{#if this.isImage}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Image"
++                @title={{t "template-builder.element.image"}}
+                 @icon="image"
+                 @isOpen={{this.isSectionOpen "image"}}
+                 @onToggle={{fn this.toggleSection "image"}}
+@@ -96,7 +96,7 @@
+                 <div class="space-y-2">
+ 
+                     {{! Source — upload or variable token }}
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Image Source">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.image-source"}}>
+                         {{#if this.imageIsVariable}}
+                             {{! Variable token display }}
+                             <div class="flex items-center space-x-1">
+@@ -104,10 +104,10 @@
+                                     <FaIcon @icon="code" class="w-3 h-3 text-blue-500 shrink-0" />
+                                     <span class="text-xs text-blue-700 dark:text-blue-300 truncate font-mono">{{this.element.src}}</span>
+                                 </div>
+-                                <button type="button" class="tb-icon-btn" title="Change variable" {{on "click" (fn this.openVariablePicker "src")}}>
++                                <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.change-variable"}} {{on "click" (fn this.openVariablePicker "src")}}>
+                                     <FaIcon @icon="pen" class="w-3 h-3" />
+                                 </button>
+-                                <button type="button" class="tb-icon-btn" title="Clear" {{on "click" this.clearImageSrc}}>
++                                <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.clear"}} {{on "click" this.clearImageSrc}}>
+                                     <FaIcon @icon="xmark" class="w-3 h-3" />
+                                 </button>
+                             </div>
+@@ -116,7 +116,7 @@
+                             <div class="flex items-center space-x-1">
+                                 <div class="flex-1 flex items-center space-x-1.5 px-2 py-1 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 min-w-0">
+                                     {{#if this.isUploadingImage}}
+-                                        <span class="text-xs text-gray-500 dark:text-gray-400">Uploading...</span>
++                                        <span class="text-xs text-gray-500 dark:text-gray-400">{{t "template-builder.properties.uploading"}}</span>
+                                     {{else}}
+                                         <FaIcon @icon="image" class="w-3 h-3 text-gray-400 shrink-0" />
+                                         <span class="text-xs text-gray-700 dark:text-gray-300 truncate">{{this.uploadedImageFilename}}</span>
+@@ -127,11 +127,11 @@
+                                     @accept="image/*"
+                                     @onFileAdded={{this.onImageFileAdded}}
+                                 >
+-                                    <button type="button" class="tb-icon-btn" title="Replace image">
++                                    <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.replace-image"}}>
+                                         <FaIcon @icon="arrow-up-from-bracket" class="w-3 h-3" />
+                                     </button>
+                                 </FileUpload>
+-                                <button type="button" class="tb-icon-btn" title="Clear" {{on "click" this.clearImageSrc}}>
++                                <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.clear"}} {{on "click" this.clearImageSrc}}>
+                                     <FaIcon @icon="xmark" class="w-3 h-3" />
+                                 </button>
+                             </div>
+@@ -145,18 +145,18 @@
+                                 >
+                                     <div class="flex items-center justify-center w-full px-3 py-3 rounded border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer transition-colors group">
+                                         {{#if this.isUploadingImage}}
+-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Uploading...</span>
++                                            <span class="text-xs text-gray-500 dark:text-gray-400">{{t "template-builder.properties.uploading"}}</span>
+                                         {{else}}
+                                             <div class="flex flex-col items-center space-y-1">
+                                                 <FaIcon @icon="arrow-up-from-bracket" class="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+-                                                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition-colors">Click to upload image</span>
++                                                <span class="text-xs text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition-colors">{{t "template-builder.properties.click-to-upload"}}</span>
+                                             </div>
+                                         {{/if}}
+                                     </div>
+                                 </FileUpload>
+                                 <div class="flex items-center space-x-1.5">
+                                     <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+-                                    <span class="text-xs text-gray-400">or</span>
++                                    <span class="text-xs text-gray-400">{{t "template-builder.properties.or"}}</span>
+                                     <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+                                 </div>
+                                 <button
+@@ -165,23 +165,23 @@
+                                     {{on "click" (fn this.openVariablePicker "src")}}
+                                 >
+                                     <FaIcon @icon="code" class="w-3 h-3" />
+-                                    <span>Use variable (e.g. {company.logo})</span>
++                                    <span>{{t "template-builder.properties.use-variable"}}</span>
+                                 </button>
+                             </div>
+                         {{/if}}
+                     </TemplateBuilder::PropertiesPanel::Field>
+ 
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Alt Text">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.alt-text"}}>
+                         <input type="text" class="tb-input" value={{this.element.alt}} {{on "change" (fn this.updateProp "alt")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Object Fit">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.object-fit"}}>
+                         <select class="tb-input" {{on "change" (fn this.updateProp "object_fit")}}>
+                             {{#each this.objectFitOptions as |opt|}}
+                                 <option value={{opt.value}} selected={{eq this.element.object_fit opt.value}}>{{opt.label}}</option>
+                             {{/each}}
+                         </select>
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Border Radius">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.border-radius"}}>
+                         <input type="number" class="tb-input" value={{this.element.border_radius}} min="0" {{on "change" (fn this.updateNumericProp "border_radius")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+                 </div>
+@@ -192,7 +192,7 @@
+         {{#if this.isTable}}
+             {{! Columns }}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Columns"
++                @title={{t "template-builder.properties.columns"}}
+                 @icon="table-columns"
+                 @isOpen={{this.isSectionOpen "table-columns"}}
+                 @onToggle={{fn this.toggleSection "table-columns"}}
+@@ -203,7 +203,7 @@
+                             <input
+                                 type="text"
+                                 class="tb-input flex-1"
+-                                placeholder="Column label"
++                                placeholder={{t "template-builder.properties.column-label"}}
+                                 value={{col.label}}
+                                 {{on "change" (fn this.updateColumnLabel index)}}
+                             />
+@@ -217,7 +217,7 @@
+                             <button
+                                 type="button"
+                                 class="tb-icon-btn text-red-400 hover:text-red-600"
+-                                title="Remove column"
++                                title={{t "template-builder.properties.remove-column"}}
+                                 {{on "click" (fn this.removeColumn index)}}
+                             >
+                                 <FaIcon @icon="xmark" class="w-3 h-3" />
+@@ -225,7 +225,7 @@
+                         </div>
+                     {{/each}}
+                     {{#if (eq this.tableColumns.length 0)}}
+-                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2">No columns defined. Add one below.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2">{{t "template-builder.properties.no-columns"}}</p>
+                     {{/if}}
+                     <button
+                         type="button"
+@@ -233,14 +233,14 @@
+                         {{on "click" this.addColumn}}
+                     >
+                         <FaIcon @icon="plus" class="w-3 h-3" />
+-                        <span>Add column</span>
++                        <span>{{t "template-builder.properties.add-column"}}</span>
+                     </button>
+                 </div>
+             </TemplateBuilder::PropertiesPanel::Section>
+ 
+             {{! Data Source }}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Data Source"
++                @title={{t "template-builder.properties.data-source"}}
+                 @icon="database"
+                 @isOpen={{this.isSectionOpen "table-data"}}
+                 @onToggle={{fn this.toggleSection "table-data"}}
+@@ -256,7 +256,7 @@
+                                     'bg-blue-500 text-white'
+                                     'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}}"
+                             {{on "click" (fn this.setTableDataMode "variable")}}
+-                        >Variable</button>
++                        >{{t "template-builder.properties.variable"}}</button>
+                         <button
+                             type="button"
+                             class="flex-1 py-1 font-medium border-l border-gray-200 dark:border-gray-700 transition-colors
+@@ -264,12 +264,12 @@
+                                     'bg-blue-500 text-white'
+                                     'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}}"
+                             {{on "click" (fn this.setTableDataMode "manual")}}
+-                        >Manual</button>
++                        >{{t "template-builder.properties.manual"}}</button>
+                     </div>
+ 
+                     {{! ── VARIABLE MODE ── }}
+                     {{#if (eq this.tableDataMode "variable")}}
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Data Variable">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.data-variable"}}>
+                             <div class="flex space-x-1">
+                                 <input
+                                     type="text"
+@@ -278,13 +278,13 @@
+                                     value={{this.element.data_source}}
+                                     {{on "change" (fn this.updateProp "data_source")}}
+                                 />
+-                                <button type="button" class="tb-icon-btn" title="Insert variable"
++                                <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.insert-variable"}}
+                                     {{on "click" (fn this.openVariablePicker "data_source")}}>
+                                     <FaIcon @icon="code" class="w-3 h-3" />
+                                 </button>
+                             </div>
+                         </TemplateBuilder::PropertiesPanel::Field>
+-                        <p class="text-xs text-gray-400 dark:text-gray-500">The variable must resolve to an array of objects. Each object's keys should match the column keys defined above.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.properties.data-variable-hint"}}</p>
+ 
+                     {{! ── MANUAL MODE ── }}
+                     {{else}}
+@@ -292,11 +292,11 @@
+                             {{#each this.tableRows as |row rowIndex|}}
+                                 <div class="rounded border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                     <div class="flex items-center justify-between px-2 py-1 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+-                                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Row {{add rowIndex 1}}</span>
++                                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">{{t "template-builder.properties.row"}} {{add rowIndex 1}}</span>
+                                         <button
+                                             type="button"
+                                             class="text-red-400 hover:text-red-600"
+-                                            title="Remove row"
++                                            title={{t "template-builder.properties.remove-row"}}
+                                             {{on "click" (fn this.removeRow rowIndex)}}
+                                         >
+                                             <FaIcon @icon="xmark" class="w-3 h-3" />
+@@ -316,13 +316,13 @@
+                                             </div>
+                                         {{/each}}
+                                         {{#if (eq this.tableColumns.length 0)}}
+-                                            <p class="text-xs text-gray-400 text-center py-1">Define columns first.</p>
++                                            <p class="text-xs text-gray-400 text-center py-1">{{t "template-builder.properties.define-columns-first"}}</p>
+                                         {{/if}}
+                                     </div>
+                                 </div>
+                             {{/each}}
+                             {{#if (eq this.tableRows.length 0)}}
+-                                <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2">No rows yet.</p>
++                                <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2">{{t "template-builder.properties.no-rows"}}</p>
+                             {{/if}}
+                             <button
+                                 type="button"
+@@ -330,7 +330,7 @@
+                                 {{on "click" this.addRow}}
+                             >
+                                 <FaIcon @icon="plus" class="w-3 h-3" />
+-                                <span>Add row</span>
++                                <span>{{t "template-builder.properties.add-row"}}</span>
+                             </button>
+                         </div>
+                     {{/if}}
+@@ -340,25 +340,25 @@
+ 
+             {{! Table Style }}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Table Style"
++                @title={{t "template-builder.properties.table-style"}}
+                 @icon="palette"
+                 @isOpen={{this.isSectionOpen "table-style"}}
+                 @onToggle={{fn this.toggleSection "table-style"}}
+             >
+                 <div class="grid grid-cols-2 gap-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Header BG">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.header-bg"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.header_background}} {{on "input" (fn this.updateProp "header_background")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Header Text">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.header-text"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.header_color}} {{on "input" (fn this.updateProp "header_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Border Color">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.border-color"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.border_color}} {{on "input" (fn this.updateProp "border_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Cell Padding">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.cell-padding"}}>
+                         <input type="number" class="tb-input" value={{this.element.cell_padding}} min="0" {{on "change" (fn this.updateNumericProp "cell_padding")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Row Alt Color" @span="2">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.row-alt-color"}} @span="2">
+                         <input type="color" class="tb-color-input" value={{this.element.row_alt_color}} {{on "input" (fn this.updateProp "row_alt_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+                 </div>
+@@ -368,22 +368,22 @@
+         {{! QR CODE / BARCODE SECTION }}
+         {{#if (or this.isQrCode this.isBarcode)}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title={{if this.isQrCode "QR Code" "Barcode"}}
++                @title={{if this.isQrCode (t "template-builder.element.qr-code") (t "template-builder.element.barcode")}}
+                 @icon={{if this.isQrCode "qrcode" "barcode"}}
+                 @isOpen={{this.isSectionOpen "code"}}
+                 @onToggle={{fn this.toggleSection "code"}}
+             >
+                 <div class="space-y-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Value">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.value"}}>
+                         <div class="flex space-x-1">
+                             <input type="text" class="tb-input flex-1" placeholder="{order.tracking_number}" value={{this.element.value}} {{on "change" (fn this.updateProp "value")}} />
+-                            <button type="button" class="tb-icon-btn" title="Insert variable" {{on "click" (fn this.openVariablePicker "value")}}>
++                            <button type="button" class="tb-icon-btn" title={{t "template-builder.properties.insert-variable"}} {{on "click" (fn this.openVariablePicker "value")}}>
+                                 <FaIcon @icon="code" class="w-3 h-3" />
+                             </button>
+                         </div>
+                     </TemplateBuilder::PropertiesPanel::Field>
+                     {{#if this.isBarcode}}
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Format">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.format"}}>
+                             <select class="tb-input" {{on "change" (fn this.updateProp "barcode_format")}}>
+                                 <option value="CODE128" selected={{eq this.element.barcode_format "CODE128"}}>CODE128</option>
+                                 <option value="CODE39"  selected={{eq this.element.barcode_format "CODE39"}}>CODE39</option>
+@@ -400,19 +400,19 @@
+         {{! LINE SECTION }}
+         {{#if this.isLine}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Line"
++                @title={{t "template-builder.element.line"}}
+                 @icon="minus"
+                 @isOpen={{this.isSectionOpen "line"}}
+                 @onToggle={{fn this.toggleSection "line"}}
+             >
+                 <div class="grid grid-cols-2 gap-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Color">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.color"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.color}} {{on "input" (fn this.updateProp "color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Width (px)">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.width-px"}}>
+                         <input type="number" class="tb-input" value={{this.element.line_width}} min="1" {{on "change" (fn this.updateNumericProp "line_width")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Style" @span="2">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.style"}} @span="2">
+                         <select class="tb-input" {{on "change" (fn this.updateProp "line_style")}}>
+                             {{#each this.lineStyleOptions as |opt|}}
+                                 <option value={{opt.value}} selected={{eq this.element.line_style opt.value}}>{{opt.label}}</option>
+@@ -426,23 +426,23 @@
+         {{! SHAPE SECTION }}
+         {{#if this.isShape}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Shape"
++                @title={{t "template-builder.element.shape"}}
+                 @icon="shapes"
+                 @isOpen={{this.isSectionOpen "shape"}}
+                 @onToggle={{fn this.toggleSection "shape"}}
+             >
+                 <div class="grid grid-cols-2 gap-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Shape" @span="2">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.element.shape"}} @span="2">
+                         <select class="tb-input" {{on "change" (fn this.updateProp "shape")}}>
+                             {{#each this.shapeOptions as |opt|}}
+                                 <option value={{opt.value}} selected={{eq this.element.shape opt.value}}>{{opt.label}}</option>
+                             {{/each}}
+                         </select>
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Fill Color">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.fill-color"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.background_color}} {{on "input" (fn this.updateProp "background_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Border Radius">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.border-radius"}}>
+                         <input type="number" class="tb-input" value={{this.element.border_radius}} min="0" {{on "change" (fn this.updateNumericProp "border_radius")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+                 </div>
+@@ -452,13 +452,13 @@
+         {{! TEXT STYLE SECTION (text elements only) }}
+         {{#if this.isText}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Text"
++                @title={{t "template-builder.element.text"}}
+                 @icon="font"
+                 @isOpen={{this.isSectionOpen "text"}}
+                 @onToggle={{fn this.toggleSection "text"}}
+             >
+                 <div class="space-y-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Font Family">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.font-family"}}>
+                         <select class="tb-input" {{on "change" (fn this.updateProp "font_family")}}>
+                             {{#each this.fontFamilyOptions as |opt|}}
+                                 <option value={{opt.value}} selected={{eq this.element.font_family opt.value}}>{{opt.label}}</option>
+@@ -466,27 +466,27 @@
+                         </select>
+                     </TemplateBuilder::PropertiesPanel::Field>
+                     <div class="grid grid-cols-2 gap-2">
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Size (px)">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.size-px"}}>
+                             <input type="number" class="tb-input" value={{this.element.font_size}} min="6" max="200" {{on "change" (fn this.updateNumericProp "font_size")}} />
+                         </TemplateBuilder::PropertiesPanel::Field>
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Weight">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.weight"}}>
+                             <select class="tb-input" {{on "change" (fn this.updateProp "font_weight")}}>
+                                 {{#each this.fontWeightOptions as |opt|}}
+                                     <option value={{opt.value}} selected={{eq this.element.font_weight opt.value}}>{{opt.label}}</option>
+                                 {{/each}}
+                             </select>
+                         </TemplateBuilder::PropertiesPanel::Field>
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Line Height">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.line-height"}}>
+                             <input type="number" class="tb-input" value={{this.element.line_height}} min="0.5" max="5" step="0.1" {{on "change" (fn this.updateNumericProp "line_height")}} />
+                         </TemplateBuilder::PropertiesPanel::Field>
+-                        <TemplateBuilder::PropertiesPanel::Field @label="Letter Spacing">
++                        <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.letter-spacing"}}>
+                             <input type="number" class="tb-input" value={{this.element.letter_spacing}} step="0.5" {{on "change" (fn this.updateNumericProp "letter_spacing")}} />
+                         </TemplateBuilder::PropertiesPanel::Field>
+                     </div>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Color">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.color"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.color}} {{on "input" (fn this.updateProp "color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Alignment">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.alignment"}}>
+                         <div class="flex space-x-1">
+                             {{#each this.textAlignOptions as |opt|}}
+                                 <button
+@@ -499,10 +499,10 @@
+                             {{/each}}
+                         </div>
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Background">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.background"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.background_color}} {{on "input" (fn this.updateProp "background_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Padding (px)">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.padding-px"}}>
+                         <input type="number" class="tb-input" value={{this.element.padding}} min="0" {{on "change" (fn this.updateNumericProp "padding")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+                 </div>
+@@ -512,26 +512,26 @@
+         {{! BORDER SECTION (non-line elements) }}
+         {{#if this.hasBorderOptions}}
+             <TemplateBuilder::PropertiesPanel::Section
+-                @title="Border"
++                @title={{t "template-builder.properties.border"}}
+                 @icon="border-all"
+                 @isOpen={{this.isSectionOpen "border"}}
+                 @onToggle={{fn this.toggleSection "border"}}
+             >
+                 <div class="grid grid-cols-2 gap-2">
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Width (px)">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.width-px"}}>
+                         <input type="number" class="tb-input" value={{this.element.border_width}} min="0" {{on "change" (fn this.updateNumericProp "border_width")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Color">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.color"}}>
+                         <input type="color" class="tb-color-input" value={{this.element.border_color}} {{on "input" (fn this.updateProp "border_color")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Style">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.style"}}>
+                         <select class="tb-input" {{on "change" (fn this.updateProp "border_style")}}>
+                             {{#each this.lineStyleOptions as |opt|}}
+                                 <option value={{opt.value}} selected={{eq this.element.border_style opt.value}}>{{opt.label}}</option>
+                             {{/each}}
+                         </select>
+                     </TemplateBuilder::PropertiesPanel::Field>
+-                    <TemplateBuilder::PropertiesPanel::Field @label="Radius (px)">
++                    <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.radius-px"}}>
+                         <input type="number" class="tb-input" value={{this.element.border_radius}} min="0" {{on "change" (fn this.updateNumericProp "border_radius")}} />
+                     </TemplateBuilder::PropertiesPanel::Field>
+                 </div>
+@@ -544,31 +544,31 @@
+         {{! ============================================================ }}
+ 
+         <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+-            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Canvas Settings</span>
++            <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{t "template-builder.properties.canvas-settings"}}</span>
+         </div>
+ 
+         <div class="p-3 space-y-3">
+-            <TemplateBuilder::PropertiesPanel::Field @label="Template Name">
++            <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.template-name"}}>
+                 <input type="text" class="tb-input" value={{@template.name}} {{on "change" (fn this.updateTemplateProp "name")}} />
+             </TemplateBuilder::PropertiesPanel::Field>
+-            <TemplateBuilder::PropertiesPanel::Field @label="Paper Size">
++            <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.paper-size"}}>
+                 <select class="tb-input" {{on "change" (fn this.updateTemplateProp "paper_size")}}>
+                     {{#each this.paperSizeOptions as |opt|}}
+                         <option value={{opt.value}} selected={{eq @template.paper_size opt.value}}>{{opt.label}}</option>
+                     {{/each}}
+                 </select>
+             </TemplateBuilder::PropertiesPanel::Field>
+-            <TemplateBuilder::PropertiesPanel::Field @label="Orientation">
++            <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.orientation"}}>
+                 <select class="tb-input" {{on "change" (fn this.updateTemplateProp "orientation")}}>
+                     {{#each this.orientationOptions as |opt|}}
+                         <option value={{opt.value}} selected={{eq @template.orientation opt.value}}>{{opt.label}}</option>
+                     {{/each}}
+                 </select>
+             </TemplateBuilder::PropertiesPanel::Field>
+-            <TemplateBuilder::PropertiesPanel::Field @label="Background Color">
++            <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.background-color"}}>
+                 <input type="color" class="tb-color-input" value={{@template.background_color}} {{on "input" (fn this.updateTemplateProp "background_color")}} />
+             </TemplateBuilder::PropertiesPanel::Field>
+-            <TemplateBuilder::PropertiesPanel::Field @label="Description">
++            <TemplateBuilder::PropertiesPanel::Field @label={{t "template-builder.properties.description"}}>
+                 <textarea class="tb-input w-full min-h-16 resize-none" {{on "input" (fn this.updateTemplateProp "description" value="target.value")}}>{{@template.description}}</textarea>
+             </TemplateBuilder::PropertiesPanel::Field>
+         </div>
+diff --git a/addon/components/template-builder/properties-panel.js b/addon/components/template-builder/properties-panel.js
+index e82bcaa..021b741 100644
+--- a/addon/components/template-builder/properties-panel.js
++++ b/addon/components/template-builder/properties-panel.js
+@@ -20,6 +20,7 @@ import { inject as service } from '@ember/service';
+ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+     @service fetch;
+     @service notifications;
++    @service intl;
+ 
+     @tracked openSections = new Set(['position', 'size', 'style', 'text', 'content']);
+ 
+@@ -41,6 +42,15 @@ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+         return this.element?.type ?? null;
+     }
+ 
++    get elementTypeLabel() {
++        const type = this.elementType;
++        if (!type) {
++            return '';
++        }
++        const key = `template-builder.element.${type.replace(/_/g, '-')}`;
++        return this.intl.exists(key) ? this.intl.t(key) : type;
++    }
++
+     get isText() {
+         return this.elementType === 'text';
+     }
+@@ -124,13 +134,13 @@ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+ 
+     get fontWeightOptions() {
+         return [
+-            { value: '300', label: 'Light' },
+-            { value: '400', label: 'Regular' },
+-            { value: '500', label: 'Medium' },
+-            { value: '600', label: 'Semi Bold' },
+-            { value: '700', label: 'Bold' },
+-            { value: '800', label: 'Extra Bold' },
+-            { value: '900', label: 'Black' },
++            { value: '300', label: this.intl.t('template-builder.options.font-weight.light') },
++            { value: '400', label: this.intl.t('template-builder.options.font-weight.regular') },
++            { value: '500', label: this.intl.t('template-builder.options.font-weight.medium') },
++            { value: '600', label: this.intl.t('template-builder.options.font-weight.semi-bold') },
++            { value: '700', label: this.intl.t('template-builder.options.font-weight.bold') },
++            { value: '800', label: this.intl.t('template-builder.options.font-weight.extra-bold') },
++            { value: '900', label: this.intl.t('template-builder.options.font-weight.black') },
+         ];
+     }
+ 
+@@ -158,18 +168,18 @@ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+ 
+     get lineStyleOptions() {
+         return [
+-            { value: 'solid', label: 'Solid' },
+-            { value: 'dashed', label: 'Dashed' },
+-            { value: 'dotted', label: 'Dotted' },
++            { value: 'solid', label: this.intl.t('template-builder.options.line-style.solid') },
++            { value: 'dashed', label: this.intl.t('template-builder.options.line-style.dashed') },
++            { value: 'dotted', label: this.intl.t('template-builder.options.line-style.dotted') },
+         ];
+     }
+ 
+     get objectFitOptions() {
+         return [
+-            { value: 'cover', label: 'Cover' },
+-            { value: 'contain', label: 'Contain' },
+-            { value: 'fill', label: 'Fill' },
+-            { value: 'none', label: 'None' },
++            { value: 'cover', label: this.intl.t('template-builder.options.object-fit.cover') },
++            { value: 'contain', label: this.intl.t('template-builder.options.object-fit.contain') },
++            { value: 'fill', label: this.intl.t('template-builder.options.object-fit.fill') },
++            { value: 'none', label: this.intl.t('template-builder.options.object-fit.none') },
+         ];
+     }
+ 
+@@ -388,8 +398,8 @@ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+ 
+     get shapeOptions() {
+         return [
+-            { value: 'rectangle', label: 'Rectangle' },
+-            { value: 'circle', label: 'Circle' },
++            { value: 'rectangle', label: this.intl.t('template-builder.options.shape.rectangle') },
++            { value: 'circle', label: this.intl.t('template-builder.options.shape.circle') },
+         ];
+     }
+ 
+@@ -400,14 +410,14 @@ export default class TemplateBuilderPropertiesPanelComponent extends Component {
+             { value: 'A5', label: 'A5 (148 × 210 mm)' },
+             { value: 'Letter', label: 'Letter (216 × 279 mm)' },
+             { value: 'Legal', label: 'Legal (216 × 356 mm)' },
+-            { value: 'custom', label: 'Custom' },
++            { value: 'custom', label: this.intl.t('template-builder.options.paper-size.custom') },
+         ];
+     }
+ 
+     get orientationOptions() {
+         return [
+-            { value: 'portrait', label: 'Portrait' },
+-            { value: 'landscape', label: 'Landscape' },
++            { value: 'portrait', label: this.intl.t('template-builder.options.orientation.portrait') },
++            { value: 'landscape', label: this.intl.t('template-builder.options.orientation.landscape') },
+         ];
+     }
+ }
+diff --git a/addon/components/template-builder/queries-panel.hbs b/addon/components/template-builder/queries-panel.hbs
+index 1c5fb14..78e80f2 100644
+--- a/addon/components/template-builder/queries-panel.hbs
++++ b/addon/components/template-builder/queries-panel.hbs
+@@ -3,15 +3,15 @@
+ 
+     {{! Header }}
+     <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+-        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Queries</span>
++        <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "template-builder.queries.title"}}</span>
+         <button
+             type="button"
+             class="flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+-            title="Add query"
++            title={{t "template-builder.queries.add-query"}}
+             {{on "click" this.openAddForm}}
+         >
+             <FaIcon @icon="plus" class="w-3 h-3" />
+-            <span>Add</span>
++            <span>{{t "template-builder.queries.add"}}</span>
+         </button>
+     </div>
+ 
+@@ -36,7 +36,7 @@
+                             {{/if}}
+                             {{! Show "unsaved" badge for queries created before the template was saved }}
+                             {{#if (string-starts-with query.uuid "_new_")}}
+-                                <span class="flex-shrink-0 px-1 py-0 rounded text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">unsaved</span>
++                                <span class="flex-shrink-0 px-1 py-0 rounded text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">{{t "template-builder.queries.unsaved"}}</span>
+                             {{/if}}
+                         </div>
+                     </div>
+@@ -46,7 +46,7 @@
+                         <button
+                             type="button"
+                             class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+-                            title="Edit query"
++                            title={{t "template-builder.queries.edit-query"}}
+                             {{on "click" (fn this.openEditForm query)}}
+                         >
+                             <FaIcon @icon="pen" class="w-3 h-3" />
+@@ -54,7 +54,7 @@
+                         <button
+                             type="button"
+                             class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+-                            title="Delete query"
++                            title={{t "template-builder.queries.delete-query"}}
+                             {{on "click" (fn this.deleteQuery query)}}
+                         >
+                             <FaIcon @icon="trash" class="w-3 h-3" />
+@@ -66,8 +66,8 @@
+         {{else}}
+             <div class="flex flex-col items-center justify-center py-8 px-4 text-center">
+                 <FaIcon @icon="database" class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-2" />
+-                <p class="text-xs text-gray-400 dark:text-gray-500">No queries yet.</p>
+-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Queries load data from Fleetbase models at render time and are saved with the template.</p>
++                <p class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.queries.no-queries"}}</p>
++                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{t "template-builder.queries.no-queries-hint"}}</p>
+             </div>
+         {{/if}}
+ 
+diff --git a/addon/components/template-builder/query-form.hbs b/addon/components/template-builder/query-form.hbs
+index 1cbaee7..c5e1c82 100644
+--- a/addon/components/template-builder/query-form.hbs
++++ b/addon/components/template-builder/query-form.hbs
+@@ -15,7 +15,7 @@
+                 <div class="flex items-center space-x-2">
+                     <FaIcon @icon="database" class="w-4 h-4 text-indigo-500" />
+                     <h3 class="text-sm font-semibold text-gray-900 dark:text-white">
+-                        {{if this.isEditing "Edit Query" "New Query"}}
++                        {{if this.isEditing (t "template-builder.query-form.edit-query") (t "template-builder.query-form.new-query")}}
+                     </h3>
+                 </div>
+                 <button type="button" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400" {{on "click" this.cancel}}>
+@@ -28,23 +28,23 @@
+ 
+                 {{! ── Basic Info ── }}
+                 <div>
+-                    <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Basic Info</h4>
++                    <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{t "template-builder.query-form.basic-info"}}</h4>
+ 
+                     <div class="grid grid-cols-2 gap-3">
+                         <div>
+                             <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+-                                Label <span class="text-red-400">*</span>
++                                {{t "template-builder.query-form.label"}} <span class="text-red-400">*</span>
+                             </label>
+                             <input
+                                 type="text"
+                                 class="tb-input w-full"
+-                                placeholder="e.g. Recent Orders"
++                                placeholder={{t "template-builder.query-form.label-placeholder"}}
+                                 value={{this.label}}
+                                 {{on "input" this.updateLabel}}
+                             />
+                         </div>
+                         <div>
+-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Variable Name</label>
++                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{t "template-builder.query-form.variable-name"}}</label>
+                             <div class="flex items-center space-x-1">
+                                 <span class="text-xs text-gray-400 font-mono">{</span>
+                                 <input
+@@ -56,16 +56,16 @@
+                                 />
+                                 <span class="text-xs text-gray-400 font-mono">}</span>
+                             </div>
+-                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Auto-derived from label if left blank.</p>
++                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{{t "template-builder.query-form.variable-name-hint"}}</p>
+                         </div>
+                     </div>
+ 
+                     <div>
+-                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
++                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{t "template-builder.query-form.description"}}</label>
+                         <input
+                             type="text"
+                             class="tb-input w-full"
+-                            placeholder="Optional description"
++                            placeholder={{t "template-builder.query-form.description-placeholder"}}
+                             value={{this.description}}
+                             {{on "input" this.updateDescription}}
+                         />
+@@ -74,8 +74,8 @@
+ 
+                 {{! ── Resource Type ── }}
+                 <div>
+-                    <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Resource Type</h4>
+-                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">Select the Fleetbase model this query runs against.</p>
++                    <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">{{t "template-builder.query-form.resource-type"}}</h4>
++                    <p class="text-xs text-gray-400 dark:text-gray-500 mb-2">{{t "template-builder.query-form.resource-type-hint"}}</p>
+ 
+                     <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2">
+                         {{#each this.resourceTypes as |rt|}}
+@@ -97,14 +97,14 @@
+                 {{! ── Filter Conditions ── }}
+                 <div>
+                     <div class="flex items-center justify-between mb-2">
+-                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Filter Conditions</h4>
++                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "template-builder.query-form.filter-conditions"}}</h4>
+                         <button
+                             type="button"
+                             class="flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700"
+                             {{on "click" this.addCondition}}
+                         >
+                             <FaIcon @icon="plus" class="w-3 h-3" />
+-                            <span>Add condition</span>
++                            <span>{{t "template-builder.query-form.add-condition"}}</span>
+                         </button>
+                     </div>
+ 
+@@ -140,7 +140,7 @@
+                                     <button
+                                         type="button"
+                                         class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 flex-shrink-0"
+-                                        title="Remove condition"
++                                        title={{t "template-builder.query-form.remove-condition"}}
+                                         {{on "click" (fn this.removeCondition condIndex)}}
+                                     >
+                                         <FaIcon @icon="xmark" class="w-3 h-3" />
+@@ -149,21 +149,21 @@
+                             {{/each}}
+                         </div>
+                     {{else}}
+-                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">No conditions — all records will be returned.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">{{t "template-builder.query-form.no-conditions"}}</p>
+                     {{/if}}
+                 </div>
+ 
+                 {{! ── Sort ── }}
+                 <div>
+                     <div class="flex items-center justify-between mb-2">
+-                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sort</h4>
++                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{t "template-builder.query-form.sort"}}</h4>
+                         <button
+                             type="button"
+                             class="flex items-center space-x-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700"
+                             {{on "click" this.addSort}}
+                         >
+                             <FaIcon @icon="plus" class="w-3 h-3" />
+-                            <span>Add sort</span>
++                            <span>{{t "template-builder.query-form.add-sort"}}</span>
+                         </button>
+                     </div>
+ 
+@@ -182,13 +182,13 @@
+                                         class="tb-input flex-shrink-0 tb-select-direction"
+                                         {{on "change" (fn this.updateSortField sortIndex "direction")}}
+                                     >
+-                                        <option value="asc"  selected={{eq sortItem.direction "asc"}}>Ascending</option>
+-                                        <option value="desc" selected={{eq sortItem.direction "desc"}}>Descending</option>
++                                        <option value="asc"  selected={{eq sortItem.direction "asc"}}>{{t "template-builder.query-form.ascending"}}</option>
++                                        <option value="desc" selected={{eq sortItem.direction "desc"}}>{{t "template-builder.query-form.descending"}}</option>
+                                     </select>
+                                     <button
+                                         type="button"
+                                         class="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 flex-shrink-0"
+-                                        title="Remove sort"
++                                        title={{t "template-builder.query-form.remove-sort"}}
+                                         {{on "click" (fn this.removeSort sortIndex)}}
+                                     >
+                                         <FaIcon @icon="xmark" class="w-3 h-3" />
+@@ -197,26 +197,26 @@
+                             {{/each}}
+                         </div>
+                     {{else}}
+-                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">No sort — default model order will be used.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-2 border border-dashed border-gray-200 dark:border-gray-700 rounded-lg">{{t "template-builder.query-form.no-sort"}}</p>
+                     {{/if}}
+                 </div>
+ 
+                 {{! ── Limit & Eager-load ── }}
+                 <div class="grid grid-cols-2 gap-4">
+                     <div>
+-                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Limit</h4>
++                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{t "template-builder.query-form.limit"}}</h4>
+                         <input
+                             type="number"
+                             class="tb-input w-full"
+-                            placeholder="No limit"
++                            placeholder={{t "template-builder.query-form.no-limit"}}
+                             min="1"
+                             value={{this.limit}}
+                             {{on "input" this.updateLimit}}
+                         />
+-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Max number of rows to return.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{t "template-builder.query-form.limit-hint"}}</p>
+                     </div>
+                     <div>
+-                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Eager Load (with)</h4>
++                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">{{t "template-builder.query-form.eager-load"}}</h4>
+                         <input
+                             type="text"
+                             class="tb-input w-full"
+@@ -224,7 +224,7 @@
+                             value={{this.withString}}
+                             {{on "input" this.updateWith}}
+                         />
+-                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Comma-separated relationship names to eager-load.</p>
++                        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{t "template-builder.query-form.eager-load-hint"}}</p>
+                     </div>
+                 </div>
+ 
+@@ -243,11 +243,11 @@
+                         class="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                         {{on "click" this.cancel}}
+                     >
+-                        Cancel
++                        {{t "template-builder.query-form.cancel"}}
+                     </button>
+                     <Button
+                         @type="primary"
+-                        @text={{if this.isEditing "Save Changes" "Create Query"}}
++                        @text={{if this.isEditing (t "template-builder.query-form.save-changes") (t "template-builder.query-form.create-query")}}
+                         @icon="floppy-disk"
+                         @size="xs"
+                         @onClick={{this.save}}
+diff --git a/addon/components/template-builder/query-form.js b/addon/components/template-builder/query-form.js
+index 1219174..3e471c2 100644
+--- a/addon/components/template-builder/query-form.js
++++ b/addon/components/template-builder/query-form.js
+@@ -24,6 +24,7 @@ import { inject as service } from '@ember/service';
+  */
+ export default class TemplateBuilderQueryFormComponent extends Component {
+     @service('template-builder') templateBuilderService;
++    @service intl;
+ 
+     // ── Scalar form fields ──────────────────────────────────────────────────
+     @tracked label = '';
+@@ -103,15 +104,15 @@ export default class TemplateBuilderQueryFormComponent extends Component {
+             return serviceTypes;
+         }
+         return [
+-            { value: 'Fleetbase\\FleetOps\\Models\\Order', label: 'Order', icon: 'box' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Driver', label: 'Driver', icon: 'id-card' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Place', label: 'Place', icon: 'location-dot' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Vendor', label: 'Vendor', icon: 'building' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Contact', label: 'Contact', icon: 'address-book' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Issue', label: 'Issue', icon: 'triangle-exclamation' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\Vehicle', label: 'Vehicle', icon: 'truck' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\FuelReport', label: 'Fuel Report', icon: 'gas-pump' },
+-            { value: 'Fleetbase\\FleetOps\\Models\\PurchaseRate', label: 'Purchase Rate', icon: 'receipt' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Order', label: this.intl.t('template-builder.resource.order'), icon: 'box' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Driver', label: this.intl.t('template-builder.resource.driver'), icon: 'id-card' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Place', label: this.intl.t('template-builder.resource.place'), icon: 'location-dot' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Vendor', label: this.intl.t('template-builder.resource.vendor'), icon: 'building' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Contact', label: this.intl.t('template-builder.resource.contact'), icon: 'address-book' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Issue', label: this.intl.t('template-builder.resource.issue'), icon: 'triangle-exclamation' },
++            { value: 'Fleetbase\\FleetOps\\Models\\Vehicle', label: this.intl.t('template-builder.resource.vehicle'), icon: 'truck' },
++            { value: 'Fleetbase\\FleetOps\\Models\\FuelReport', label: this.intl.t('template-builder.resource.fuel-report'), icon: 'gas-pump' },
++            { value: 'Fleetbase\\FleetOps\\Models\\PurchaseRate', label: this.intl.t('template-builder.resource.purchase-rate'), icon: 'receipt' },
+         ];
+     }
+ 
+@@ -263,11 +264,11 @@ export default class TemplateBuilderQueryFormComponent extends Component {
+         this.errorMessage = null;
+ 
+         if (!this.label?.trim()) {
+-            this.errorMessage = 'Label is required.';
++            this.errorMessage = this.intl.t('template-builder.query-form.label-required');
+             return;
+         }
+         if (!this.modelType) {
+-            this.errorMessage = 'Please select a resource type.';
++            this.errorMessage = this.intl.t('template-builder.query-form.resource-type-required');
+             return;
+         }
+ 
+diff --git a/addon/components/template-builder/toolbar.hbs b/addon/components/template-builder/toolbar.hbs
+index a52c1f4..a02ab68 100644
+--- a/addon/components/template-builder/toolbar.hbs
++++ b/addon/components/template-builder/toolbar.hbs
+@@ -8,7 +8,7 @@
+             <button
+                 type="button"
+                 class="tb-toolbar-btn flex items-center space-x-1 px-2 py-1.5 rounded text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors mr-1"
+-                title={{or @closeLabel "Close"}}
++                title={{or @closeLabel (t "template-builder.toolbar.close")}}
+                 {{on "click" this.close}}
+             >
+                 <FaIcon @icon={{or @closeIcon "chevron-left"}} class="w-3.5 h-3.5" />
+@@ -23,7 +23,7 @@
+             <button
+                 type="button"
+                 class="tb-toolbar-btn flex items-center space-x-1 px-2 py-1.5 rounded text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+-                title="Add {{et.label}}"
++                title="{{t 'template-builder.toolbar.add'}} {{et.label}}"
+                 {{on "click" (fn this.addElement et.type)}}
+             >
+                 <FaIcon @icon={{et.icon}} class="w-3.5 h-3.5" />
+@@ -37,7 +37,7 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn p-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+-            title="Zoom out"
++            title={{t "template-builder.toolbar.zoom-out"}}
+             {{on "click" this.zoomOut}}
+         >
+             <FaIcon @icon="magnifying-glass-minus" class="w-3.5 h-3.5" />
+@@ -45,7 +45,7 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn px-2 py-1 rounded text-xs font-mono text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors min-w-12 text-center"
+-            title="Reset zoom"
++            title={{t "template-builder.toolbar.zoom-reset"}}
+             {{on "click" this.zoomReset}}
+         >
+             {{this.zoomPercent}}
+@@ -53,7 +53,7 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn p-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+-            title="Zoom in"
++            title={{t "template-builder.toolbar.zoom-in"}}
+             {{on "click" this.zoomIn}}
+         >
+             <FaIcon @icon="magnifying-glass-plus" class="w-3.5 h-3.5" />
+@@ -70,7 +70,7 @@
+                 {{if @selectedElement
+                     'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                     'text-gray-400 dark:text-gray-600'}}"
+-            title="Rotate left 90°"
++            title={{t "template-builder.toolbar.rotate-left"}}
+             disabled={{not @selectedElement}}
+             {{on "click" this.rotateLeft}}
+         >
+@@ -82,7 +82,7 @@
+                 {{if @selectedElement
+                     'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                     'text-gray-400 dark:text-gray-600'}}"
+-            title="Rotate right 90°"
++            title={{t "template-builder.toolbar.rotate-right"}}
+             disabled={{not @selectedElement}}
+             {{on "click" this.rotateRight}}
+         >
+@@ -94,7 +94,7 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn p-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+-            title="Undo"
++            title={{t "template-builder.toolbar.undo"}}
+             disabled={{not @canUndo}}
+             {{on "click" this.undo}}
+         >
+@@ -103,7 +103,7 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn p-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+-            title="Redo"
++            title={{t "template-builder.toolbar.redo"}}
+             disabled={{not @canRedo}}
+             {{on "click" this.redo}}
+         >
+@@ -115,17 +115,17 @@
+         <button
+             type="button"
+             class="tb-toolbar-btn flex items-center space-x-1.5 px-3 py-1.5 rounded text-xs font-medium text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+-            title="Preview template"
++            title={{t "template-builder.toolbar.preview-template"}}
+             {{on "click" this.preview}}
+         >
+             <FaIcon @icon="eye" class="w-3.5 h-3.5" />
+-            <span>Preview</span>
++            <span>{{t "template-builder.toolbar.preview"}}</span>
+         </button>
+ 
+         <Button
+             @type="primary"
+             @icon="floppy-disk"
+-            @text="Save"
++            @text={{t "template-builder.toolbar.save"}}
+             @size="xs"
+             @isLoading={{@isSaving}}
+             @onClick={{this.save}}
+diff --git a/addon/components/template-builder/toolbar.js b/addon/components/template-builder/toolbar.js
+index 289e0f0..e68243f 100644
+--- a/addon/components/template-builder/toolbar.js
++++ b/addon/components/template-builder/toolbar.js
+@@ -1,5 +1,6 @@
+ import Component from '@glimmer/component';
+ import { action } from '@ember/object';
++import { inject as service } from '@ember/service';
+ 
+ /**
+  * TemplateBuilderToolbarComponent
+@@ -29,15 +30,19 @@ import { action } from '@ember/object';
+  * @argument {String}   [closeLabel]     - Text label shown beside the close icon (default: none)
+  */
+ export default class TemplateBuilderToolbarComponent extends Component {
+-    elementTypes = [
+-        { type: 'text', icon: 'font', label: 'Text' },
+-        { type: 'image', icon: 'image', label: 'Image' },
+-        { type: 'table', icon: 'table', label: 'Table' },
+-        { type: 'line', icon: 'minus', label: 'Line' },
+-        { type: 'shape', icon: 'square', label: 'Shape' },
+-        { type: 'qr_code', icon: 'qrcode', label: 'QR Code' },
+-        { type: 'barcode', icon: 'barcode', label: 'Barcode' },
+-    ];
++    @service intl;
++
++    get elementTypes() {
++        return [
++            { type: 'text', icon: 'font', label: this.intl.t('template-builder.element.text') },
++            { type: 'image', icon: 'image', label: this.intl.t('template-builder.element.image') },
++            { type: 'table', icon: 'table', label: this.intl.t('template-builder.element.table') },
++            { type: 'line', icon: 'minus', label: this.intl.t('template-builder.element.line') },
++            { type: 'shape', icon: 'square', label: this.intl.t('template-builder.element.shape') },
++            { type: 'qr_code', icon: 'qrcode', label: this.intl.t('template-builder.element.qr-code') },
++            { type: 'barcode', icon: 'barcode', label: this.intl.t('template-builder.element.barcode') },
++        ];
++    }
+ 
+     get zoomPercent() {
+         return `${Math.round((this.args.zoom ?? 1) * 100)}%`;
+diff --git a/addon/components/template-builder/variable-picker.hbs b/addon/components/template-builder/variable-picker.hbs
+index df9f937..fd63452 100644
+--- a/addon/components/template-builder/variable-picker.hbs
++++ b/addon/components/template-builder/variable-picker.hbs
+@@ -11,7 +11,7 @@
+             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                 <div class="flex items-center space-x-2">
+                     <FaIcon @icon="code" class="w-4 h-4 text-blue-500" />
+-                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Insert Variable or Formula</h3>
++                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">{{t "template-builder.variable-picker.title"}}</h3>
+                 </div>
+                 <button type="button" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-400" {{on "click" this.close}}>
+                     <FaIcon @icon="xmark" class="w-4 h-4" />
+@@ -26,7 +26,7 @@
+                     {{on "click" (fn this.switchTab "variables")}}
+                 >
+                     <FaIcon @icon="brackets-curly" class="w-3 h-3 mr-1.5 inline" />
+-                    Variables
++                    {{t "template-builder.variable-picker.variables"}}
+                 </button>
+                 <button
+                     type="button"
+@@ -34,7 +34,7 @@
+                     {{on "click" (fn this.switchTab "formula")}}
+                 >
+                     <FaIcon @icon="calculator" class="w-3 h-3 mr-1.5 inline" />
+-                    Formula
++                    {{t "template-builder.variable-picker.formula"}}
+                 </button>
+             </div>
+ 
+@@ -47,7 +47,7 @@
+                         <input
+                             type="text"
+                             class="w-full pl-7 pr-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md outline-none focus:border-blue-400 dark:focus:border-blue-500"
+-                            placeholder="Search variables..."
++                            placeholder={{t "template-builder.variable-picker.search-placeholder"}}
+                             value={{this.searchQuery}}
+                             {{on "input" this.updateSearch}}
+                         />
+@@ -65,8 +65,8 @@
+                         >
+                             <div class="flex items-center space-x-2">
+                                 <FaIcon @icon="globe" class="w-3.5 h-3.5 text-purple-500" />
+-                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Global</span>
+-                                <span class="text-xs text-gray-400 dark:text-gray-500">Always available</span>
++                                <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">{{t "template-builder.variable-picker.global"}}</span>
++                                <span class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.variable-picker.always-available"}}</span>
+                             </div>
+                             <FaIcon @icon={{if (this.isExpanded "__global__") "chevron-up" "chevron-down"}} class="w-3 h-3 text-gray-400" />
+                         </button>
+@@ -100,7 +100,7 @@
+                                     <div class="flex items-center space-x-2">
+                                         <FaIcon @icon={{schema.icon}} class="w-3.5 h-3.5 text-blue-500" />
+                                         <span class="text-xs font-semibold text-gray-700 dark:text-gray-300 capitalize">{{schema.label}}</span>
+-                                        <span class="text-xs text-gray-400 dark:text-gray-500">{{schema.variables.length}} variables</span>
++                                        <span class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.variable-picker.variables-count" count=schema.variables.length}}</span>
+                                     </div>
+                                     <FaIcon @icon={{if (this.isExpanded schema.namespace) "chevron-up" "chevron-down"}} class="w-3 h-3 text-gray-400" />
+                                 </button>
+@@ -125,7 +125,7 @@
+                     {{else}}
+                         <div class="flex flex-col items-center justify-center py-10 text-center">
+                             <FaIcon @icon="magnifying-glass" class="w-6 h-6 text-gray-300 dark:text-gray-600 mb-2" />
+-                            <p class="text-xs text-gray-400 dark:text-gray-500">No variables match "{{this.searchQuery}}"</p>
++                            <p class="text-xs text-gray-400 dark:text-gray-500">{{t "template-builder.variable-picker.no-match" query=this.searchQuery}}</p>
+                         </div>
+                     {{/if}}
+                 </div>
+@@ -136,17 +136,17 @@
+                 <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                     {{! Syntax guide }}
+                     <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+-                        <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">Formula Syntax</p>
++                        <p class="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1">{{t "template-builder.variable-picker.formula-syntax"}}</p>
+                         <p class="text-xs text-blue-600 dark:text-blue-400 font-mono">[{ expression }]</p>
+-                        <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">Use variables inside the expression:</p>
++                        <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">{{t "template-builder.variable-picker.use-variables-hint"}}</p>
+                         <p class="text-xs text-blue-600 dark:text-blue-400 font-mono mt-0.5">[{ {invoice.subtotal} * 1.1 }]</p>
+                         <p class="text-xs text-blue-600 dark:text-blue-400 font-mono">[{ {order.quantity} * {order.unit_price} }]</p>
+-                        <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">Supported: + − × ÷ ( ) round() abs() ceil() floor()</p>
++                        <p class="text-xs text-blue-500 dark:text-blue-400 mt-1">{{t "template-builder.variable-picker.supported"}}: + − × ÷ ( ) round() abs() ceil() floor()</p>
+                     </div>
+ 
+                     {{! Formula input }}
+                     <div>
+-                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Expression</label>
++                        <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{t "template-builder.variable-picker.expression"}}</label>
+                         <textarea
+                             class="w-full font-mono text-xs bg-gray-50 dark:bg-gray-800 border {{if this.formulaError 'border-red-400' 'border-gray-200 dark:border-gray-700'}} rounded-lg px-3 py-2 outline-none focus:border-blue-400 dark:focus:border-blue-500 resize-none min-h-20"
+                             placeholder="{invoice.subtotal} * 1.1"
+@@ -160,7 +160,7 @@
+                     {{! Preview }}
+                     {{#if this.formulaPreview}}
+                         <div>
+-                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Preview</label>
++                            <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{t "template-builder.toolbar.preview"}}</label>
+                             <div class="font-mono text-xs bg-gray-900 dark:bg-gray-950 text-green-400 rounded-lg px-3 py-2 break-all">
+                                 {{this.formulaPreview}}
+                             </div>
+@@ -169,7 +169,7 @@
+ 
+                     {{! Quick-insert variables into formula }}
+                     <div>
+-                        <p class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Quick-insert variable</p>
++                        <p class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">{{t "template-builder.variable-picker.quick-insert"}}</p>
+                         <div class="space-y-1 max-h-40 overflow-y-auto">
+                             {{#each this.contextSchemas as |schema|}}
+                                 {{#each schema.variables as |variable|}}
+@@ -193,11 +193,11 @@
+                 {{! Footer }}
+                 <div class="flex items-center justify-end space-x-2 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+                     <button type="button" class="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors" {{on "click" this.close}}>
+-                        Cancel
++                        {{t "template-builder.query-form.cancel"}}
+                     </button>
+                     <Button
+                         @type="primary"
+-                        @text="Insert Formula"
++                        @text={{t "template-builder.variable-picker.insert-formula"}}
+                         @icon="calculator"
+                         @size="xs"
+                         @isDisabled={{not this.formulaExpression}}
+diff --git a/addon/components/template-builder/variable-picker.js b/addon/components/template-builder/variable-picker.js
+index 50282c4..88df03f 100644
+--- a/addon/components/template-builder/variable-picker.js
++++ b/addon/components/template-builder/variable-picker.js
+@@ -1,4 +1,5 @@
+ import Component from '@glimmer/component';
++import { inject as service } from '@ember/service';
+ import { tracked } from '@glimmer/tracking';
+ import { action } from '@ember/object';
+ 
+@@ -20,6 +21,8 @@ import { action } from '@ember/object';
+  * @argument {Function} onClose        - Called when the picker should be dismissed
+  */
+ export default class TemplateBuilderVariablePickerComponent extends Component {
++    @service intl;
++
+     @tracked activeTab = 'variables';
+     @tracked searchQuery = '';
+     @tracked expandedNamespaces = new Set();
+@@ -122,7 +125,7 @@ export default class TemplateBuilderVariablePickerComponent extends Component {
+         const openBraces = (expr.match(/\{/g) ?? []).length;
+         const closeBraces = (expr.match(/\}/g) ?? []).length;
+         if (openBraces !== closeBraces) {
+-            this.formulaError = 'Unbalanced curly braces in formula.';
++            this.formulaError = this.intl.t('template-builder.variable-picker.unbalanced-braces');
+             return;
+         }
+ 
 diff --git a/addon/components/upload-button.hbs b/addon/components/upload-button.hbs
-index d006adfc3c2ce6a8d127195da0e2393a3615dc9e..f1a9cd60a7488db2da40d98ab9e00eefe2d524af 100644
+index d006adf..f1a9cd6 100644
 --- a/addon/components/upload-button.hbs
 +++ b/addon/components/upload-button.hbs
 @@ -20,7 +20,7 @@
@@ -1204,7 +2633,7 @@ index d006adfc3c2ce6a8d127195da0e2393a3615dc9e..f1a9cd60a7488db2da40d98ab9e00eef
          {{/if}}
 diff --git a/addon/helpers/localize-label.js b/addon/helpers/localize-label.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..5a628d072b9ddb230eef130af04e948615972698
+index 0000000..5a628d0
 --- /dev/null
 +++ b/addon/helpers/localize-label.js
 @@ -0,0 +1,31 @@
@@ -1241,7 +2670,7 @@ index 0000000000000000000000000000000000000000..5a628d072b9ddb230eef130af04e9486
 +}
 diff --git a/addon/helpers/translate-value.js b/addon/helpers/translate-value.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..b64d9642273c51b6ade6ecac9aa0028d369140f4
+index 0000000..b64d964
 --- /dev/null
 +++ b/addon/helpers/translate-value.js
 @@ -0,0 +1,37 @@
@@ -1283,7 +2712,7 @@ index 0000000000000000000000000000000000000000..b64d9642273c51b6ade6ecac9aa0028d
 +    }
 +}
 diff --git a/addon/services/sidebar.js b/addon/services/sidebar.js
-index 22807dc2aec0c22af597f830e6bcd78037576db4..0df0d5ea4207d68e3c24cfc605dfe0870ee0c878 100644
+index 22807dc..0df0d5e 100644
 --- a/addon/services/sidebar.js
 +++ b/addon/services/sidebar.js
 @@ -20,6 +20,14 @@ export default class SidebarService extends Service {
@@ -1326,7 +2755,7 @@ index 22807dc2aec0c22af597f830e6bcd78037576db4..0df0d5ea4207d68e3c24cfc605dfe087
          return this.context?.component;
      }
 diff --git a/addon/styles/addon.css b/addon/styles/addon.css
-index dec859727ca1976d2d55450e93795126144b6c34..a07335637e4a7563dd403de5cf00e3178feb66ee 100644
+index dec8597..a073356 100644
 --- a/addon/styles/addon.css
 +++ b/addon/styles/addon.css
 @@ -72,7 +72,7 @@
@@ -1346,7 +2775,7 @@ index dec859727ca1976d2d55450e93795126144b6c34..a07335637e4a7563dd403de5cf00e317
 +    background: #0f0f0f;
  }
 diff --git a/addon/styles/components/chat.css b/addon/styles/components/chat.css
-index 8816c7f7fc6000c99fd89ffc5cff8d2b91072694..fae80325b034eb8ef9e0dd13ecf27281a0b90aa3 100644
+index 8816c7f..fae8032 100644
 --- a/addon/styles/components/chat.css
 +++ b/addon/styles/components/chat.css
 @@ -4,7 +4,7 @@ body.fleetbase-console .chat-tray-panel-container.ember-basic-dropdown-content {
@@ -1983,7 +3412,7 @@ index 8816c7f7fc6000c99fd89ffc5cff8d2b91072694..fae80325b034eb8ef9e0dd13ecf27281
  
  body[data-theme='dark'] .chat-inbox-empty-icon,
 diff --git a/addon/styles/components/dashboard.css b/addon/styles/components/dashboard.css
-index 2d9304d925253e32b4687722eec03a239e74a7ff..1058437218f3c97b3c4bad89412b21e75667c1d8 100644
+index 2d9304d..1058437 100644
 --- a/addon/styles/components/dashboard.css
 +++ b/addon/styles/components/dashboard.css
 @@ -108,8 +108,8 @@
@@ -2097,7 +3526,7 @@ index 2d9304d925253e32b4687722eec03a239e74a7ff..1058437218f3c97b3c4bad89412b21e7
  
  /* Indigo (vehicles deployed) */
 diff --git a/addon/styles/components/date-picker.css b/addon/styles/components/date-picker.css
-index 399ef36dbb373ca412de8927b8dfa2b9898d5240..1a283d01697e9754ecbc0e2fa3127dda7c51a2b9 100644
+index 399ef36..1a283d0 100644
 --- a/addon/styles/components/date-picker.css
 +++ b/addon/styles/components/date-picker.css
 @@ -1,26 +1,26 @@
@@ -2139,7 +3568,7 @@ index 399ef36dbb373ca412de8927b8dfa2b9898d5240..1a283d01697e9754ecbc0e2fa3127dda
      --adp-color-disabled: rgba(107, 114, 128, 1);
      --adp-color-disabled-in-range: #939393;
 diff --git a/addon/styles/components/input.css b/addon/styles/components/input.css
-index e7e5cdf25d1f01dfeb3e0f246ebc2c1cc8422406..ce6030dc24cbaa53bc70f34b7e9609945d895bc1 100644
+index e7e5cdf..ce6030d 100644
 --- a/addon/styles/components/input.css
 +++ b/addon/styles/components/input.css
 @@ -533,12 +533,12 @@ body[data-theme='dark'] .iti__selected-dial-code {
@@ -2159,7 +3588,7 @@ index e7e5cdf25d1f01dfeb3e0f246ebc2c1cc8422406..ce6030dc24cbaa53bc70f34b7e960994
  
  .ui-money-input .ember-basic-dropdown > .ember-basic-dropdown-trigger {
 diff --git a/addon/styles/components/kanban.css b/addon/styles/components/kanban.css
-index 77a1536d08378919b5616c0ace79797c590b8d76..6e53adf4ea80fe335576a4028a59850729a993c7 100644
+index 77a1536..6e53adf 100644
 --- a/addon/styles/components/kanban.css
 +++ b/addon/styles/components/kanban.css
 @@ -91,15 +91,15 @@
@@ -2182,7 +3611,7 @@ index 77a1536d08378919b5616c0ace79797c590b8d76..6e53adf4ea80fe335576a4028a598507
  
  .kanban-board .kanban-card-content {
 diff --git a/addon/styles/components/modal.css b/addon/styles/components/modal.css
-index 817f5e8edb6240ae1dcd2f3f16488b231bad64e9..75db28430cdaa0f12e0a86b77cac63e62b03fe62 100644
+index 817f5e8..75db284 100644
 --- a/addon/styles/components/modal.css
 +++ b/addon/styles/components/modal.css
 @@ -28,7 +28,7 @@
@@ -2204,7 +3633,7 @@ index 817f5e8edb6240ae1dcd2f3f16488b231bad64e9..75db28430cdaa0f12e0a86b77cac63e6
  }
  
 diff --git a/addon/styles/components/query-builder.css b/addon/styles/components/query-builder.css
-index f30e90782d165f1aa47326cdf4d4ba502f0d48c6..09836a209265d727d2e234ed62dc3e9a9c496bd5 100644
+index f30e907..09836a2 100644
 --- a/addon/styles/components/query-builder.css
 +++ b/addon/styles/components/query-builder.css
 @@ -32,7 +32,7 @@
@@ -2253,7 +3682,7 @@ index f30e90782d165f1aa47326cdf4d4ba502f0d48c6..09836a209265d727d2e234ed62dc3e9a
  
  .drag-sort-item:hover {
 diff --git a/addon/styles/components/resource-context-panel.css b/addon/styles/components/resource-context-panel.css
-index 80caf33491d86b28011cd2f3b7de8769f7262a67..a24a19a3bc0422cda709db46952f95fff1772da1 100644
+index 80caf33..a24a19a 100644
 --- a/addon/styles/components/resource-context-panel.css
 +++ b/addon/styles/components/resource-context-panel.css
 @@ -84,5 +84,5 @@ body[data-theme='dark'] .resource-context-panel-backdrop {
@@ -2264,7 +3693,7 @@ index 80caf33491d86b28011cd2f3b7de8769f7262a67..a24a19a3bc0422cda709db46952f95ff
 +    background-color: #0f0f0f;
  }
 diff --git a/addon/styles/components/sidebar-toggle.css b/addon/styles/components/sidebar-toggle.css
-index 4df72edfbd6d2e883c2e533ca82b0e783490a189..8f5c471331f7ecb176cc607a6812abc218735cc4 100644
+index 4df72ed..8f5c471 100644
 --- a/addon/styles/components/sidebar-toggle.css
 +++ b/addon/styles/components/sidebar-toggle.css
 @@ -19,7 +19,7 @@
@@ -2297,7 +3726,7 @@ index 4df72edfbd6d2e883c2e533ca82b0e783490a189..8f5c471331f7ecb176cc607a6812abc2
 +    fill: #2b2b2b;
  }
 diff --git a/addon/styles/components/smart-nav-menu.css b/addon/styles/components/smart-nav-menu.css
-index 4602dc97e9cf219526a727ebd42bc045de6d8bd8..7feca5902b80424cef0ca17ebc397a3114c67a4e 100644
+index 4602dc9..7feca59 100644
 --- a/addon/styles/components/smart-nav-menu.css
 +++ b/addon/styles/components/smart-nav-menu.css
 @@ -77,8 +77,8 @@
@@ -2548,7 +3977,7 @@ index 4602dc97e9cf219526a727ebd42bc045de6d8bd8..7feca5902b80424cef0ca17ebc397a31
  body[data-theme='light'] .snm-more-btn.is-open {
      @apply bg-gray-200 text-gray-900 rounded;
 diff --git a/addon/styles/components/tab-navigation.css b/addon/styles/components/tab-navigation.css
-index 34d5b906216ea1df7c1576684fbf3534177ff5dd..512b73dde3f2e817526b70c59583f82cf0e733cb 100644
+index 34d5b90..512b73d 100644
 --- a/addon/styles/components/tab-navigation.css
 +++ b/addon/styles/components/tab-navigation.css
 @@ -1,26 +1,26 @@
@@ -2599,7 +4028,7 @@ index 34d5b906216ea1df7c1576684fbf3534177ff5dd..512b73dde3f2e817526b70c59583f82c
  
      .tab-navigation .tab-item {
 diff --git a/addon/styles/components/table.css b/addon/styles/components/table.css
-index bfdb47d30e531dabf96f42ca1941a8bfff52d23c..dc533045f599c00b6e2e2672012ebf40ba54466d 100644
+index bfdb47d..dc53304 100644
 --- a/addon/styles/components/table.css
 +++ b/addon/styles/components/table.css
 @@ -182,13 +182,13 @@
@@ -2637,7 +4066,7 @@ index bfdb47d30e531dabf96f42ca1941a8bfff52d23c..dc533045f599c00b6e2e2672012ebf40
  
  [data-theme='light'] .table-wrapper {
 diff --git a/addon/styles/components/tabs.css b/addon/styles/components/tabs.css
-index 417d1ab07ef6a6ad105dd6e83e58d659a5acaa6e..0d109b017d5ad001aebc8afc4996c604a0ad5506 100644
+index 417d1ab..0d109b0 100644
 --- a/addon/styles/components/tabs.css
 +++ b/addon/styles/components/tabs.css
 @@ -185,16 +185,16 @@ body[data-theme='dark'] .ui-tabs > nav .ui-tab:disabled {
@@ -2672,7 +4101,7 @@ index 417d1ab07ef6a6ad105dd6e83e58d659a5acaa6e..0d109b017d5ad001aebc8afc4996c604
      color: #fff;
  }
 diff --git a/addon/styles/components/template-builder.css b/addon/styles/components/template-builder.css
-index a1406ba114953d851dbd2459834e7421f0033095..750fad2882472afda6335f82425e09666fe82e52 100644
+index a1406ba..750fad2 100644
 --- a/addon/styles/components/template-builder.css
 +++ b/addon/styles/components/template-builder.css
 @@ -33,7 +33,7 @@ body[data-theme='dark'] .tb-canvas {
@@ -2816,7 +4245,7 @@ index a1406ba114953d851dbd2459834e7421f0033095..750fad2882472afda6335f82425e0966
  
  /* ─── Variable Picker ────────────────────────────────────────────────────── */
 diff --git a/addon/styles/components/timeline.css b/addon/styles/components/timeline.css
-index b8f603eafab65d848508a806428c5c3073cb8c51..8ad405048f241118f2550491422ea7e320927bb1 100644
+index b8f603e..8ad4050 100644
 --- a/addon/styles/components/timeline.css
 +++ b/addon/styles/components/timeline.css
 @@ -105,8 +105,8 @@
@@ -2831,7 +4260,7 @@ index b8f603eafab65d848508a806428c5c3073cb8c51..8ad405048f241118f2550491422ea7e3
  
  .timeline-item::after {
 diff --git a/addon/styles/components/tip-tap-editor.css b/addon/styles/components/tip-tap-editor.css
-index 156e9b4b9c3a85f5ee3f76b72ea10fb6c3ce76f7..c2176b281971903f15ab0145b10e5f8a3aecb908 100644
+index 156e9b4..c2176b2 100644
 --- a/addon/styles/components/tip-tap-editor.css
 +++ b/addon/styles/components/tip-tap-editor.css
 @@ -8,8 +8,8 @@
@@ -2900,7 +4329,7 @@ index 156e9b4b9c3a85f5ee3f76b72ea10fb6c3ce76f7..c2176b281971903f15ab0145b10e5f8a
  }
  
 diff --git a/addon/styles/layout/legacy.css b/addon/styles/layout/legacy.css
-index e68430be1ad944dbdc46a2a3eb3e604f1818ad2c..ae99aee87ddd0e0327c9ab14ae1fa4641e08aaba 100644
+index e68430b..ae99aee 100644
 --- a/addon/styles/layout/legacy.css
 +++ b/addon/styles/layout/legacy.css
 @@ -101,8 +101,8 @@ video {
@@ -2945,7 +4374,7 @@ index e68430be1ad944dbdc46a2a3eb3e604f1818ad2c..ae99aee87ddd0e0327c9ab14ae1fa464
  
  .waypoint-label {
 diff --git a/addon/styles/layout/next.css b/addon/styles/layout/next.css
-index 8146e52777892257c86fd7e4528f3514ffa020f9..d18f051060d3d305d41e6d8ffac05cc76071b6fb 100644
+index 8146e52..d18f051 100644
 --- a/addon/styles/layout/next.css
 +++ b/addon/styles/layout/next.css
 @@ -1258,7 +1258,7 @@ body[data-theme='light']
@@ -3015,7 +4444,7 @@ index 8146e52777892257c86fd7e4528f3514ffa020f9..d18f051060d3d305d41e6d8ffac05cc7
      border-radius: 0.15rem;
      text-align: center;
 diff --git a/addon/styles/layout/reset.css b/addon/styles/layout/reset.css
-index 39e02d86f8f6ad5acbc3731001bd3e9b1b6b13ab..3fd1e2cbe93a1437e2396b7506560ceba6f004b1 100644
+index 39e02d8..3fd1e2c 100644
 --- a/addon/styles/layout/reset.css
 +++ b/addon/styles/layout/reset.css
 @@ -13,9 +13,9 @@ body {
@@ -3033,7 +4462,7 @@ index 39e02d86f8f6ad5acbc3731001bd3e9b1b6b13ab..3fd1e2cbe93a1437e2396b7506560ceb
  ::-webkit-scrollbar {
 diff --git a/addon/utils/calculate-tray-position.js b/addon/utils/calculate-tray-position.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..60cc274b106118408689a599635efa36a90ac2ca
+index 0000000..60cc274
 --- /dev/null
 +++ b/addon/utils/calculate-tray-position.js
 @@ -0,0 +1,41 @@
@@ -3080,7 +4509,7 @@ index 0000000000000000000000000000000000000000..60cc274b106118408689a599635efa36
 +}
 diff --git a/addon/utils/resolve-sticky-side.js b/addon/utils/resolve-sticky-side.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..2a7bd0dc2bae87fcda76ff63fe3925a7d4df33a1
+index 0000000..2a7bd0d
 --- /dev/null
 +++ b/addon/utils/resolve-sticky-side.js
 @@ -0,0 +1,31 @@
@@ -3117,20 +4546,20 @@ index 0000000000000000000000000000000000000000..2a7bd0dc2bae87fcda76ff63fe3925a7
 +}
 diff --git a/app/helpers/localize-label.js b/app/helpers/localize-label.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..612a3f8a6a2caae16f56cab741fa71d617f7d661
+index 0000000..612a3f8
 --- /dev/null
 +++ b/app/helpers/localize-label.js
 @@ -0,0 +1 @@
 +export { default } from '@fleetbase/ember-ui/helpers/localize-label';
 diff --git a/app/helpers/translate-value.js b/app/helpers/translate-value.js
 new file mode 100644
-index 0000000000000000000000000000000000000000..110e315172a6373ab11c9d4e64f44066a71e2df1
+index 0000000..110e315
 --- /dev/null
 +++ b/app/helpers/translate-value.js
 @@ -0,0 +1 @@
 +export { default } from '@fleetbase/ember-ui/helpers/translate-value';
 diff --git a/tailwind.config.js b/tailwind.config.js
-index 94b914c0ec88068cb0467755c5e59fe90eec3565..13d6d877806cbee5f373a323b57a21a245b8c4ff 100644
+index 94b914c..13d6d87 100644
 --- a/tailwind.config.js
 +++ b/tailwind.config.js
 @@ -30,16 +30,68 @@ module.exports = {

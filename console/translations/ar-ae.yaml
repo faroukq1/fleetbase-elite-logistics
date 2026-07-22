@@ -1067,6 +1067,12 @@ ledger:
 
 status-label:
   active: نشط
+  sent: مُرسلة
+  viewed: مُشاهدة
+  partial: مدفوعة جزئيًا
+  paid: مدفوعة
+  overdue: متأخرة
+  void: لاغية
   inactive: غير نشط
   frozen: مجمّد
   suspended: موقوف
@@ -1432,3 +1438,202 @@ seeded-policy-desc:
   policy-for-full-access-to-fleetbase-extensions-and-resources: سياسة للوصول الكامل إلى إضافات المنصة ومواردها.
   policy-for-managing-sales-reports-of-extensions: سياسة لإدارة تقارير مبيعات الإضافات.
   policy-for-complete-management-of-extensions: سياسة للإدارة الكاملة للإضافات.
+
+template-builder:
+  tabs:
+    layers: الطبقات
+    queries: الاستعلامات
+  element:
+    text: نص
+    image: صورة
+    table: جدول
+    line: خط
+    shape: شكل
+    qr-code: رمز QR
+    barcode: باركود
+    element: عنصر
+  toolbar:
+    close: إغلاق
+    add: إضافة
+    zoom-in: تكبير
+    zoom-out: تصغير
+    zoom-reset: إعادة ضبط التكبير
+    rotate-left: تدوير لليسار 90°
+    rotate-right: تدوير لليمين 90°
+    undo: تراجع
+    redo: إعادة
+    preview: معاينة
+    preview-template: معاينة القالب
+    save: حفظ
+  layers:
+    title: الطبقات
+    rename-hint: انقر نقرًا مزدوجًا لإعادة التسمية
+    hide-element: إخفاء العنصر
+    show-element: إظهار العنصر
+    move-up: نقل الطبقة لأعلى
+    move-down: نقل الطبقة لأسفل
+    delete-element: حذف العنصر
+    no-elements: لا توجد عناصر بعد.
+    no-elements-hint: استخدم شريط الأدوات لإضافة عناصر.
+  queries:
+    title: الاستعلامات
+    add: إضافة
+    add-query: إضافة استعلام
+    edit-query: تعديل الاستعلام
+    delete-query: حذف الاستعلام
+    unsaved: غير محفوظ
+    no-queries: لا توجد استعلامات بعد.
+    no-queries-hint: تقوم الاستعلامات بتحميل البيانات من نماذج النظام عند العرض ويتم حفظها مع القالب.
+  properties:
+    element-properties: "خصائص {type}"
+    position: الموضع
+    x: س
+    y: ص
+    rotation: التدوير
+    z-index: ترتيب الطبقة
+    opacity: الشفافية
+    size: الحجم
+    width: العرض
+    height: الارتفاع
+    content: المحتوى
+    content-placeholder: أدخل نصًا أو استخدم صيغة '{'variable.name'}'...
+    insert-variable-or-formula: إدراج متغير أو معادلة
+    image-source: مصدر الصورة
+    change-variable: تغيير المتغير
+    replace-image: استبدال الصورة
+    click-to-upload: انقر لرفع صورة
+    or: أو
+    use-variable: استخدام متغير (مثل '{'company.logo'}')
+    alt-text: النص البديل
+    object-fit: ملاءمة الصورة
+    columns: الأعمدة
+    column-label: تسمية العمود
+    remove-column: إزالة العمود
+    no-columns: لا توجد أعمدة معرّفة. أضف واحدًا أدناه.
+    add-column: إضافة عمود
+    data-source: مصدر البيانات
+    variable: متغير
+    manual: يدوي
+    data-variable: متغير البيانات
+    data-variable-hint: يجب أن يكون المتغير مصفوفة من الكائنات، وأن تطابق مفاتيح كل كائن مفاتيح الأعمدة المعرّفة أعلاه.
+    row: صف
+    remove-row: إزالة الصف
+    define-columns-first: عرّف الأعمدة أولًا.
+    no-rows: لا توجد صفوف بعد.
+    add-row: إضافة صف
+    table-style: نمط الجدول
+    header-bg: خلفية الترويسة
+    header-text: نص الترويسة
+    border-color: لون الحدود
+    cell-padding: حشو الخلية
+    row-alt-color: لون الصف البديل
+    value: القيمة
+    format: التنسيق
+    fill-color: لون التعبئة
+    font-family: نوع الخط
+    size-px: الحجم (بكسل)
+    weight: سماكة الخط
+    line-height: ارتفاع السطر
+    letter-spacing: تباعد الأحرف
+    alignment: المحاذاة
+    background: الخلفية
+    padding-px: الحشو (بكسل)
+    border: الحدود
+    radius-px: نصف قطر الزوايا (بكسل)
+    canvas-settings: إعدادات اللوحة
+    template-name: اسم القالب
+    paper-size: حجم الورق
+    orientation: الاتجاه
+    background-color: لون الخلفية
+    description: الوصف
+    color: اللون
+    width-px: العرض (بكسل)
+    style: النمط
+    border-radius: استدارة الزوايا
+    clear: مسح
+    insert-variable: إدراج متغير
+    uploading: جارٍ الرفع...
+  options:
+    font-weight:
+      light: خفيف
+      regular: عادي
+      medium: متوسط
+      semi-bold: شبه عريض
+      bold: عريض
+      extra-bold: عريض جدًا
+      black: أسود
+    line-style:
+      solid: متصل
+      dashed: متقطع
+      dotted: منقّط
+    object-fit:
+      cover: تغطية
+      contain: احتواء
+      fill: تعبئة
+      none: بدون
+    shape:
+      rectangle: مستطيل
+      circle: دائرة
+    paper-size:
+      custom: مخصص
+    orientation:
+      portrait: عمودي
+      landscape: أفقي
+  resource:
+    order: طلب
+    driver: سائق
+    place: مكان
+    vendor: مورد
+    contact: جهة اتصال
+    issue: مشكلة
+    vehicle: مركبة
+    fuel-report: تقرير وقود
+    purchase-rate: سعر شراء
+  query-form:
+    new-query: استعلام جديد
+    edit-query: تعديل الاستعلام
+    basic-info: معلومات أساسية
+    label: التسمية
+    label-placeholder: مثل الطلبات الأخيرة
+    label-required: التسمية مطلوبة.
+    resource-type-required: يرجى اختيار نوع المورد.
+    variable-name: اسم المتغير
+    variable-name-hint: يُشتق تلقائيًا من التسمية إذا تُرك فارغًا.
+    description: الوصف
+    description-placeholder: وصف اختياري
+    resource-type: نوع المورد
+    resource-type-hint: اختر النموذج الذي يعمل عليه هذا الاستعلام.
+    filter-conditions: شروط التصفية
+    add-condition: إضافة شرط
+    remove-condition: إزالة الشرط
+    no-conditions: لا توجد شروط — سيتم إرجاع جميع السجلات.
+    sort: الترتيب
+    add-sort: إضافة ترتيب
+    remove-sort: إزالة الترتيب
+    ascending: تصاعدي
+    descending: تنازلي
+    no-sort: بدون ترتيب — سيُستخدم الترتيب الافتراضي.
+    limit: الحد الأقصى
+    no-limit: بلا حد
+    limit-hint: أقصى عدد من الصفوف المراد إرجاعها.
+    eager-load: التحميل المسبق (with)
+    eager-load-hint: أسماء العلاقات المراد تحميلها مسبقًا مفصولة بفواصل.
+    cancel: إلغاء
+    save-changes: حفظ التغييرات
+    create-query: إنشاء الاستعلام
+  variable-picker:
+    title: إدراج متغير أو معادلة
+    variables: المتغيرات
+    formula: المعادلة
+    search-placeholder: البحث في المتغيرات...
+    global: عام
+    always-available: متاح دائمًا
+    variables-count: "{count} متغيرات"
+    no-match: لا توجد متغيرات مطابقة لـ "{query}"
+    formula-syntax: صيغة المعادلة
+    use-variables-hint: "استخدم المتغيرات داخل التعبير:"
+    supported: المدعوم
+    expression: التعبير
+    quick-insert: إدراج سريع لمتغير
+    insert-formula: إدراج المعادلة
+    unbalanced-braces: أقواس معقوفة غير متوازنة في المعادلة.

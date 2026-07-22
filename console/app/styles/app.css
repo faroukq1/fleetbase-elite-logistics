@@ -996,6 +996,114 @@ body[data-theme='dark'] .kanban-board .kanban-columns-container::-webkit-scrollb
     opacity: 0.85;
 }
 
+/* ── ELITE SKIN: header extension tabs — green active pill in both themes ──
+   ember-ui paints the active .next-view-header-item with bg-sky-500 in light
+   mode (remapped to brand green in tailwind.config.js) but falls back to a
+   gray-700 pill in dark mode. The client wants the same green pill regardless
+   of theme, matching the sidebar's active state. */
+body[data-theme='dark'] .next-view-header-item.active,
+body[data-theme='dark'] a.next-view-header-item.active,
+.next-view-header-item.active {
+    background-color: #5dd62c !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+.next-view-header-item.active svg,
+body[data-theme='dark'] .next-view-header-item.active svg {
+    color: currentColor !important;
+}
+
+/* ── ELITE SKIN: live-map orders/fleet panel — always black ─────────────────
+   The floating order/fleet listing over the Fleet-Ops live map (Overlay with
+   class .orders-panel) ships white in light mode and navy-gray in dark. The
+   client wants it in the site's black identity in both themes, like the
+   sidebar: black surfaces, light text, green accents. Vendor rules use long
+   descendant selectors without !important, so these all win with it. */
+.next-content-overlay-panel.orders-panel,
+.next-content-overlay-panel.orders-panel .next-content-overlay-panel-body.fleetops-order-list-overlay {
+    background-color: #0f0f0f !important;
+}
+.next-content-overlay-panel.orders-panel .next-content-overlay-panel-header,
+.next-content-overlay-panel.orders-panel .order-list-overlay-panel-header {
+    background-color: #0f0f0f !important;
+    border-color: rgba(93, 214, 44, 0.25) !important;
+}
+.next-content-overlay-panel.orders-panel .order-list-overlay-search,
+.next-content-overlay-panel.orders-panel .order-list-overlay-panel-header input {
+    color: #e5e5e5 !important;
+}
+.next-content-overlay-panel.orders-panel .order-list-overlay-panel-header input::placeholder {
+    color: #9ca3af !important;
+}
+/* section headers (Active Orders / Unassigned / fleet groups / driver rows) */
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel {
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header {
+    background-color: #0f0f0f !important;
+    border-bottom: 1px solid #1f1f1f !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header:hover {
+    background-color: #1f1f1f !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header .panel-title,
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header .panel-title div,
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header span,
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header a,
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-header .icon-container svg {
+    color: #e5e5e5 !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .resource-count,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .resource-count {
+    background-color: #1f1f1f !important;
+    border-color: rgba(93, 214, 44, 0.35) !important;
+    color: #e5e5e5 !important;
+}
+/* order cards inside the panel */
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .order-listings-row-container,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .order-listings-row-container {
+    background-color: #141414 !important;
+    border-bottom: 1px solid #262626 !important;
+    color: #e5e5e5 !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .order-listings-row-container.selected,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .order-listings-row-container.selected {
+    background-color: rgba(93, 214, 44, 0.18) !important;
+    border-bottom-color: #5dd62c !important;
+    color: #ffffff !important;
+}
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-body,
+.next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-body-inner,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-body,
+body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order-list-overlay .next-content-panel-body-inner {
+    background-color: transparent !important;
+}
+/* resize gutter + header action triggers stay legible on black */
+.next-content-overlay-panel.orders-panel .order-list-overlay-panel-header .next-org-button-trigger svg {
+    color: #e5e5e5 !important;
+}
+
+/* ── RTL: wormholed dropdown menus pinned to the screen edge ────────────────
+   ember-basic-dropdown positions wormholed content (power-selects, table row
+   menus, column filters, …) with an inline page-space `left`. postcss-rtlcss
+   flips the vendor rule `.ember-basic-dropdown-content--left { left: 0 }`
+   into `[dir='rtl'] … { right: 0 }`; with both edges set the box is
+   over-constrained and in RTL the browser honors `right`, pinning every such
+   menu to the viewport edge (e.g. the invoice status filter). Kill the class
+   `right` so the JS-computed `left` wins again. In-place dropdowns anchor via
+   these classes intentionally, so they are excluded. */
+/*rtl:begin:ignore*/
+[dir='rtl'] .ember-basic-dropdown-content--left:not(.ember-basic-dropdown-content--in-place) {
+    right: auto !important;
+}
+/*rtl:end:ignore*/
+
 /* Respect reduced-motion. */
 @media (prefers-reduced-motion: reduce) {
     body,
