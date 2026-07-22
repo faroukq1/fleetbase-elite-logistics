@@ -724,7 +724,7 @@ index 5cadb8f..089a421 100644
      </LinkToExternal>
  {{/if}}
 diff --git a/addon/components/layout/header/smart-nav-menu/item.js b/addon/components/layout/header/smart-nav-menu/item.js
-index 0df254b..e369e07 100644
+index 0df254b..35b53bd 100644
 --- a/addon/components/layout/header/smart-nav-menu/item.js
 +++ b/addon/components/layout/header/smart-nav-menu/item.js
 @@ -14,6 +14,34 @@ import { inject as service } from '@ember/service';
@@ -762,6 +762,24 @@ index 0df254b..e369e07 100644
  
      /**
       * Whether the item's route matches the current route, making it "active".
+@@ -25,6 +53,16 @@ export default class LayoutHeaderSmartNavMenuItemComponent extends Component {
+         if (!route) return false;
+         const r = this.router ?? this.hostRouter;
+         const current = r?.currentRouteName ?? '';
+-        return current.startsWith(route);
++        if (current && current.startsWith(route)) {
++            return true;
++        }
++        // URL fallback: engine tabs mount at a path equal to the route's last
++        // segment (console.storefront → /storefront), so match on pathname when
++        // route-name comparison fails (e.g. router service scoping quirks).
++        // Reading currentRouteName above keeps this getter tracked, so it still
++        // recomputes on every transition.
++        const segment = route.split('.').pop();
++        const path = window.location?.pathname ?? '';
++        return path === `/${segment}` || path.startsWith(`/${segment}/`);
+     }
+ }
 diff --git a/addon/components/layout/resource/tabular-actions.hbs b/addon/components/layout/resource/tabular-actions.hbs
 index 615c4c5..87f4eb7 100644
 --- a/addon/components/layout/resource/tabular-actions.hbs

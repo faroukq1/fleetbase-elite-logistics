@@ -1127,3 +1127,13 @@ body[data-theme='dark'] .next-content-overlay-panel.orders-panel .fleetops-order
         transition: none;
     }
 }
+
+/* ── ELITE SKIN: header tabs — green hover in dark mode ─────────────────────
+   Light mode paints header-tab hover green via the vendor bg-sky-500 remap;
+   dark mode fell back to a gray pill. Match them. */
+body[data-theme='dark'] .next-view-header-item:hover,
+body[data-theme='dark'] .snm-item:hover {
+    background-color: #5dd62c !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
